@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   atributoDoTema,
   cookieDaPreferencia,
+  corDaBarra,
   lerPreferencias,
   PREFERENCIAS_PADRAO,
 } from "./preferencias";
@@ -11,9 +12,9 @@ const cookies = (valores: Record<string, string>) => (nome: string) =>
   valores[nome];
 
 describe("lerPreferencias", () => {
-  it("sem cookies, devolve o padrão: tema do aparelho e português", () => {
+  it("sem cookies, devolve o padrão: tema claro e português", () => {
     expect(lerPreferencias(cookies({}))).toEqual(PREFERENCIAS_PADRAO);
-    expect(PREFERENCIAS_PADRAO).toEqual({ tema: "auto", idioma: "pt-BR" });
+    expect(PREFERENCIAS_PADRAO).toEqual({ tema: "light", idioma: "pt-BR" });
   });
 
   it("lê tema e idioma gravados", () => {
@@ -57,5 +58,16 @@ describe("cookieDaPreferencia", () => {
     expect(lerPreferencias(cookies({ "achados-tema": valor })).tema).toBe(
       "auto"
     );
+  });
+});
+
+describe("corDaBarra", () => {
+  it("segue o tema escolhido e, em auto, o do aparelho", () => {
+    expect(corDaBarra("light")).toBe("#f15a24");
+    expect(corDaBarra("dark")).toBe("#06131e");
+    expect(corDaBarra("auto")).toEqual([
+      { media: "(prefers-color-scheme: light)", color: "#f15a24" },
+      { media: "(prefers-color-scheme: dark)", color: "#06131e" },
+    ]);
   });
 });

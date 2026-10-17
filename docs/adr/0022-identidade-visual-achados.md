@@ -18,7 +18,7 @@ O design system veio da base com tokens semânticos, temas claro e escuro e comp
 - **Paleta (camada 1):** laranja (`#F15A24` do logotipo), asfalto (`#0A1E2E`), ardósia (neutros do protótipo), âmbar, céu, verde/esmeralda e rosa.
 - **Papéis novos:** `brand` (laranja do logotipo, só ícone e elemento gráfico, 3,4:1), `foreground-brand` ("Achados"), `accent` âmbar (curadoria), `star` e `rating` (nota), `seal-*` (selos editoriais sobre foto), `favorite`, `chip`, `passport-*` e as utilidades `bg-brand-gradient`, `text-brand-gradient`, `bg-passport`, `scrollbar-none`.
 - **Contraste AA por construção:** texto laranja usa o 700 (`#C2410C`); preenchimento com texto branco usa o 600 (`#D4440F`); selos "Mais querido" e "Verificado" usam céu 700 e verde 700; `foreground-muted` é `#5F6E84`, um pouco mais escuro que o slate-500 do protótipo, para atingir AA também sobre o cinza das abas. Diferença visual pequena em relação ao protótipo, registrada aqui.
-- **Tema:** o escuro segue o asfalto da marca e foi aprovado pelo responsável em 17/10/2026 ("ficou muito melhor"). O app acompanha o tema do aparelho por padrão, e a pessoa escolhe claro, escuro ou automático no perfil. A barra de status do celular usa laranja no claro e asfalto no escuro.
+- **Tema:** o escuro segue o asfalto da marca e foi aprovado pelo responsável em 17/10/2026 ("ficou muito melhor"). O app abre no claro por padrão (decisão do responsável em 17/10/2026, enquanto o seletor não está em evidência), e a pessoa escolhe claro, escuro ou automático no perfil. A barra de status do celular acompanha o tema do app: laranja no claro, asfalto no escuro.
 
 ### Tipografia, forma e movimento
 

@@ -23,12 +23,12 @@ export type Preferencias = {
 };
 
 /**
- * O tema segue o aparelho por padrão. O escuro (asfalto da marca) foi
- * aprovado pelo responsável em 17/10/2026 (ADR-0022); a pessoa escolhe outro
- * no perfil.
+ * O tema é claro por padrão, por decisão do responsável (17/10/2026): o
+ * escuro (asfalto da marca, ADR-0022) continua disponível por escolha no
+ * perfil, e "auto" segue o aparelho.
  */
 export const PREFERENCIAS_PADRAO: Preferencias = {
-  tema: "auto",
+  tema: "light",
   idioma: IDIOMA_PADRAO,
 };
 
@@ -63,6 +63,22 @@ export function lerPreferencias(
 /** `data-theme` do `<html>`: ausente em `auto`, para o sistema operacional decidir. */
 export function atributoDoTema(tema: Tema): "light" | "dark" | undefined {
   return tema === "auto" ? undefined : tema;
+}
+
+const COR_DA_BARRA = { light: "#f15a24", dark: "#06131e" } as const;
+
+/**
+ * A cor da barra de status do celular (`theme-color`): laranja da marca no
+ * claro, asfalto no escuro; em `auto`, uma para cada tema do aparelho.
+ */
+export function corDaBarra(
+  tema: Tema
+): string | { media: string; color: string }[] {
+  if (tema !== "auto") return COR_DA_BARRA[tema];
+  return [
+    { media: "(prefers-color-scheme: light)", color: COR_DA_BARRA.light },
+    { media: "(prefers-color-scheme: dark)", color: COR_DA_BARRA.dark },
+  ];
 }
 
 /**

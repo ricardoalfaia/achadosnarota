@@ -6,7 +6,7 @@ import { configuracaoDoApp } from "@/shared/config/configuracao";
 import { ConfiguracaoProvider } from "@/shared/config/configuracao-provider";
 import { escopoDaPessoa } from "@/shared/consultas/escopo.servidor";
 import { ProvedorDeConsultas } from "@/shared/consultas/provedor-de-consultas";
-import { atributoDoTema } from "@/shared/preferencias/preferencias";
+import { atributoDoTema, corDaBarra } from "@/shared/preferencias/preferencias";
 import { PreferenciasProvider } from "@/shared/preferencias/preferencias-provider";
 import { lerPreferenciasDoPedido } from "@/shared/preferencias/preferencias.servidor";
 import { pessoaDoPedido } from "@/shared/sessao/sessao.servidor";
@@ -40,16 +40,16 @@ export const metadata: Metadata = {
   },
 };
 
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  viewportFit: "cover",
-  // Barra de status do celular: laranja da marca no claro, asfalto no escuro.
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f15a24" },
-    { media: "(prefers-color-scheme: dark)", color: "#06131e" },
-  ],
-};
+export async function generateViewport(): Promise<Viewport> {
+  const { tema } = await lerPreferenciasDoPedido();
+  return {
+    width: "device-width",
+    initialScale: 1,
+    viewportFit: "cover",
+    // Barra de status do celular na cor do tema do app.
+    themeColor: corDaBarra(tema),
+  };
+}
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   // As preferências vêm dos cookies para o HTML já sair do servidor no tema e
