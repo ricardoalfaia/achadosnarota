@@ -190,8 +190,11 @@ export function ListaDeAbas({
 }
 
 const ABA: Record<VarianteDeAbas, string> = {
+  // No celular, as abas dividem a largura e encolhem em vez de vazar da tela
+  // (4 abas não cabem em 360px com largura fixa); de 640px em diante, cada uma
+  // tem a largura do próprio nome.
   linha:
-    "h-control-sm rounded-t-control px-4 text-sm hover:text-primary aria-selected:text-primary",
+    "h-control-sm min-w-0 flex-1 shrink justify-center rounded-t-control px-2 text-sm hover:text-primary aria-selected:text-primary sm:flex-none sm:px-4",
   pilula:
     "h-7 rounded-md px-3 text-sm hover:text-foreground aria-selected:text-primary-solid-foreground",
   segmentos:

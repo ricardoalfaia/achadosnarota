@@ -98,6 +98,7 @@ test("no desktop, a ficha mostra foto e informações lado a lado", async ({
   });
   const foto = page.getByRole("img", { name: /Salão iluminado/ });
   await expect(titulo).toBeVisible();
+  await expect(foto).toBeVisible();
   const [caixaDoTitulo, caixaDaFoto] = await Promise.all([
     titulo.boundingBox(),
     foto.boundingBox(),
