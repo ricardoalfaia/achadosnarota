@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { SeletorDeTema, type Tema } from "@meuproduto/ui";
+import { SeletorDeTema, type Tema } from "@achados/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, within } from "storybook/test";
 

@@ -5,17 +5,21 @@ import { useState } from "react";
 import { cn } from "../../lib/cn";
 import { iniciaisDoNome } from "./iniciais";
 
-/** `sm` 28px (listas), `md` 36px (faixa do topo, o padrão), `lg` 48px (perfil). */
-export type TamanhoDoAvatar = "sm" | "md" | "lg";
+/**
+ * `sm` 28px (listas), `md` 36px (cabeçalho, o padrão), `lg` 48px e `xl` 80px
+ * (topo do perfil).
+ */
+export type TamanhoDoAvatar = "sm" | "md" | "lg" | "xl";
 
 const TAMANHO: Record<TamanhoDoAvatar, string> = {
   sm: "size-7 text-2xs",
   md: "size-9 text-sm",
   lg: "size-12 text-lg",
+  xl: "size-20 text-2xl",
 };
 
 /**
- * Foto da pessoa ou, sem ela, as iniciais do nome sobre o azul suave da marca.
+ * Foto da pessoa ou, sem ela, as iniciais do nome sobre o laranja suave da marca.
  * Se a foto não carregar, as iniciais entram no lugar. O nome é o nome acessível.
  */
 export function Avatar({
@@ -34,7 +38,7 @@ export function Avatar({
   const comFoto = fotoUrl && fotoUrl !== fotoComErro;
 
   const moldura = cn(
-    "inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-info-border bg-primary-subtle font-bold text-primary select-none",
+    "inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-surface bg-primary-subtle font-bold text-primary shadow-sm select-none",
     TAMANHO[tamanho],
     className
   );

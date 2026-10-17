@@ -25,75 +25,68 @@ type Textos = {
     emConstrucao: string;
     verTodos: string;
   };
-  /** Os nomes seguem o menu lateral do sistema. */
+  /** Os nomes seguem a barra de navegação do app. */
   modulos: Record<Modulo, string>;
   rodape: { direitos: string };
 };
 
 const TEXTOS: Record<Idioma, Textos> = {
   "pt-BR": {
-    nomeDoSite: "Meuproduto Docs",
-    descricaoDoSite: "Documentação do Meuproduto para quem usa o sistema.",
+    nomeDoSite: "Achados na Rota Docs",
+    descricaoDoSite: "Documentação do Achados na Rota para quem usa o app.",
     documentacao: "Documentação",
     rotuloDaMarca: "Docs",
     inicio: {
       selo: "Central de documentação",
-      titulo: "Seus documentos",
-      tituloDestaque: "ganham vida.",
+      titulo: "Descubra lugares",
+      tituloDestaque: "que valem a pena.",
       descricao:
-        "Guias para conhecer o Meuproduto, entender cada área e resolver dúvidas do dia a dia.",
+        "Guias para conhecer o Achados na Rota, o passaporte de benefícios e cada área do app.",
       comecar: "Começar a ler",
       buscar: "Buscar na documentação",
       acessoRapido: "Acesso rápido",
       secoes: "Por onde começar",
       secoesDescricao: "Escolha um caminho e siga no seu ritmo.",
-      modulos: "Áreas do sistema",
-      modulosDescricao: "As mesmas áreas do menu lateral do Meuproduto.",
+      modulos: "Áreas do app",
+      modulosDescricao: "As mesmas áreas da barra de navegação do app.",
       emConstrucao: "Em construção",
       verTodos: "Ver todas as áreas",
     },
     modulos: {
-      documentos: "Documentos",
-      modelos: "Modelos",
-      assinaturas: "Assinaturas",
-      clientes: "Clientes",
-      equipe: "Equipe",
-      relatorios: "Relatórios",
-      integracoes: "Integrações",
-      configuracoes: "Configurações",
+      explorar: "Explorar",
+      favoritos: "Favoritos",
+      passaporte: "Passaporte",
+      perfil: "Perfil",
     },
     rodape: { direitos: "Todos os direitos reservados." },
   },
   en: {
-    nomeDoSite: "Meuproduto Docs",
-    descricaoDoSite: "Meuproduto documentation for the people who use it.",
+    nomeDoSite: "Achados na Rota Docs",
+    descricaoDoSite:
+      "Achados na Rota documentation for the people who use the app.",
     documentacao: "Documentation",
     rotuloDaMarca: "Docs",
     inicio: {
       selo: "Documentation center",
-      titulo: "Your documents",
-      tituloDestaque: "come to life.",
+      titulo: "Discover places",
+      tituloDestaque: "worth the trip.",
       descricao:
-        "Guides to get to know Meuproduto, understand each area and answer day-to-day questions.",
+        "Guides to get to know Achados na Rota, the benefits passport and each area of the app.",
       comecar: "Start reading",
       buscar: "Search the documentation",
       acessoRapido: "Quick access",
       secoes: "Where to start",
       secoesDescricao: "Pick a path and go at your own pace.",
-      modulos: "Areas of the system",
-      modulosDescricao: "The same areas as the Meuproduto side menu.",
+      modulos: "Areas of the app",
+      modulosDescricao: "The same areas as the app navigation bar.",
       emConstrucao: "Under construction",
       verTodos: "See all areas",
     },
     modulos: {
-      documentos: "Documents",
-      modelos: "Templates",
-      assinaturas: "Signatures",
-      clientes: "Clients",
-      equipe: "Team",
-      relatorios: "Reports",
-      integracoes: "Integrations",
-      configuracoes: "Settings",
+      explorar: "Explore",
+      favoritos: "Favorites",
+      passaporte: "Passport",
+      perfil: "Profile",
     },
     rodape: { direitos: "All rights reserved." },
   },

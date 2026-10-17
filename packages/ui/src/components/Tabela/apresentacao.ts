@@ -12,7 +12,7 @@ export const LARGURA_MINIMA = 64;
 export const LARGURA_DA_SELECAO = 40;
 
 /** Faixa de cor da linha marcada, por cima do fundo opaco das células fixas. */
-export const MARCADA = "shadow-[inset_0_0_0_999px_var(--pl-primary-subtle)]";
+export const MARCADA = "shadow-[inset_0_0_0_999px_var(--ar-primary-subtle)]";
 
 const ALINHAMENTO = {
   inicio: "justify-start text-left",

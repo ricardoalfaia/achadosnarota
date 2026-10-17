@@ -94,7 +94,7 @@ for (const [name, project] of projects) {
             `${name}: import relativo fora do projeto em ${path.relative(root, filename)}`
           );
       }
-      if (!specifier.startsWith("@meuproduto/")) continue;
+      if (!specifier.startsWith("@achados/")) continue;
       const parts = specifier.split("/");
       const dependency = parts.slice(0, 2).join("/");
       const target = projects.get(dependency);
@@ -115,8 +115,8 @@ for (const [name, project] of projects) {
         errors.push(`${name}: export privado/inexistente ${specifier}`);
     }
     if (
-      name === "@meuproduto/core" &&
-      /\bfrom\s+["'](?:react|react-dom|next|@tanstack\/|@meuproduto\/ui)/.test(
+      name === "@achados/core" &&
+      /\bfrom\s+["'](?:react|react-dom|next|@tanstack\/|@achados\/ui)/.test(
         text
       )
     )

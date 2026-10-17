@@ -10,7 +10,7 @@ export function Esqueleto({ className }: { className?: string }) {
     <span
       aria-hidden="true"
       className={cn(
-        "block animate-pulse rounded-md bg-surface-active",
+        "block animate-pulse rounded-md bg-surface-hover",
         className
       )}
     />

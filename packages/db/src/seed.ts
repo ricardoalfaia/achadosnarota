@@ -1,205 +1,536 @@
 /**
- * Dados SINTÉTICOS de desenvolvimento (docs/produto/09: dado real de cliente
- * nunca entra aqui). Idempotente: rodar de novo não duplica nada nem troca
- * senha de usuário existente.
+ * Dados SINTÉTICOS de desenvolvimento. Os lugares, notas, ofertas e pessoas
+ * daqui são inventados, a partir do protótipo; nada é real e nada disto vai
+ * para produção (docs/produto/README, princípio 6). Telefones começam com 0
+ * depois do DDD (número inexistente) e os sites usam example.com.
  *
  *   pnpm db:seed
  *
- * Cria a organização "Organização Demo", os tenants escritorio-demo e
- * escritorio-teste, três usuários e três clientes em cada tenant.
- *
- * Organização, tenants, usuários e memberships são gravados como DONO
- * (DATABASE_URL_ADMIN), como num bootstrap. Os clientes são gravados com o
- * papel da app (DATABASE_URL) dentro de withTenant: o seed passa pelo mesmo
- * caminho do app e já exercita as policies de escrita.
+ * Idempotente: rodar de novo atualiza o catálogo pelo slug e não troca a
+ * senha de quem já existe. Grava como DONO (DATABASE_URL_ADMIN): o catálogo
+ * não tem caminho de escrita para o papel da app.
  */
-import { Ok, type Result } from "@meuproduto/core";
 import { generateRandomString, hashPassword } from "better-auth/crypto";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 
 import { criarDb, encerrarDb, type Db } from "./client";
+import { novoId } from "./id";
 import * as s from "./schema";
-import { withTenant } from "./tenant-scope";
 
 if (process.env.APP_ENV === "production") {
-  console.error("✗ seed é só para desenvolvimento. Em produção use bootstrap.");
+  console.error("✗ seed é só para desenvolvimento.");
   process.exit(1);
 }
 
-const ORGANIZACAO = { name: "Organização Demo", slug: "organizacao-demo" };
-
-const TENANTS = [
+const CIDADES = [
+  { slug: "pindamonhangaba-sp", name: "Pindamonhangaba", state: "SP" },
+  { slug: "campos-do-jordao-sp", name: "Campos do Jordão", state: "SP" },
   {
-    slug: "escritorio-demo",
-    name: "Escritório Demo",
-    clientes: ["Ana Exemplo", "Bruno Fictício", "Carla Sintética"],
+    slug: "sao-bento-do-sapucai-sp",
+    name: "São Bento do Sapucaí",
+    state: "SP",
   },
   {
-    slug: "escritorio-teste",
-    name: "Escritório Teste",
-    clientes: ["Daniel Exemplo", "Elisa Fictícia", "Fábio Sintético"],
+    slug: "santo-antonio-do-pinhal-sp",
+    name: "Santo Antônio do Pinhal",
+    state: "SP",
+  },
+  {
+    slug: "sao-francisco-xavier-sp",
+    name: "São Francisco Xavier",
+    state: "SP",
   },
 ] as const;
 
-type TenantSlug = (typeof TENANTS)[number]["slug"];
+type CidadeSlug = (typeof CIDADES)[number]["slug"];
 
-const USUARIOS: ReadonlyArray<{
-  email: string;
+const CATEGORIAS = [
+  { slug: "restaurantes", name: "Restaurantes", icon: "utensils" },
+  { slug: "cafes", name: "Cafés", icon: "coffee" },
+  { slug: "bares", name: "Bares", icon: "beer" },
+  { slug: "pousadas", name: "Pousadas", icon: "house" },
+  { slug: "atracoes", name: "Atrações", icon: "landmark" },
+  { slug: "compras", name: "Compras", icon: "shopping-bag" },
+] as const;
+
+type CategoriaSlug = (typeof CATEGORIAS)[number]["slug"];
+
+type Oferta = {
+  title: string;
+  terms: string;
+  kind: s.OfferKind;
+  icon: string;
+};
+
+type Lugar = {
+  slug: string;
   name: string;
-  password: string;
-  tenant: TenantSlug;
-  role: s.TenantRole;
-}> = [
+  cidade: CidadeSlug;
+  categoria: CategoriaSlug;
+  specialty: string;
+  summary: string;
+  description: string;
+  tags: string[];
+  address: string;
+  phone: string;
+  fotos: { arquivo: string; alt: string }[];
+  avaliacao: {
+    score: string;
+    summary: string;
+    caveats?: string;
+    visitedOn: string;
+    seal: s.Seal | null;
+  };
+  ofertas: Oferta[];
+};
+
+const ORIGEM_DAS_FOTOS =
+  "Imagem ilustrativa do protótipo; só para desenvolvimento.";
+
+const LUGARES: Lugar[] = [
   {
-    email: "admin@meuproduto.local",
-    name: "Admin Demo",
-    password: "meuproduto123",
-    tenant: "escritorio-demo",
-    role: "owner",
+    slug: "rancho-portugues",
+    name: "Rancho Português",
+    cidade: "pindamonhangaba-sp",
+    categoria: "restaurantes",
+    specialty: "Culinária Brasileira",
+    summary:
+      "Tradição, sabor e um ambiente acolhedor, com pratos típicos portugueses e um atendimento que faz você se sentir em casa.",
+    description:
+      "Salão rústico com deck voltado para a serra, cozinha de forno a lenha e porções para compartilhar. Bom para famílias e grupos na parada da viagem.",
+    tags: ["Culinária Brasileira", "Ambiente Familiar", "Vista"],
+    address: "Estrada do Rancho, km 98, Pindamonhangaba - SP",
+    phone: "1200000001",
+    fotos: [
+      { arquivo: "rancho", alt: "Salão iluminado do Rancho Português à noite" },
+      {
+        arquivo: "rancho-dish",
+        alt: "Prato típico servido no Rancho Português",
+      },
+      { arquivo: "rancho-int1", alt: "Mesas de madeira no salão rústico" },
+      { arquivo: "rancho-int2", alt: "Deck com vista para a serra" },
+    ],
+    avaliacao: {
+      score: "4.8",
+      summary:
+        "Bacalhau bem executado, porções generosas e serviço atento mesmo com a casa cheia. O deck vale a parada no fim da tarde.",
+      caveats: "Movimento alto aos domingos; chegue antes do meio-dia.",
+      visitedOn: "2026-09-14",
+      seal: "featured",
+    },
+    ofertas: [
+      {
+        title: "10% de desconto no almoço",
+        terms: "Válido de segunda a sexta. Apresente o cupom no local.",
+        kind: "discount",
+        icon: "percent",
+      },
+      {
+        title: "Sobremesa cortesia no jantar",
+        terms: "Válido todos os dias. Uma sobremesa por mesa.",
+        kind: "courtesy",
+        icon: "dessert",
+      },
+    ],
   },
   {
-    email: "operador@meuproduto.local",
-    name: "Operador Demo",
-    password: "meuproduto123",
-    tenant: "escritorio-demo",
-    role: "member",
+    slug: "choperia-da-estacao",
+    name: "Choperia da Estação",
+    cidade: "pindamonhangaba-sp",
+    categoria: "bares",
+    specialty: "Choperia",
+    summary:
+      "Chopp gelado, petiscos incríveis e ambiente descontraído para reunir a família e os amigos na rota.",
+    description:
+      "Casa ao lado da antiga estação, com chopp tirado na hora, petiscos de boteco e música ao vivo nas sextas.",
+    tags: ["Chopp Artesanal", "Petiscos", "Música ao Vivo"],
+    address: "Rua da Estação, 450, Centro, Pindamonhangaba - SP",
+    phone: "1200000002",
+    fotos: [
+      { arquivo: "choperia", alt: "Chopp gelado e petiscos sobre a mesa" },
+      { arquivo: "gourmet-plate", alt: "Porção servida na choperia" },
+    ],
+    avaliacao: {
+      score: "4.7",
+      summary:
+        "Chopp sempre na temperatura certa e colarinho bem tirado. Os pastéis são o ponto alto do cardápio.",
+      visitedOn: "2026-09-21",
+      seal: "beloved",
+    },
+    ofertas: [
+      {
+        title: "1 chopp cortesia na compra de 2",
+        terms:
+          "Válido de terça a domingo. Peça 2 chopps de 500 ml e ganhe o terceiro.",
+        kind: "courtesy",
+        icon: "beer",
+      },
+    ],
   },
   {
-    email: "outro@meuproduto.local",
-    name: "Outro Escritório",
-    password: "meuproduto123",
-    tenant: "escritorio-teste",
-    role: "owner",
+    slug: "cafe-da-serra",
+    name: "Café da Serra",
+    cidade: "campos-do-jordao-sp",
+    categoria: "cafes",
+    specialty: "Café & Confeitaria",
+    summary:
+      "Cafés especiais, doces artesanais e uma vista deslumbrante das montanhas da Serra da Mantiqueira.",
+    description:
+      "Cafeteria com torra própria, métodos filtrados e confeitaria da casa. Varanda envidraçada para os dias frios.",
+    tags: ["Cafés Especiais", "Doces Artesanais", "Vista da Serra"],
+    address: "Avenida das Hortênsias, 310, Capivari, Campos do Jordão - SP",
+    phone: "1200000003",
+    fotos: [
+      { arquivo: "cafe-serra", alt: "Xícara de café com doces na varanda" },
+      { arquivo: "rancho-int2", alt: "Varanda com vista para as montanhas" },
+    ],
+    avaliacao: {
+      score: "4.6",
+      summary:
+        "Grãos de produtores da região bem apresentados pela equipe. A torta de frutas vermelhas é o destaque.",
+      visitedOn: "2026-10-02",
+      seal: "verified",
+    },
+    ofertas: [
+      {
+        title: "Sobremesa cortesia no jantar",
+        terms:
+          "Válido todos os dias. Uma sobremesa por mesa na compra de prato principal.",
+        kind: "courtesy",
+        icon: "dessert",
+      },
+    ],
+  },
+  {
+    slug: "mirante-do-vale",
+    name: "Mirante do Vale",
+    cidade: "sao-bento-do-sapucai-sp",
+    categoria: "restaurantes",
+    specialty: "Restaurante",
+    summary:
+      "Alta gastronomia contemporânea com uma das vistas mais lindas e panorâmicas da região.",
+    description:
+      "Menu degustação sazonal com ingredientes da Mantiqueira e carta de vinhos de altitude. Reserva recomendada.",
+    tags: ["Alta Gastronomia", "Carta de Vinhos", "Deck Panorâmico"],
+    address: "Estrada do Mirante, km 4, São Bento do Sapucaí - SP",
+    phone: "1200000004",
+    fotos: [
+      { arquivo: "mirante", alt: "Deck do restaurante com vista para o vale" },
+      { arquivo: "gourmet-plate", alt: "Prato do menu degustação" },
+      { arquivo: "hero-road", alt: "Estrada da serra ao pôr do sol" },
+    ],
+    avaliacao: {
+      score: "4.9",
+      summary:
+        "Técnica precisa, ingredientes locais e serviço sem pressa. O pôr do sol do deck completa a experiência.",
+      caveats: "Só com reserva aos sábados.",
+      visitedOn: "2026-10-05",
+      seal: "new",
+    },
+    ofertas: [
+      {
+        title: "15% de desconto no menu degustação",
+        terms: "Válido para jantares com reserva prévia confirmada.",
+        kind: "discount",
+        icon: "tag",
+      },
+    ],
+  },
+  {
+    slug: "pousada-morada-dos-ventos",
+    name: "Pousada Morada dos Ventos",
+    cidade: "santo-antonio-do-pinhal-sp",
+    categoria: "pousadas",
+    specialty: "Pousada",
+    summary:
+      "Chalés privativos com hidromassagem, lareira e vista privilegiada para o pôr do sol.",
+    description:
+      "Oito chalés espalhados pelo terreno, café da manhã servido no quarto e trilha própria até o mirante.",
+    tags: ["Lareira", "Hidromassagem", "Pet Friendly"],
+    address: "Estrada da Fazenda Velha, km 2, Santo Antônio do Pinhal - SP",
+    phone: "1200000005",
+    fotos: [
+      { arquivo: "passport-bg", alt: "Chalé da pousada entre as montanhas" },
+      { arquivo: "hero-road", alt: "Estrada de acesso à pousada" },
+    ],
+    avaliacao: {
+      score: "4.9",
+      summary:
+        "Chalés silenciosos e bem cuidados, café da manhã farto e equipe que conhece a região.",
+      visitedOn: "2026-08-30",
+      seal: "featured",
+    },
+    ofertas: [
+      {
+        title: "20% de desconto na 2ª diária",
+        terms: "Válido de domingo a quinta-feira para chalés premium.",
+        kind: "discount",
+        icon: "bed",
+      },
+    ],
+  },
+  {
+    slug: "emporio-rota-real",
+    name: "Empório Rota Real",
+    cidade: "sao-francisco-xavier-sp",
+    categoria: "compras",
+    specialty: "Compras & Degustação",
+    summary:
+      "Queijos artesanais da Mantiqueira, vinhos de altitude e azeites prensados na região.",
+    description:
+      "Empório de produtores locais com sala de degustação guiada e harmonizações aos fins de semana.",
+    tags: ["Queijos Artesanais", "Vinhos de Altitude", "Empório"],
+    address: "Rua Quinze de Novembro, 120, São Francisco Xavier - SP",
+    phone: "1200000006",
+    fotos: [
+      { arquivo: "gourmet-plate", alt: "Tábua de queijos artesanais" },
+      { arquivo: "cafe-serra", alt: "Balcão do empório" },
+    ],
+    avaliacao: {
+      score: "4.8",
+      summary:
+        "Seleção cuidadosa de pequenos produtores e explicação paciente na degustação.",
+      visitedOn: "2026-09-07",
+      seal: "verified",
+    },
+    ofertas: [
+      {
+        title: "Degustação guiada cortesia",
+        terms: "Quatro queijos e dois vinhos. Apresente o cupom na recepção.",
+        kind: "courtesy",
+        icon: "wine",
+      },
+    ],
   },
 ];
 
-/** Mesmo formato de id que o Better Auth gera (32 caracteres alfanuméricos). */
-const novoId = () => generateRandomString(32, "a-z", "A-Z", "0-9");
+const PLANO = {
+  name: "Passaporte Anual",
+  // R$ 129/ano é hipótese de teste (docs/produto/08), não tabela aprovada.
+  priceCents: 12900,
+};
 
-function exigir(nome: "DATABASE_URL" | "DATABASE_URL_ADMIN"): string {
-  const valor = process.env[nome];
-  if (!valor) throw new Error(`${nome} não definida.`);
-  return valor;
+const SENHA = "achados123";
+
+const PESSOAS = [
+  {
+    email: "assinante@achados.local",
+    name: "Ana Viajante",
+    assinante: true,
+    favoritos: ["rancho-portugues", "cafe-da-serra"],
+  },
+  {
+    email: "visitante@achados.local",
+    name: "Bruno Estradeiro",
+    assinante: false,
+    favoritos: [],
+  },
+] as const;
+
+async function semearCatalogo(db: Db): Promise<Map<string, string>> {
+  const idsDasCidades = new Map<string, string>();
+  for (const cidade of CIDADES) {
+    const [linha] = await db
+      .insert(s.cities)
+      .values({ id: novoId(), ...cidade })
+      .onConflictDoUpdate({
+        target: s.cities.slug,
+        set: { name: cidade.name, state: cidade.state },
+      })
+      .returning({ id: s.cities.id });
+    idsDasCidades.set(cidade.slug, linha!.id);
+  }
+
+  const idsDasCategorias = new Map<string, string>();
+  for (const [posicao, categoria] of CATEGORIAS.entries()) {
+    const [linha] = await db
+      .insert(s.categories)
+      .values({ id: novoId(), ...categoria, position: posicao })
+      .onConflictDoUpdate({
+        target: s.categories.slug,
+        set: { name: categoria.name, icon: categoria.icon, position: posicao },
+      })
+      .returning({ id: s.categories.id });
+    idsDasCategorias.set(categoria.slug, linha!.id);
+  }
+
+  const idsDosLugares = new Map<string, string>();
+  const agora = new Date();
+  for (const lugar of LUGARES) {
+    const dados = {
+      cityId: idsDasCidades.get(lugar.cidade)!,
+      categoryId: idsDasCategorias.get(lugar.categoria)!,
+      name: lugar.name,
+      specialty: lugar.specialty,
+      summary: lugar.summary,
+      description: lugar.description,
+      tags: lugar.tags,
+      address: lugar.address,
+      phone: lugar.phone,
+      website: `https://example.com/${lugar.slug}`,
+      status: "published" as const,
+      publishedAt: agora,
+    };
+    const [linha] = await db
+      .insert(s.places)
+      .values({ id: novoId(), slug: lugar.slug, ...dados })
+      .onConflictDoUpdate({ target: s.places.slug, set: dados })
+      .returning({ id: s.places.id });
+    const placeId = linha!.id;
+    idsDosLugares.set(lugar.slug, placeId);
+
+    // Fotos, avaliação e ofertas do lugar são refeitas a cada seed.
+    await db.delete(s.placeMedia).where(eq(s.placeMedia.placeId, placeId));
+    await db.insert(s.placeMedia).values(
+      lugar.fotos.map((foto, posicao) => ({
+        id: novoId(),
+        placeId,
+        url: `/exemplos/${foto.arquivo}.webp`,
+        alt: foto.alt,
+        source: ORIGEM_DAS_FOTOS,
+        position: posicao,
+      }))
+    );
+
+    await db
+      .delete(s.editorialReviews)
+      .where(eq(s.editorialReviews.placeId, placeId));
+    await db.insert(s.editorialReviews).values({
+      id: novoId(),
+      placeId,
+      ...lugar.avaliacao,
+      caveats: lugar.avaliacao.caveats ?? null,
+      status: "published",
+      publishedAt: agora,
+    });
+
+    await db.delete(s.offers).where(eq(s.offers.placeId, placeId));
+    await db.insert(s.offers).values(
+      lugar.ofertas.map((oferta, posicao) => ({
+        id: novoId(),
+        placeId,
+        ...oferta,
+        status: "active" as const,
+        position: posicao,
+      }))
+    );
+  }
+  return idsDosLugares;
 }
 
-async function garantirUsuario(
-  admin: Db,
-  u: (typeof USUARIOS)[number]
-): Promise<string> {
-  const [existente] = await admin
-    .select({ id: s.users.id })
-    .from(s.users)
-    .where(eq(s.users.email, u.email));
+async function semearPlano(db: Db): Promise<string> {
+  const [existente] = await db
+    .select({ id: s.plans.id })
+    .from(s.plans)
+    .where(and(eq(s.plans.name, PLANO.name), eq(s.plans.version, 1)));
   if (existente) {
-    console.log(`· usuário ${u.email} já existe (senha mantida)`);
+    await db
+      .update(s.plans)
+      .set({ priceCents: PLANO.priceCents, active: true })
+      .where(eq(s.plans.id, existente.id));
     return existente.id;
   }
-  const id = novoId();
-  await admin.transaction(async (tx) => {
-    await tx
-      .insert(s.users)
-      .values({ id, name: u.name, email: u.email, emailVerified: true });
-    // Mesmo formato do sign-up por e-mail e senha do Better Auth 1.7:
-    // providerId "credential", accountId = user.id, password = hashPassword().
-    await tx.insert(s.accounts).values({
-      id: novoId(),
-      accountId: id,
-      providerId: "credential",
-      userId: id,
-      password: await hashPassword(u.password),
-    });
-  });
-  console.log(`✓ usuário ${u.email} / senha ${u.password}`);
-  return id;
+  const [criado] = await db
+    .insert(s.plans)
+    .values({ id: novoId(), ...PLANO, active: true })
+    .returning({ id: s.plans.id });
+  return criado!.id;
 }
 
-async function main() {
-  const admin = criarDb(exigir("DATABASE_URL_ADMIN"), { max: 2 });
-  const app = criarDb(exigir("DATABASE_URL"), { max: 2 });
-  try {
-    const [organizacao] = await admin
-      .insert(s.organizations)
-      .values(ORGANIZACAO)
-      .onConflictDoUpdate({
-        target: s.organizations.slug,
-        set: { name: ORGANIZACAO.name },
-      })
-      .returning({ id: s.organizations.id });
-    if (!organizacao) throw new Error("organização não gravada");
-    console.log(`✓ organização ${ORGANIZACAO.name}`);
-
-    const tenantIds = new Map<TenantSlug, string>();
-    for (const t of TENANTS) {
-      const [tenant] = await admin
-        .insert(s.tenants)
-        .values({ organizationId: organizacao.id, slug: t.slug, name: t.name })
-        .onConflictDoUpdate({ target: s.tenants.slug, set: { name: t.name } })
-        .returning({
-          id: s.tenants.id,
-          organizationId: s.tenants.organizationId,
-        });
-      if (!tenant) throw new Error(`tenant ${t.slug} não gravado`);
-      if (tenant.organizationId !== organizacao.id)
-        throw new Error(`o slug ${t.slug} pertence a outra organização`);
-      tenantIds.set(t.slug, tenant.id);
-      console.log(`✓ tenant ${t.slug} (${tenant.id})`);
+async function semearPessoas(
+  db: Db,
+  planId: string,
+  idsDosLugares: Map<string, string>
+) {
+  for (const pessoa of PESSOAS) {
+    let [usuario] = await db
+      .select({ id: s.users.id })
+      .from(s.users)
+      .where(eq(s.users.email, pessoa.email));
+    if (!usuario) {
+      const id = novoId();
+      await db.insert(s.users).values({
+        id,
+        name: pessoa.name,
+        email: pessoa.email,
+        emailVerified: true,
+      });
+      await db.insert(s.accounts).values({
+        id: novoId(),
+        accountId: id,
+        providerId: "credential",
+        userId: id,
+        password: await hashPassword(SENHA),
+      });
+      usuario = { id };
     }
 
-    for (const u of USUARIOS) {
-      const userId = await garantirUsuario(admin, u);
-      const tenantId = tenantIds.get(u.tenant)!;
-      const [membro] = await admin
-        .select({ role: s.tenantUsers.role })
-        .from(s.tenantUsers)
+    if (pessoa.assinante) {
+      const [ativa] = await db
+        .select({ id: s.subscriptions.id })
+        .from(s.subscriptions)
         .where(
           and(
-            eq(s.tenantUsers.tenantId, tenantId),
-            eq(s.tenantUsers.userId, userId)
+            eq(s.subscriptions.userId, usuario.id),
+            eq(s.subscriptions.status, "active")
           )
         );
-      if (!membro) {
-        await admin
-          .insert(s.tenantUsers)
-          .values({ tenantId, userId, role: u.role });
-        console.log(`✓ ${u.email} é ${u.role} de ${u.tenant}`);
+      if (!ativa) {
+        const inicio = new Date();
+        inicio.setDate(inicio.getDate() - 30);
+        const fim = new Date(inicio);
+        fim.setFullYear(fim.getFullYear() + 1);
+        // Assinatura de fixture: no sistema real ela só nasce do webhook
+        // autenticado do provedor (ADR-006 de produto).
+        await db.insert(s.subscriptions).values({
+          id: novoId(),
+          userId: usuario.id,
+          planId,
+          status: "active",
+          providerSubscriptionId: `seed_${generateRandomString(12, "a-z", "0-9")}`,
+          startsAt: inicio,
+          endsAt: fim,
+        });
       }
     }
 
-    for (const t of TENANTS) {
-      const resultado: Result<number> = await withTenant(
-        app,
-        tenantIds.get(t.slug)!,
-        async (tx) => {
-          const existentes = new Set(
-            (await tx.select({ name: s.clients.name }).from(s.clients)).map(
-              (c) => c.name
-            )
-          );
-          const faltando = t.clientes.filter((nome) => !existentes.has(nome));
-          if (faltando.length > 0) {
-            await tx.insert(s.clients).values(
-              faltando.map((name) => ({
-                tenantId: tenantIds.get(t.slug)!,
-                name,
-              }))
-            );
-          }
-          return Ok(faltando.length);
-        }
-      );
-      if (!resultado.ok) throw resultado.error;
-      console.log(
-        resultado.value > 0
-          ? `✓ ${resultado.value} clientes sintéticos em ${t.slug}`
-          : `· clientes de ${t.slug} já existem`
-      );
+    const favoritos = pessoa.favoritos
+      .map((slug) => idsDosLugares.get(slug))
+      .filter((id): id is string => Boolean(id));
+    if (favoritos.length > 0) {
+      await db
+        .insert(s.favorites)
+        .values(favoritos.map((placeId) => ({ userId: usuario.id, placeId })))
+        .onConflictDoNothing();
     }
-  } finally {
-    await Promise.all([encerrarDb(admin), encerrarDb(app)]);
   }
 }
 
-main().catch((erro: unknown) => {
-  console.error("✗ seed falhou:", erro);
-  process.exit(1);
-});
+async function main() {
+  const url = process.env.DATABASE_URL_ADMIN;
+  if (!url) throw new Error("DATABASE_URL_ADMIN não definida.");
+  const db = criarDb(url, { max: 1 });
+  try {
+    const idsDosLugares = await semearCatalogo(db);
+    const planId = await semearPlano(db);
+    await semearPessoas(db, planId, idsDosLugares);
+
+    // Lugares que saíram da lista do seed deixam de aparecer no app.
+    const slugs = LUGARES.map((l) => l.slug);
+    const todos = await db.select({ slug: s.places.slug }).from(s.places);
+    const sobras = todos.map((l) => l.slug).filter((x) => !slugs.includes(x));
+    if (sobras.length > 0)
+      await db
+        .update(s.places)
+        .set({ status: "archived" })
+        .where(inArray(s.places.slug, sobras));
+
+    console.log(
+      `✓ seed: ${CIDADES.length} cidades, ${CATEGORIAS.length} categorias, ${LUGARES.length} lugares, ${PESSOAS.length} pessoas (senha ${SENHA}).`
+    );
+  } finally {
+    await encerrarDb(db);
+  }
+}
+
+await main();

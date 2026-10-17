@@ -5,7 +5,7 @@ import {
   IconeBusca,
   IconeCopiar,
   IconeFechar,
-} from "@meuproduto/ui";
+} from "@achados/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, within } from "storybook/test";
 

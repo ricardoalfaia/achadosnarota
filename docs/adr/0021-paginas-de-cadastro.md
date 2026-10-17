@@ -8,9 +8,9 @@
 
 ## Contexto
 
-O Meuproduto precisa de telas de cadastro para clientes, modelos, equipe e configurações ([01 — Produto](../produto/01-produto-e-escopo.md), MVP P0). A base de origem trouxe um padrão de tela de cadastro (listagem, formulário, pendências, regras puras) e as partes visuais em `@meuproduto/ui` (`GradeDeCadastro`, `Visoes`, `BarraDoFormulario`, `Abas`, `Tabela`; [ADR-0008](0008-design-system.md)). O padrão continua válido; o domínio de origem, não.
+O Achados na Rota precisa de telas de cadastro para clientes, modelos, equipe e configurações ([01 — Produto](../produto/01-produto-e-escopo.md), MVP P0). A base de origem trouxe um padrão de tela de cadastro (listagem, formulário, pendências, regras puras) e as partes visuais em `@achados/ui` (`GradeDeCadastro`, `Visoes`, `BarraDoFormulario`, `Abas`, `Tabela`; [ADR-0008](0008-design-system.md)). O padrão continua válido; o domínio de origem, não.
 
-Diferenças do Meuproduto que mudam o desenho:
+Diferenças do Achados na Rota que mudam o desenho:
 
 - O menu tem itens planos ([ADR-0018](0018-casca-do-sistema.md)); não há hub de cadastros nem mega menu.
 - O tenant ativo está na URL e é conferido no servidor ([ADR-0020](0020-autenticacao-e-sessao.md)).
@@ -28,12 +28,12 @@ Diferenças do Meuproduto que mudam o desenho:
 
 ### Composição
 
-| Parte                 | Onde                                                                                  | Responsabilidade                                     |
-| --------------------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| Rota da área          | `app/.../<area>/page.tsx`                                                             | Confere sessão e tenant; escolhe lista ou formulário |
-| Capacidade            | `features/<area>` (por exemplo, `features/clientes`)                                  | Domínio (tipo, regras, validação) e componentes      |
-| Listagem e formulário | `@meuproduto/ui` (`GradeDeCadastro`, `Visoes`, `BarraDoFormulario`, `Abas`, `Tabela`) | Apresentação, sem regra de negócio                   |
-| Leitura e gravação    | Consulta no servidor e Server Action                                                  | `Result` do core; autorização e tenant no servidor   |
+| Parte                 | Onde                                                                               | Responsabilidade                                     |
+| --------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| Rota da área          | `app/.../<area>/page.tsx`                                                          | Confere sessão e tenant; escolhe lista ou formulário |
+| Capacidade            | `features/<area>` (por exemplo, `features/clientes`)                               | Domínio (tipo, regras, validação) e componentes      |
+| Listagem e formulário | `@achados/ui` (`GradeDeCadastro`, `Visoes`, `BarraDoFormulario`, `Abas`, `Tabela`) | Apresentação, sem regra de negócio                   |
+| Leitura e gravação    | Consulta no servidor e Server Action                                               | `Result` do core; autorização e tenant no servidor   |
 
 ### Regras como funções puras
 
@@ -60,7 +60,7 @@ Enquanto não houver API, uma tela pode usar dados sintéticos marcados como pro
 
 ## Alternativas consideradas
 
-- **Hub por grupo com abas para cada cadastro (desenho da base):** fazia sentido com dezenas de cadastros; o Meuproduto tem poucas áreas e menu plano.
+- **Hub por grupo com abas para cada cadastro (desenho da base):** fazia sentido com dezenas de cadastros; o Achados na Rota tem poucas áreas e menu plano.
 - **Formulário em rota própria** (`/clientes/<id>`): carregamento por registro no servidor, que é o desenho certo com API. A troca na mesma página preserva busca e filtros; revisar quando a leitura vier do servidor.
 - **Biblioteca de formulário (react-hook-form):** reavaliar na primeira integração com Actions e erros por campo vindos do servidor.
 - **Exportação da listagem em CSV no navegador:** a base tinha; para dados de clientes, exportação é feita no servidor, autorizada e auditada ([ADR-0015](0015-tabela-de-dados.md)).

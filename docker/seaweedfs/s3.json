@@ -1,10 +1,8 @@
 {
   "identities": [
     {
-      "name": "meuproduto",
-      "credentials": [
-        { "accessKey": "meuproduto", "secretKey": "meuproduto-dev" }
-      ],
+      "name": "achados",
+      "credentials": [{ "accessKey": "achados", "secretKey": "achados-dev" }],
       "actions": ["Admin", "Read", "Write", "List", "Tagging"]
     }
   ]

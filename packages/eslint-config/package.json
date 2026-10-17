@@ -1,5 +1,5 @@
 {
-  "name": "@meuproduto/eslint-config",
+  "name": "@achados/eslint-config",
   "version": "0.0.0",
   "private": true,
   "type": "module",

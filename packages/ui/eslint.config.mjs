@@ -1,4 +1,4 @@
-import { react } from "@meuproduto/eslint-config/react";
+import { react } from "@achados/eslint-config/react";
 
 export default [
   ...react,
@@ -18,7 +18,7 @@ export default [
           patterns: [
             {
               group: [
-                "@meuproduto/*/src/**",
+                "@achados/*/src/**",
                 "apps/**",
                 "@/features/**",
                 "@/server/**",

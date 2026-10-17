@@ -33,7 +33,7 @@ Composição atual: `QueryErrorResetBoundary` → `InnerErrorBoundary` → `Susp
 Exemplo de uso da API real, com componentes de uma funcionalidade ainda ilustrativos:
 
 ```tsx
-import { DataBoundary } from "@meuproduto/data-boundary";
+import { DataBoundary } from "@achados/data-boundary";
 
 <DataBoundary fallback={<CustomerListSkeleton />}>
   <CustomerListRegion />

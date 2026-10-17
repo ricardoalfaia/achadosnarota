@@ -1,8 +1,8 @@
-# Instruções do Meuproduto
+# Instruções do Achados na Rota
 
 ## Antes de alterar
 
-1. Leia o [README de produto](docs/produto/README.md), com os princípios inegociáveis e os portões G0–G5, e os documentos de produto ligados à mudança. Eles são a fonte do produto; ADRs de produto ficam em `docs/produto/adr` (`ADR-001` a `ADR-012`).
+1. Leia o [README de produto](docs/produto/README.md), com os princípios inegociáveis e as fases F0–F5 como portões, e os documentos de produto ligados à mudança. Eles são a fonte do produto; ADRs de produto ficam em `docs/produto/adr` (`ADR-001` a `ADR-010`). O protótipo, na pasta `achadosnarota-prototipo` ao lado deste repositório, é a referência visual das telas, não de regras ([marca](docs/produto/marca/README.md)).
 2. Leia [os princípios do frontend](docs/arquitetura.md) e [o índice de ADRs de frontend](docs/adr/README.md) (`0001` em diante), e os ADRs relacionados à mudança.
 3. Verifique o código existente antes de criar uma abstração. Reutilize [Result/Error](packages/core/src/result.ts) e [DataBoundary](packages/data-boundary/src/data-boundary.tsx), com os contratos e lacunas dos ADRs 0004 e 0005. A estrutura está no [ADR-0011](docs/adr/0011-estrutura-monorepo.md); aplicações ficam em apps e bibliotecas em packages.
 4. Identifique as responsabilidades, a fonte de cada estado e os testes que demonstram o comportamento.
@@ -10,17 +10,19 @@
 
 Não apresente um ADR proposto como aceito nem uma verificação planejada como executada. Evidência registrada na base de origem não vale aqui: só o que foi executado neste repositório.
 
-Use exports públicos e `workspace:*`, com dependências declaradas por consumidor. Não faça imports relativos entre projetos nem instale uma aplicação como dependência de outra. `@meuproduto/ui` e `@meuproduto/ui/hooks` são cliente; `@meuproduto/ui/dates`, `@meuproduto/ui/zod` e `@meuproduto/ui/estilos` são entrypoints puros. Uma função exportada por um entrypoint cliente não pode ser chamada em Server Component: para classes de estilo, use `@meuproduto/ui/estilos`. Leia também as instruções locais do app e os guias do Next da versão instalada antes de modificar suas convenções.
+Use exports públicos e `workspace:*`, com dependências declaradas por consumidor. Não faça imports relativos entre projetos nem instale uma aplicação como dependência de outra. `@achados/ui` e `@achados/ui/hooks` são cliente; `@achados/ui/dates`, `@achados/ui/zod` e `@achados/ui/estilos` são entrypoints puros. Uma função exportada por um entrypoint cliente não pode ser chamada em Server Component: para classes de estilo, use `@achados/ui/estilos`. Leia também as instruções locais do app e os guias do Next da versão instalada antes de modificar suas convenções.
 
 ## Regras do produto que valem para todo código
 
-- Nenhum conteúdo de documento, dado pessoal (CPF completo, nome de cliente), token, senha ou URL assinada em logs, telemetria, mensagens de erro, prompts de IA ou URLs.
-- Tenant e autorização são decididos no servidor, a cada requisição. Nunca confie em `tenantId` vindo do cliente; o acesso a dados de negócio passa pelo escopo do tenant ([ADR-0020](docs/adr/0020-autenticacao-e-sessao.md), [ADR-003 de produto](docs/produto/adr/ADR-003.md)).
-- Testes e ambiente de desenvolvimento usam fixtures sintéticas. Documento ou dado real nunca entra no repositório, no seed ou no ambiente local.
-- Documento assinado ou modelo publicado não é editado no lugar; mudanças criam nova versão.
-- Nenhuma IA recebe documentos de clientes ([ADR-010 de produto](docs/produto/adr/ADR-010.md)).
+- Nenhum dado pessoal (e-mail, nome, telefone), token, senha, código de resgate ou segredo em logs, telemetria, mensagens de erro, prompts de IA ou URLs.
+- Autorização e identidade são decididas no servidor, a cada requisição. Nunca confie em `userId`, papel ou parceiro vindos do cliente; dado de um usuário passa pelo escopo dele (`withUser`, RLS) e dado de parceiro pelo escopo do parceiro ([ADR-0020](docs/adr/0020-autenticacao-e-sessao.md), [ADR-003 de produto](docs/produto/adr/ADR-003.md)).
+- Avaliação editorial (critérios, notas, selos, pareceres) e oferta comercial são domínios separados: parceiro não escreve no editorial, e selo ou posição não se compra ([ADR-004 de produto](docs/produto/adr/ADR-004.md)).
+- Nenhuma avaliação, nota, estabelecimento ou economia fictícios fora do ambiente de desenvolvimento. Testes, seed e desenvolvimento usam fixtures sintéticas; dado real de pessoa ou parceiro não entra no repositório.
+- Código de resgate é aleatório, guardado em hash, de uso único e consumido em transação; nunca fica em cache offline nem em histórico completo ([ADR-005 de produto](docs/produto/adr/ADR-005.md)).
+- Assinatura só é ativada por webhook autenticado e reconciliado; confirmação vinda do navegador não prova pagamento ([ADR-006 de produto](docs/produto/adr/ADR-006.md)).
+- Identificadores de linha são ULID ([ADR-0024](docs/adr/0024-identificadores-ulid.md)).
 - Validação no navegador é conveniência; o servidor valida de novo.
-- Não invente API externa (Gov.br, provedor de assinatura) nem estado atual do código: audite antes.
+- Não invente API externa (provedor de pagamento, mapas) nem estado atual do código: audite antes.
 
 ## Diretrizes já expressas pelo responsável
 
@@ -30,7 +32,7 @@ Use exports públicos e `workspace:*`, com dependências declaradas por consumid
 - Suspense e o DataBoundary existente fazem parte da arquitetura de dados assíncronos.
 - Result/Error do core é o contrato para resultados e falhas operacionais. Não crie tipos Result locais, substitutos ou fluxos paralelos baseados em exceções.
 - Estado HTTP tem prioridade sobre stores globais; dados remotos não são copiados para stores de interface.
-- Testes unitários e E2E com Playwright acompanham a implementação, incluindo isolamento entre tenants.
+- Testes unitários e E2E com Playwright acompanham a implementação, incluindo isolamento entre usuários e entre parceiros.
 - Mudanças arquiteturais são registradas em ADRs.
 
 ## Aplicação dos ADRs
@@ -45,7 +47,7 @@ Não use Server Actions como mecanismo geral de consultas. A proposta detalhada 
 
 - Cite os ADRs aplicáveis (de frontend e de produto) e explique mudanças nos contratos.
 - Execute as verificações pertinentes: `pnpm check:architecture`, lint, typecheck, testes e build pelo Turborepo; para E2E, `pnpm test:e2e` após o build. Informe resultados e limitações; se um teste não rodou, diga.
-- Apresente o que [10 — Supervisão](docs/produto/10-supervisao.md) pede: arquivos alterados, testes com saída, testes de tenant A/B quando houver dado de negócio, efeitos sobre privacidade, riscos e pendências.
+- Apresente o que [09 — Supervisão](docs/produto/09-supervisao.md) pede: arquivos alterados, testes com saída, testes de isolamento A/B (usuários, parceiros) quando houver dado de negócio, efeitos sobre privacidade, riscos e pendências.
 - Não desative regras ou testes para fazer a alteração passar. Uma exceção arquitetural precisa de motivo, escopo, responsável e condição de retirada no ADR.
 - Não declare aderência garantida por este arquivo: grafo/imports públicos e declarações concorrentes de Result têm verificações locais, mas coesão, segurança e isolamento ainda precisam das evidências do [ADR-0010](docs/adr/0010-governanca.md).
 

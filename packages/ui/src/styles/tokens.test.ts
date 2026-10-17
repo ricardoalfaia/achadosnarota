@@ -9,7 +9,7 @@ type Cor = { r: number; g: number; b: number; a: number };
 
 const css = readFileSync(new URL("./tokens.css", import.meta.url), "utf8");
 const declaracoes = new Map<string, string>();
-for (const [, nome, valor] of css.matchAll(/(--pl-[\w-]+):\s*([^;]+);/g)) {
+for (const [, nome, valor] of css.matchAll(/(--ar-[\w-]+):\s*([^;]+);/g)) {
   if (nome && valor) declaracoes.set(nome, valor.replace(/\s+/g, " ").trim());
 }
 
@@ -85,7 +85,8 @@ function contraste(
   base: string,
   tema: Tema
 ): number {
-  const cor = (token: string) => resolver(`var(--pl-${token})`, tema);
+  const cor = (token: string) =>
+    resolver(token === "white" ? "#ffffff" : `var(--ar-${token})`, tema);
   const fundoFinal = sobre(cor(fundo), cor(base));
   const [a, b] = [
     luminancia(sobre(cor(texto), fundoFinal)),
@@ -100,45 +101,56 @@ const PARES: [string, string, string][] = [
   ["foreground", "surface", "surface"],
   ["foreground", "surface-raised", "surface"],
   ["foreground", "surface-active", "surface"],
+  ["foreground", "chip", "surface"],
+  ["chip-foreground", "chip", "surface"],
   ["foreground-muted", "surface", "surface"],
   ["foreground-muted", "background", "background"],
+  ["foreground-muted", "surface-hover", "surface"],
+  ["foreground-muted", "chip", "surface"],
+  ["foreground-brand", "surface", "surface"],
   ["primary", "surface", "surface"],
+  ["primary", "background", "background"],
   ["primary", "primary-subtle", "surface"],
+  ["primary", "surface-active", "surface"],
   ["primary-solid-foreground", "primary-solid", "surface"],
   ["primary-solid-foreground", "primary-solid-hover", "surface"],
-  ["sidebar-foreground", "surface-sidebar", "surface-sidebar"],
+  ["primary-solid-foreground", "primary-solid-start", "surface"],
+  ["primary-solid-foreground", "primary-solid-start-hover", "surface"],
+  ["primary-solid-foreground", "primary-solid-end", "surface"],
+  ["accent", "surface", "surface"],
+  ["accent", "accent-subtle", "surface"],
+  ["rating", "surface", "surface"],
+  ["highlight", "surface", "surface"],
+  ["highlight", "highlight-subtle", "surface"],
+  ["seal-foreground", "seal-featured", "surface"],
+  ["seal-foreground", "seal-beloved", "surface"],
+  ["seal-foreground", "seal-verified", "surface"],
+  ["seal-foreground", "seal-new", "surface"],
   ["success", "surface", "surface"],
   ["success", "success-subtle", "surface"],
+  ["white", "success-solid", "surface"],
   ["warning", "surface", "surface"],
   ["warning", "warning-subtle", "surface"],
+  ["warning", "background", "background"],
   ["danger", "surface", "surface"],
   ["danger", "danger-subtle", "surface"],
   ["danger-solid-foreground", "danger-solid", "surface"],
   ["danger-solid-foreground", "danger-solid-hover", "surface"],
-  ["primary-solid-foreground", "primary-solid-start", "surface"],
-  ["primary-solid-foreground", "primary-solid-start-hover", "surface"],
-  ["primary-solid-foreground", "primary-solid-end", "surface"],
-  ["primary", "background", "background"],
-  ["primary", "surface-active", "surface"],
+  ["info", "surface", "surface"],
   ["info", "info-subtle", "surface"],
-  ["accent", "surface", "surface"],
-  ["accent", "accent-subtle", "surface"],
-  ["highlight", "surface", "surface"],
-  ["highlight", "highlight-subtle", "surface"],
-  ["warning", "background", "background"],
   ["badge-ok-foreground", "badge-ok", "surface"],
   ["badge-new-foreground", "badge-new-start", "surface"],
   ["badge-new-foreground", "badge-new-end", "surface"],
+  ["white", "passport-start", "surface"],
+  ["white", "passport-end", "surface"],
+  ["passport-muted", "passport-end", "surface"],
 ];
 
-// Degradê de ação (bg-brand-gradient-action): texto branco sobre as duas pontas.
-const PONTAS_DA_ACAO = ["verde-agua-700", "azul-600"];
-
-// Texto em degradê (text-brand-gradient): só título grande, que pede 3:1.
-const PONTAS_DO_TEXTO = [
-  "brand-text-start",
-  "brand-text-mid",
-  "brand-text-end",
+// Marca decorativa (ícones, item ativo, estrela): elemento gráfico pede 3:1.
+const GRAFICOS: [string, string][] = [
+  ["brand", "surface"],
+  ["brand", "background"],
+  ["favorite", "surface"],
 ];
 
 describe.each<Tema>(["claro", "escuro"])("tokens no tema %s", (tema) => {
@@ -149,21 +161,10 @@ describe.each<Tema>(["claro", "escuro"])("tokens no tema %s", (tema) => {
     }
   );
 
-  it.each(PONTAS_DA_ACAO)(
-    "texto branco sobre %s, no degradê de ação, atinge AA (4,5:1)",
-    (ponta) => {
-      expect(
-        contraste("primary-solid-foreground", ponta, "surface", tema)
-      ).toBeGreaterThanOrEqual(4.5);
-    }
-  );
-
-  it.each(PONTAS_DO_TEXTO)(
-    "%s sobre background atinge AA para texto grande (3:1)",
-    (ponta) => {
-      expect(
-        contraste(ponta, "background", "background", tema)
-      ).toBeGreaterThanOrEqual(3);
+  it.each(GRAFICOS)(
+    "%s sobre %s atinge 3:1 (elemento gráfico)",
+    (cor, fundo) => {
+      expect(contraste(cor, fundo, fundo, tema)).toBeGreaterThanOrEqual(3);
     }
   );
 

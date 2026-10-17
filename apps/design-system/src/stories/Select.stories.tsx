@@ -1,4 +1,4 @@
-import { CampoSkeleton, Select, type Opcao } from "@meuproduto/ui";
+import { CampoSkeleton, Select, type Opcao } from "@achados/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 
@@ -80,7 +80,7 @@ export const Tamanhos: Story = {
     const alturas = [...canvasElement.querySelectorAll("label")].map(
       (campo) => campo.getBoundingClientRect().height
     );
-    await expect(alturas).toEqual([36, 36, 44, 44, 56, 56]);
+    await expect(alturas).toEqual([40, 40, 44, 44, 52, 52]);
   },
 };
 

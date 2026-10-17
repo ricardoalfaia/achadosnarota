@@ -7,8 +7,9 @@ import {
   DialogoDeExclusao,
   IconeCheck,
   IconeLixeira,
-} from "@meuproduto/ui";
+} from "@achados/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { QrCode } from "lucide-react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 
 const meta = { title: "Conteúdo/Dialogo" } satisfies Meta;
@@ -85,31 +86,26 @@ function Formulario() {
   const [aberto, setAberto] = useState(false);
   return (
     <>
-      <Botao onClick={() => setAberto(true)}>Novo modelo</Botao>
+      <Botao onClick={() => setAberto(true)}>Sugerir lugar</Botao>
       <Dialogo
         aberto={aberto}
         aoFechar={() => setAberto(false)}
-        titulo="Novo modelo de documento"
-        descricao="O modelo fica em rascunho até ser aprovado."
+        titulo="Sugerir um lugar"
+        descricao="A curadoria visita antes de qualquer publicação."
         rodape={
           <>
             <Botao variante="fantasma" onClick={() => setAberto(false)}>
               Cancelar
             </Botao>
             <Botao icone={<IconeCheck />} onClick={() => setAberto(false)}>
-              Salvar modelo
+              Enviar sugestão
             </Botao>
           </>
         }
       >
         <div className="flex flex-col gap-4 pt-2">
-          <CampoDeTexto label="Nome do modelo" tamanho="md" />
-          <CampoDeTexto
-            label="Validade padrão"
-            sufixo="meses"
-            modoDeEntrada="numeric"
-            tamanho="md"
-          />
+          <CampoDeTexto label="Nome do lugar" tamanho="md" />
+          <CampoDeTexto label="Cidade" tamanho="md" />
         </div>
       </Dialogo>
     </>
@@ -233,4 +229,58 @@ export const DeExclusao: Story = {
 export const DeExclusaoComFalha: Story = {
   name: "De exclusão com falha",
   render: () => <Exclusao falhar />,
+};
+
+function Cartao({ tema }: { tema?: "light" | "dark" }) {
+  const [aberto, setAberto] = useState(false);
+  return (
+    <>
+      <Botao onClick={() => setAberto(true)}>Resgatar</Botao>
+      <Dialogo
+        aberto={aberto}
+        aoFechar={() => setAberto(false)}
+        variante="cartao"
+        tamanho="sm"
+        {...(tema ? { tema } : {})}
+        icone={<QrCode />}
+        titulo="10% de desconto no almoço"
+        descricao="Rancho Português • Pindamonhangaba - SP"
+        rodape={
+          <Botao variante="contorno" onClick={() => setAberto(false)}>
+            Entendi
+          </Botao>
+        }
+      >
+        <p className="rounded-2xl border border-border bg-surface-raised p-3 text-left text-xs">
+          Regras: válido de segunda a sexta. Apresente o cupom no local.
+        </p>
+      </Dialogo>
+    </>
+  );
+}
+
+/** O modal do app: ícone, título e conteúdo centralizados, fechar no canto. */
+export const VarianteCartao: Story = {
+  name: "Cartão",
+  render: () => <Cartao />,
+  play: async ({ canvasElement }) => {
+    const tela = within(canvasElement.ownerDocument.body);
+    await userEvent.click(tela.getByRole("button", { name: "Resgatar" }));
+    const dialogo = await tela.findByRole("dialog", {
+      name: "10% de desconto no almoço",
+    });
+    await expect(dialogo).toHaveTextContent("Regras");
+    await userEvent.click(
+      within(dialogo).getByRole("button", { name: "Fechar" })
+    );
+    await waitFor(() =>
+      expect(tela.queryByRole("dialog")).not.toBeInTheDocument()
+    );
+  },
+};
+
+/** O mesmo cartão forçado no tema escuro, como o leitor de QR Code. */
+export const VarianteCartaoEscuro: Story = {
+  name: "Cartão escuro",
+  render: () => <Cartao tema="dark" />,
 };

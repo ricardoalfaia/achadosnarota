@@ -28,6 +28,6 @@
   ],
   "importOrderParserPlugins": ["typescript", "jsx", "decorators-legacy"],
   "importOrderTypeScriptVersion": "5.0.0",
-  "tailwindStylesheet": "./apps/meuproduto-web/src/app/globals.css",
+  "tailwindStylesheet": "./apps/achados-web/src/app/globals.css",
   "tailwindFunctions": ["clsx", "twMerge", "cn"]
 }

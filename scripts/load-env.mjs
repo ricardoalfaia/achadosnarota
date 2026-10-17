@@ -1,5 +1,5 @@
 // Carregador de variáveis para o que roda FORA do Next: drizzle-kit, seed,
-// bootstrap, setup do papel da app e testes de integração do @meuproduto/db.
+// bootstrap, setup do papel da app e testes de integração do @achados/db.
 //
 // Ordem de precedência (a primeira que tiver a variável vence):
 //   1. o próprio processo (pipeline/CI, ou `DATABASE_URL=... pnpm ...`);
@@ -21,12 +21,10 @@ export const RAIZ = path.resolve(
 );
 
 export const PADROES_DEV = {
-  // meuproduto_app: papel da aplicação, sujeito a RLS (docker/postgres/init).
-  DATABASE_URL:
-    "postgresql://meuproduto_app:meuproduto_app@127.0.0.1:4450/meuproduto",
+  // achados_app: papel da aplicação, sujeito a RLS (docker/postgres/init).
+  DATABASE_URL: "postgresql://achados_app:achados_app@127.0.0.1:4550/achados",
   // Dono do schema: migrations, seed e bootstrap.
-  DATABASE_URL_ADMIN:
-    "postgresql://meuproduto:meuproduto@127.0.0.1:4450/meuproduto",
+  DATABASE_URL_ADMIN: "postgresql://achados:achados@127.0.0.1:4550/achados",
 };
 
 /** host:porta/banco, sem usuário nem senha — seguro para log. */

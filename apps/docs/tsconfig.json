@@ -1,5 +1,5 @@
 {
-  "extends": "@meuproduto/typescript-config/nextjs.json",
+  "extends": "@achados/typescript-config/nextjs.json",
   "compilerOptions": {
     "paths": {
       "@/*": ["./src/*"]

@@ -13,7 +13,7 @@ React, Next.js e TanStack Query também possuem mecanismos próprios de exceçã
 
 ## Decisão proposta
 
-**Uma implementação canônica de Result/Error, reutilizada por todas as aplicações do monorepo.** Nenhuma feature declara um Result alternativo, envelope incompatível ou utilitário local de unwrap. A troca do escopo dos pacotes para `@meuproduto` foi uma mudança de integração; não criou outro contrato.
+**Uma implementação canônica de Result/Error, reutilizada por todas as aplicações do monorepo.** Nenhuma feature declara um Result alternativo, envelope incompatível ou utilitário local de unwrap. A troca do escopo dos pacotes para `@achados` foi uma mudança de integração; não criou outro contrato.
 
 ### API existente confirmada
 
@@ -63,7 +63,7 @@ Usar as categorias e códigos do core para classificar falhas. `details` carrega
 | Cancelamento solicitado            | Preservar a semântica do runtime/Signal; não exibir como falha de negócio nem repetir uma busca cancelada.                |
 | Defeito inesperado                 | Observabilidade e mecanismo de erro do runtime; não disfarçar como validação.                                             |
 
-Não decidir comportamento comparando textos de mensagem. Detalhes técnicos, stack, credenciais e payloads sensíveis ficam no servidor. No Meuproduto isso inclui conteúdo de documento, CPF completo, tokens e URLs assinadas: nenhum deles entra em `message`, `details`, `context` ou log ([04 — Segurança](../produto/04-seguranca-confidencialidade.md), [ADR-011 de produto](../produto/adr/ADR-011.md)). Logs usam um identificador de correlação quando disponível; a UI recebe mensagem segura e referência de suporte, se necessária.
+Não decidir comportamento comparando textos de mensagem. Detalhes técnicos, stack, credenciais e payloads sensíveis ficam no servidor. No Achados na Rota isso inclui conteúdo de documento, CPF completo, tokens e URLs assinadas: nenhum deles entra em `message`, `details`, `context` ou log ([04 — Segurança](../produto/04-seguranca-confidencialidade.md), [ADR-011 de produto](../produto/adr/ADR-011.md)). Logs usam um identificador de correlação quando disponível; a UI recebe mensagem segura e referência de suporte, se necessária.
 
 ### Integração com os runtimes
 
@@ -96,7 +96,7 @@ Este é o único ponto que reconcilia a convenção Result com a convenção de 
 Exemplo de consumo na fronteira Query, usando a API real; a operação é um placeholder de funcionalidade:
 
 ```ts
-import { unwrapOrThrow } from "@meuproduto/core";
+import { unwrapOrThrow } from "@achados/core";
 
 const result = await operation(); // Result ou ActionResult do contrato canônico
 const data = unwrapOrThrow(result); // somente no adaptador Query/throw-based
@@ -132,7 +132,7 @@ Falhas se tornam parte da tipagem e do teste. São necessários adaptadores pequ
 - `serializeAppError` remove cause/stack/context, mas copia `message` e `details` sem sanitizar. `details` aceita `unknown`: serialização segura e ausência de segredos não estão garantidas apenas pelo tipo. Definir mensagens públicas e campos permitidos; testar payloads antes de produção.
 - `errorStatusCode` mapeia toda categoria `security` para 403. O desenho de autenticação precisa distinguir ausência/expiração de sessão e acesso proibido, sem criar um mapeamento local divergente.
 - `setActionFailureReporter` é global por processo. Não guardar contexto de request/tenant nesse callback; ele deve consumir o contexto do próprio erro. A assinatura é síncrona, e o catch atual não trata uma Promise rejeitada por um reporter assíncrono. Definir explicitamente seu ciclo e tratamento de falhas na integração.
-- A chave global de reporte (`Symbol.for(...)` em `result.ts`) ainda usa o identificador de um produto de origem. Adaptá-la sem duplicar a implementação. Os envelopes de entidade da origem foram retirados e não são contrato da API Meuproduto.
+- A chave global de reporte (`Symbol.for(...)` em `result.ts`) ainda usa o identificador de um produto de origem. Adaptá-la sem duplicar a implementação. Os envelopes de entidade da origem foram retirados e não são contrato da API Achados na Rota.
 - A [suite permanente do core](../../packages/core/src/result.test.ts) cobre curto-circuito de `andThen`, roundtrip de um erro controlado, `unwrapOrThrow` e captura por `fromPromise`; não comprova segurança de payload arbitrário, status de autenticação ou reporte assíncrono.
 
 Essas lacunas continuam necessárias antes de integrar os contratos em produção. A implementação e seus testes vieram da base; a execução deles neste repositório é verificação pendente.

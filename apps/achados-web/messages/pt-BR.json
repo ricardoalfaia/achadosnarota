@@ -1,0 +1,112 @@
+{
+  "Acesso": {
+    "conexao": {
+      "servicoIndisponivel": "O {sistema} está sem acesso aos dados neste momento. Tente entrar de novo em instantes."
+    },
+    "entrar": {
+      "titulo": "Entrar",
+      "subtitulo": "Entre para salvar lugares e usar os benefícios do seu passaporte.",
+      "email": "E-mail",
+      "senha": "Senha",
+      "mostrarSenha": "Mostrar {campo}",
+      "ocultarSenha": "Ocultar {campo}",
+      "capsLock": "Caps Lock ativado",
+      "lembrarEmail": "Lembrar meu e-mail",
+      "esqueciASenha": "Esqueceu a senha?",
+      "botao": "Entrar",
+      "enviando": "Entrando…",
+      "semConta": "Ainda não tem conta?",
+      "criarConta": "Criar conta grátis"
+    },
+    "doisFatores": {
+      "titulo": "Verificação em duas etapas",
+      "subtitulo": "Digite o código de 6 dígitos do seu aplicativo autenticador.",
+      "subtituloRecuperacao": "Digite um dos códigos de recuperação que você guardou ao configurar o autenticador. Cada código vale uma vez.",
+      "codigo": "Código de verificação",
+      "codigoDeRecuperacao": "Código de recuperação",
+      "usarRecuperacao": "Sem o aparelho? Use um código de recuperação",
+      "usarAutenticador": "Usar o código do aplicativo autenticador",
+      "botao": "Confirmar",
+      "enviando": "Confirmando…"
+    },
+    "trocaDeSenha": {
+      "titulo": "Defina uma nova senha",
+      "subtitulo": "Você está usando uma senha provisória. Defina a sua antes de continuar.",
+      "senhaAtual": "Senha atual",
+      "novaSenha": "Nova senha",
+      "confirmacao": "Confirmar nova senha",
+      "botao": "Salvar e entrar",
+      "enviando": "Salvando…"
+    },
+    "recuperar": {
+      "voltar": "Voltar para o login",
+      "titulo": "Recuperar senha",
+      "subtitulo": "Informe seu e-mail. Se houver cadastro, o link para criar uma nova senha chega nele.",
+      "email": "E-mail",
+      "botao": "Enviar instruções",
+      "enviando": "Enviando…",
+      "concluidoTitulo": "Pedido registrado",
+      "concluidoTexto": "Se {email} tiver cadastro, o link chega em instantes. Ele vale por 1 hora."
+    },
+    "erros": {
+      "obrigatorio": "Campo obrigatório",
+      "emailInvalido": "Informe um e-mail válido",
+      "codigoInvalido": "Informe os 6 dígitos do código",
+      "codigoDeRecuperacaoInvalido": "Informe o código de recuperação completo (10 letras e números)",
+      "senhasDiferentes": "As senhas não são iguais",
+      "senhaCurta": "A senha precisa ter pelo menos 10 caracteres.",
+      "senhaIncorreta": "Senha incorreta.",
+      "credenciaisInvalidas": "E-mail ou senha inválidos.",
+      "muitasTentativas": "Muitas tentativas seguidas. Aguarde alguns minutos e tente de novo.",
+      "codigoIncorreto": "Código incorreto. Confira o aplicativo e tente de novo.",
+      "etapaExpirada": "O tempo para concluir a entrada acabou. Informe e-mail e senha de novo.",
+      "servicoIndisponivel": "O {sistema} está sem acesso aos dados neste momento. Tente de novo em instantes.",
+      "linkInvalido": "Este link de redefinição é inválido ou já venceu. Peça um novo.",
+      "falha": "Não foi possível concluir. Tente de novo em instantes.",
+      "nomeCurto": "Informe seu nome (de 2 a 80 caracteres).",
+      "aceiteObrigatorio": "Para criar a conta, aceite os termos e a política de privacidade.",
+      "emailEmUso": "Não foi possível criar a conta com este e-mail. Se você já tem conta, entre ou recupere a senha.",
+      "cadastroFechado": "O cadastro está fechado neste momento."
+    },
+    "autenticador": {
+      "titulo": "Configure o autenticador",
+      "subtitulo": "Quem administra o escritório entra com verificação em duas etapas. Confirme sua senha para começar.",
+      "senha": "Senha",
+      "gerar": "Continuar",
+      "gerando": "Preparando…",
+      "lerQr": "Leia o QR code no seu aplicativo autenticador (ou digite a chave) e informe o código de 6 dígitos que ele mostrar.",
+      "qrAlt": "QR code para configurar o autenticador",
+      "chave": "Chave para digitar no aplicativo",
+      "codigosTitulo": "Códigos de recuperação",
+      "codigosTexto": "Guarde estes códigos em lugar seguro. Eles aparecem só agora e servem para entrar sem o aparelho, uma vez cada.",
+      "confirmar": "Ativar e entrar"
+    },
+    "redefinir": {
+      "titulo": "Nova senha",
+      "subtitulo": "Crie a sua nova senha. Ao salvar, as sessões abertas em outros aparelhos são encerradas.",
+      "botao": "Salvar nova senha",
+      "concluidoTitulo": "Senha redefinida",
+      "concluidoTexto": "Sua senha foi trocada e as sessões abertas foram encerradas. Entre com a nova senha.",
+      "entrar": "Ir para o login",
+      "pedirOutro": "Pedir um novo link"
+    },
+    "cadastro": {
+      "titulo": "Criar conta",
+      "subtitulo": "Grátis. Salve seus lugares favoritos e conheça o Passaporte Achados na Rota.",
+      "nome": "Seu nome",
+      "email": "E-mail",
+      "senha": "Crie uma senha",
+      "ajudaDaSenha": "Pelo menos 10 caracteres.",
+      "aceite": "Li e aceito os <termos>termos de uso</termos> e a <privacidade>política de privacidade</privacidade>.",
+      "botao": "Criar conta",
+      "enviando": "Criando…",
+      "jaTemConta": "Já tem conta?",
+      "entrar": "Entrar"
+    }
+  },
+  "Erro": {
+    "titulo": "Não foi possível abrir esta tela",
+    "descricao": "Algo falhou do nosso lado. Tente de novo em instantes.",
+    "tentarDeNovo": "Tentar de novo"
+  }
+}

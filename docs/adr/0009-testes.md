@@ -13,7 +13,7 @@ Precisamos implementar rapidamente com confiança, sem descobrir comportamento c
 
 Testes fazem parte da funcionalidade desde o primeiro fluxo. Recomenda-se Vitest para regras, contratos e componentes compatíveis, com React Testing Library para comportamento de UI e MSW ou servidor de teste para a fronteira HTTP. Playwright valida jornadas no navegador.
 
-No Meuproduto, isolamento entre tenants e privacidade são critérios de aceite, não testes opcionais: o Definition of Done de [08 — Plano de entrega](../produto/08-milestones-e-aceite.md) pede testes de autorização tenant A/B em toda entrega, e [09 — Prompt](../produto/09-prompt-claude.md) pede fixtures sintéticas, nunca dados reais.
+No Achados na Rota, isolamento entre tenants e privacidade são critérios de aceite, não testes opcionais: o Definition of Done de [08 — Plano de entrega](../produto/08-milestones-e-aceite.md) pede testes de autorização tenant A/B em toda entrega, e [09 — Prompt](../produto/09-prompt-claude.md) pede fixtures sintéticas, nunca dados reais.
 
 ### Distribuição de evidências
 

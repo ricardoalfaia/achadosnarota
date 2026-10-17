@@ -7,7 +7,7 @@
 
 ## Contexto
 
-As aplicações do Meuproduto precisam de consistência visual e componentes reutilizáveis, sem estilos globais que se acumulam por tela. A identidade visual do produto está no [ADR-0022](0022-identidade-visual-meuproduto.md). Composição visual também precisa preservar interação por teclado, foco e semântica.
+As aplicações do Achados na Rota precisam de consistência visual e componentes reutilizáveis, sem estilos globais que se acumulam por tela. A identidade visual do produto está no [ADR-0022](0022-identidade-visual-achados.md). Composição visual também precisa preservar interação por teclado, foco e semântica.
 
 ## Decisão proposta
 
@@ -37,7 +37,7 @@ A estrutura inicial usa `packages/ui`, conforme ADR-0011; a biblioteca de novas 
 
 A detecção de classes e de fontes compartilhadas depende da configuração do build e da versão escolhida. [Referência: detecção de classes no Tailwind](https://tailwindcss.com/docs/detecting-classes-in-source-files).
 
-O pacote exporta os tokens por `@meuproduto/ui/styles/tokens.css` e o app declara as fontes de UI/DataBoundary no seu CSS com `@source`. Build, contraste e troca de tema com a paleta Meuproduto são verificações pendentes neste repositório. A aparência de cada campo nos dois temas e sua interação completa ainda precisam de verificação no consumidor.
+O pacote exporta os tokens por `@achados/ui/styles/tokens.css` e o app declara as fontes de UI/DataBoundary no seu CSS com `@source`. Build, contraste e troca de tema com a paleta Achados na Rota são verificações pendentes neste repositório. A aparência de cada campo nos dois temas e sua interação completa ainda precisam de verificação no consumidor.
 
 Formulários são compostos por partes claras, com parsing/validação na fronteira e erros de campo tratados junto ao input. Usar formulário nativo com Actions quando suficiente; considerar biblioteca de formulário para edição complexa. Não adotar mutação manual do DOM como regra universal de máscara. Máscara, valor normalizado, registro do campo e submissão devem ter contrato testado.
 
@@ -47,17 +47,17 @@ Os campos herdados já oferecem composição útil, mas precisam completar esses
 
 ### Tokens e temas
 
-[tokens.css](../../packages/ui/src/styles/tokens.css) é a única fonte de cores, sombras e famílias de fonte. Os nomes semânticos vieram da base; os valores passam a ser os da identidade Meuproduto ([ADR-0022](0022-identidade-visual-meuproduto.md)). Trocar a paleta não muda nenhum nome usado pelos componentes. Não há `tailwind.config.js`: no Tailwind v4 o tema é CSS.
+[tokens.css](../../packages/ui/src/styles/tokens.css) é a única fonte de cores, sombras e famílias de fonte. Os nomes semânticos vieram da base; os valores passam a ser os da identidade Achados na Rota ([ADR-0022](0022-identidade-visual-achados.md)). Trocar a paleta não muda nenhum nome usado pelos componentes. Não há `tailwind.config.js`: no Tailwind v4 o tema é CSS.
 
 | Camada    | Exemplo                                              | Quem usa                   |
 | --------- | ---------------------------------------------------- | -------------------------- |
 | Paleta    | Tons da marca (azul-escuro, verde-água, azul, roxo)  | Somente a camada semântica |
-| Semântica | `--pl-surface`, `--pl-primary`, `--pl-danger-subtle` | O `@theme`                 |
+| Semântica | `--ar-surface`, `--ar-primary`, `--ar-danger-subtle` | O `@theme`                 |
 | Classes   | `bg-surface`, `text-primary`, `border-danger`        | Componentes                |
 
 - **Um valor por tema na mesma linha:** cada token semântico usa `light-dark(claro, escuro)`. O tema segue o sistema operacional; `data-theme="light"` ou `data-theme="dark"` em qualquer elemento força um deles. O build do Next converte `light-dark()` para navegadores que não o suportam.
 - **Paleta fechada:** `--color-*: initial` remove as cores padrão do Tailwind. `bg-zinc-200` ou `text-red-600` não geram CSS; um tom novo entra como token.
-- **Marca em dois papéis:** `primary` é texto, ícone e contorno; `primary-solid` (com `-hover`, `-foreground` e `-border`) é preenchimento. A regra herdada para o tema escuro (preenchimento translúcido em vez de sólido) precisa ser revista com a paleta nova; ver [ADR-0022](0022-identidade-visual-meuproduto.md).
+- **Marca em dois papéis:** `primary` é texto, ícone e contorno; `primary-solid` (com `-hover`, `-foreground` e `-border`) é preenchimento. A regra herdada para o tema escuro (preenchimento translúcido em vez de sólido) precisa ser revista com a paleta nova; ver [ADR-0022](0022-identidade-visual-achados.md).
 - **Feedback em três partes:** `success`, `warning`, `danger` e `info` têm cor de texto, fundo `-subtle` e `-border`.
 - **Tons translúcidos** usam `color-mix()` sobre a paleta, e modificadores como `bg-primary-subtle/50` funcionam com qualquer token.
 - **`dark:`** segue a mesma regra dos tokens e fica reservado ao que não é cor.
@@ -66,7 +66,7 @@ Todo par de texto e fundo precisa atingir contraste AA nos dois temas; `tokens.t
 
 **Fontes:** Inter (`font-sans`), a da marca, e JetBrains Mono (`font-mono`), em versão variável. [fonts.css](../../packages/ui/src/styles/fonts.css) as importa dos pacotes `@fontsource-variable`, e cada aplicação importa esse arquivo junto de `tokens.css`. Os arquivos são servidos pela própria aplicação: o build não acessa rede e o navegador não chama CDN externo. A alternativa `next/font` otimiza pré-carregamento e métrica da fonte reserva, mas só existe no Next e baixa do Google no build; a vitrine em Vite ficaria com outro mecanismo. Itálicos não foram incluídos.
 
-**Escala tipográfica:** densa, herdada da base. `text-base` é o corpo e vale 13px; o `body` já o aplica. A escala vai de `text-2xs` (10px) a `text-4xl` (28px) e substitui a do Tailwind: os nomes são os mesmos, os valores são menores (`text-sm` vale 12px, não 14px). Tamanhos acima de `4xl` não existem. `text-2xs` fica restrito a selos e etiquetas em maiúsculas. O mockup Meuproduto tem títulos maiores e corpo mais arejado; manter ou mudar a escala é decisão aberta do [ADR-0022](0022-identidade-visual-meuproduto.md).
+**Escala tipográfica:** densa, herdada da base. `text-base` é o corpo e vale 13px; o `body` já o aplica. A escala vai de `text-2xs` (10px) a `text-4xl` (28px) e substitui a do Tailwind: os nomes são os mesmos, os valores são menores (`text-sm` vale 12px, não 14px). Tamanhos acima de `4xl` não existem. `text-2xs` fica restrito a selos e etiquetas em maiúsculas. O mockup Achados na Rota tem títulos maiores e corpo mais arejado; manter ou mudar a escala é decisão aberta do [ADR-0022](0022-identidade-visual-achados.md).
 
 **Raios por papel:** `rounded-control` (8px, campos e botões), `rounded-card` (12px, cards e painéis) e `rounded-overlay` (16px, menus, popovers e modais). A escala numérica do Tailwind continua disponível para casos pontuais.
 
@@ -88,13 +88,13 @@ Fora desta etapa: pré-carregamento das fontes e espaçamento entre letras dos r
 - Tamanhos `xs` (28px), `sm` (36px, o padrão), `md` (44px) e `lg` (56px), pelos mesmos tokens `control-*` dos campos, para ficarem alinhados na mesma linha.
 - `icone` e `iconeFinal` acompanham o tamanho do texto. `BotaoDeIcone` é o botão quadrado só com ícone e exige `rotulo`, que vira o nome acessível.
 - `carregando` mostra o indicador de progresso, bloqueia novos cliques e marca `aria-busy`.
-- O comportamento do sólido no tema escuro segue o [ADR-0022](0022-identidade-visual-meuproduto.md). O perigo sólido tem a mesma estrutura com os tokens `danger-*`.
-- `estiloDoBotao()` devolve as classes, para um link ter a aparência de botão. Em Server Component ela vem de `@meuproduto/ui/estilos`, um ponto de entrada puro: o ponto de entrada principal do pacote é cliente, e uma função dele não pode ser chamada no servidor.
+- O comportamento do sólido no tema escuro segue o [ADR-0022](0022-identidade-visual-achados.md). O perigo sólido tem a mesma estrutura com os tokens `danger-*`.
+- `estiloDoBotao()` devolve as classes, para um link ter a aparência de botão. Em Server Component ela vem de `@achados/ui/estilos`, um ponto de entrada puro: o ponto de entrada principal do pacote é cliente, e uma função dele não pode ser chamada no servidor.
 - Variantes são mapas tipados (`Record`), sem biblioteca de variantes.
 
 `BotaoDeMenu` abre um menu de ações no padrão WAI-ARIA de menu button, com `ItemDeMenu` e `SeparadorDeMenu`. Enter, espaço ou seta abrem; setas, Home e End percorrem os itens habilitados; Esc fecha e devolve o foco. Com `somenteIcone` vira o botão de ações de uma linha de tabela.
 
-O pacote exporta um conjunto pequeno de ícones de ação (`IconeMais`, `IconeBaixar`, `IconeLixeira` e outros), desenhados no mesmo traço. Ícones próprios de uma tela entram conforme a necessidade real. Os tokens próprios do menu lateral (`--pl-sidebar-*`) estão no [ADR-0018](0018-casca-do-sistema.md).
+O pacote exporta um conjunto pequeno de ícones de ação (`IconeMais`, `IconeBaixar`, `IconeLixeira` e outros), desenhados no mesmo traço. Ícones próprios de uma tela entram conforme a necessidade real. Os tokens próprios do menu lateral (`--ar-sidebar-*`) estão no [ADR-0018](0018-casca-do-sistema.md).
 
 ### Conjunto inicial de componentes
 
@@ -112,7 +112,7 @@ Com os campos, botões, abas e checkbox, estes fecham o conjunto mínimo para co
 | `Selo`                             | Etiqueta pequena em maiúsculas: `ok` (ATUALIZADO, PRINCIPAL) e `novo` (NOVO, VERSÃO ATUAL). Serve em Server Component                                                                                                                                                                                 |
 | `Dica`                             | Aparece com atraso no mouse e na hora no foco; Esc esconde. Liga-se ao controle por `aria-describedby`                                                                                                                                                                                                |
 
-Os componentes que a identidade Meuproduto pede (`Avatar`, `CampoDeBusca`, `CartaoDeIndicador`, `CartaoDeAcao`, `CartaoDeModelo`, `Destaque`, `EstadoVazio`, `ZonaDeArquivo` e `Etapas`) estão registrados no [ADR-0022](0022-identidade-visual-meuproduto.md).
+Os componentes que a identidade Achados na Rota pede (`Avatar`, `CampoDeBusca`, `CartaoDeIndicador`, `CartaoDeAcao`, `CartaoDeModelo`, `Destaque`, `EstadoVazio`, `ZonaDeArquivo` e `Etapas`) estão registrados no [ADR-0022](0022-identidade-visual-achados.md).
 
 `DialogoDeExclusao` é a exclusão em duas confirmações, para o que não pode ser desfeito:
 
@@ -142,13 +142,13 @@ O cadastro (listagem e formulário) é um conjunto de partes em `components/Cada
 
 A `Tabela` ganhou o que a listagem precisa: `aoAbrirLinha` (clique ou Enter na linha abre o registro; cliques em controles da linha não contam), `alturaDaLinha` (64px para nome com complemento; o padrão continua 32) e `semRodape` (quando a grade já tem o seu). As `Abas` têm a variante `formulario`: sobre a faixa neutra, a ativa fica destacada com a linha da marca embaixo e o painel entra descendo (`fade-in-down`, 250ms).
 
-O interruptor "Status do Registro" não existe ainda (a história mostra um `SeloDeStatus`). Quando o cadastro abrir em modal, o cabeçalho é o `Dialogo` em variante `destaque`; em página, o título da tela cumpre o papel. O uso nas telas do Meuproduto está no [ADR-0021](0021-paginas-de-cadastro.md).
+O interruptor "Status do Registro" não existe ainda (a história mostra um `SeloDeStatus`). Quando o cadastro abrir em modal, o cabeçalho é o `Dialogo` em variante `destaque`; em página, o título da tela cumpre o papel. O uso nas telas do Achados na Rota está no [ADR-0021](0021-paginas-de-cadastro.md).
 
 ### Escolha de tema pelo usuário
 
-`SeletorDeTema`, em `@meuproduto/ui`, oferece Claro, Escuro e Auto no menu do usuário. Ele só apresenta e avisa a escolha; guardar e aplicar é da aplicação.
+`SeletorDeTema`, em `@achados/ui`, oferece Claro, Escuro e Auto no menu do usuário. Ele só apresenta e avisa a escolha; guardar e aplicar é da aplicação.
 
-No `meuproduto-web`, a preferência fica no cookie `meuproduto-tema`. O layout raiz o lê no servidor e escreve `data-theme` no `<html>`, de modo que a página já chega no tema escolhido, sem piscar no tema errado. Na troca, o `PreferenciasProvider` grava o cookie e aplica o atributo na hora. Em Auto não há atributo e o sistema operacional decide. O tema é uma das preferências do usuário, descritas no [ADR-0017](0017-idiomas-e-preferencias.md).
+No `achados-web`, a preferência fica no cookie `achados-tema`. O layout raiz o lê no servidor e escreve `data-theme` no `<html>`, de modo que a página já chega no tema escolhido, sem piscar no tema errado. Na troca, o `PreferenciasProvider` grava o cookie e aplica o atributo na hora. Em Auto não há atributo e o sistema operacional decide. O tema é uma das preferências do usuário, descritas no [ADR-0017](0017-idiomas-e-preferencias.md).
 
 - Ler cookie no layout raiz torna todas as rotas dinâmicas (renderizadas a cada requisição). Para um sistema autenticado isso já seria assim.
 - A alternativa de um script embutido no `<head>` manteria páginas estáticas, mas exige liberar script inline na política de segurança de conteúdo.
@@ -175,11 +175,11 @@ Abrir, fechar e trocar conteúdo são animados. Os tokens ficam em `tokens.css`:
 
 `Abas` segue o padrão WAI-ARIA de tabs com composição explícita: `Abas`, `ListaDeAbas`, `Aba` e `PainelDaAba`. Setas, Home e End trocam de aba pulando as desabilitadas, e a seleção acompanha o foco. Há duas variantes: `linha`, para abas de página e de formulário, e `pilula`, para alternância compacta de visão. Um indicador desliza até a aba ativa. A regra de navegação por teclado é a função pura `abaDestino`, testada à parte.
 
-No escuro, a aba e o checkbox ativos seguem a regra de preenchimento da marca do [ADR-0022](0022-identidade-visual-meuproduto.md).
+No escuro, a aba e o checkbox ativos seguem a regra de preenchimento da marca do [ADR-0022](0022-identidade-visual-achados.md).
 
 ### Vitrine
 
-[apps/design-system](../../apps/design-system/README.md) é um Storybook (React com Vite) que consome o contrato público de `@meuproduto/ui`, como qualquer aplicação; `packages/ui` não depende do Storybook. Há uma página de tokens e histórias dos estados de Select, SeletorDeData e SeletorDePeriodo, com um seletor de tema que usa o mesmo `data-theme` das aplicações.
+[apps/design-system](../../apps/design-system/README.md) é um Storybook (React com Vite) que consome o contrato público de `@achados/ui`, como qualquer aplicação; `packages/ui` não depende do Storybook. Há uma página de tokens e histórias dos estados de Select, SeletorDeData e SeletorDePeriodo, com um seletor de tema que usa o mesmo `data-theme` das aplicações.
 
 Cada história também é um teste: `pnpm test` as renderiza em Chromium e reprova erro de renderização ou violação de acessibilidade do axe. A vitrine é ferramenta de desenvolvimento, não uma aplicação de produto; por isso não segue a diretriz de Next.js das novas aplicações.
 
@@ -207,7 +207,7 @@ Temas e padrões visuais ganham consistência. Há custo de manutenção de cont
 | Classes dos pacotes chegam ao CSS                   | Build e página consumidora em navegador real                                                     | Pendente neste repositório        |
 | Interação acessível                                 | Testes de teclado, foco e labels; revisão das interações críticas                                | Planejado                         |
 | Variantes e temas consistentes                      | Exemplos de estados e verificação visual pertinente                                              | Planejado                         |
-| Pares de texto e fundo atingem contraste AA         | `tokens.test.ts` com a paleta Meuproduto, nos dois temas                                         | Pendente neste repositório        |
+| Pares de texto e fundo atingem contraste AA         | `tokens.test.ts` com a paleta Achados na Rota, nos dois temas                                    | Pendente neste repositório        |
 | Tema segue o sistema e pode ser forçado             | Cores computadas da página inicial em Chromium                                                   | Pendente neste repositório        |
 | Escolha de tema persiste e vem pronta do servidor   | E2E `preferencias.spec.ts`: troca, recarrega e confere o HTML recebido                           | Pendente neste repositório        |
 | Componentes usam só tokens                          | Build sem classes da paleta padrão; `git grep` sem `zinc`, `red`, `slate`                        | Pendente; regra de lint planejada |

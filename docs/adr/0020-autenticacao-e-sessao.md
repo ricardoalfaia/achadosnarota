@@ -4,11 +4,11 @@
 **Data:** 2026-10-17  
 **Princípios relacionados:** P05, P07, P08, P12  
 **Responsável pela proposta:** Ricardo Alfaia Barbosa  
-**Aceitação:** pendente. A implementação no `meuproduto-web` existe desde 17/10/2026; as verificações executadas estão na tabela de aderência, com data.
+**Aceitação:** pendente. A implementação no `achados-web` existe desde 17/10/2026; as verificações executadas estão na tabela de aderência, com data.
 
 ## Contexto
 
-A base de origem autenticava contra a API de identidade de outro sistema, com sessão em cookie JWE próprio, pré-sessão para segundo fator e uma API falsa para os testes. O Meuproduto não tem essa API. O responsável decidiu que o Meuproduto é multi-tenant com **Better Auth**, no padrão dos seus projetos SaaS (o CRM é a referência), rodando no próprio app Next.
+A base de origem autenticava contra a API de identidade de outro sistema, com sessão em cookie JWE próprio, pré-sessão para segundo fator e uma API falsa para os testes. O Achados na Rota não tem essa API. O responsável decidiu que o Achados na Rota é multi-tenant com **Better Auth**, no padrão dos seus projetos SaaS (o CRM é a referência), rodando no próprio app Next.
 
 Requisitos de produto que este ADR precisa atender:
 
@@ -23,10 +23,10 @@ Requisitos de produto que este ADR precisa atender:
 
 ### Identidade: Better Auth no app
 
-- **Servidor de identidade:** Better Auth 1.7.5 no `meuproduto-web`, exposto pelo route handler `app/api/auth/[...all]` com `toNextJsHandler`.
-- **Banco:** PostgreSQL ([ADR-0013](0013-ambientes-e-configuracao.md), local na porta 4450) pelo `drizzleAdapter`. O schema de autenticação é escrito em Drizzle no pacote `@meuproduto/db` (Drizzle ORM 0.45.3, drizzle-kit 0.31.11, postgres.js 3.4.9), com migrações SQL versionadas.
+- **Servidor de identidade:** Better Auth 1.7.5 no `achados-web`, exposto pelo route handler `app/api/auth/[...all]` com `toNextJsHandler`.
+- **Banco:** PostgreSQL ([ADR-0013](0013-ambientes-e-configuracao.md), local na porta 4550) pelo `drizzleAdapter`. O schema de autenticação é escrito em Drizzle no pacote `@achados/db` (Drizzle ORM 0.45.3, drizzle-kit 0.31.11, postgres.js 3.4.9), com migrações SQL versionadas.
 - **Seed e bootstrap:** seed idempotente com **dois tenants sintéticos**, para os testes de isolamento; bootstrap de produção separado do seed, sem dados de exemplo.
-- **Configuração:** `shared/auth/auth.servidor.ts`, criada na primeira chamada (o `next build` importa as rotas sem segredos): `drizzleAdapter(db, { provider: "pg", schema: authSchema })` com o `db` do `@meuproduto/db` em `DATABASE_URL`; `baseURL` e `trustedOrigins` = `APP_URL`; `telemetry` desligada; plugins `twoFactor({ issuer: "Meuproduto" })` e `nextCookies()` por último; `user.additionalFields` `mustChangePassword`, `termsVersion` e `termsAcceptedAt`, todos `input: false`. As telas usam Server Actions que chamam `auth().api.*` com os headers do pedido; o `nextCookies` grava os cookies.
+- **Configuração:** `shared/auth/auth.servidor.ts`, criada na primeira chamada (o `next build` importa as rotas sem segredos): `drizzleAdapter(db, { provider: "pg", schema: authSchema })` com o `db` do `@achados/db` em `DATABASE_URL`; `baseURL` e `trustedOrigins` = `APP_URL`; `telemetry` desligada; plugins `twoFactor({ issuer: "Achados na Rota" })` e `nextCookies()` por último; `user.additionalFields` `mustChangePassword`, `termsVersion` e `termsAcceptedAt`, todos `input: false`. As telas usam Server Actions que chamam `auth().api.*` com os headers do pedido; o `nextCookies` grava os cookies.
 - **Cadastro:** o hook `databaseHooks.user.create.before` é a porta única de criação de usuário (recusa com `CADASTRO_FECHADO`), além de `disableSignUp`. O cadastro público é controlado por `SIGNUP_ENABLED`, fechado por padrão. Os convites ainda não existem: o gancho `podeCriarConta` é onde o convite pendente vai abrir a porta; hoje, com o cadastro fechado, ninguém cria conta pelo app (só seed e bootstrap).
 - **Convite:** por link, com o token guardado só como hash no banco. Pendente.
 - **Senha:** mínimo de 10 caracteres. Redefinição por link de uso único (1 hora) com `revokeSessionsOnPasswordReset`, que encerra as sessões abertas. O link aponta para `/login/redefinir?token=...` (página com `Referrer-Policy: no-referrer`); o pedido responde igual exista ou não a conta, e o e-mail sai em `after()`. Senha provisória: `user.mustChangePassword` (gravado só pelo servidor) obriga a troca no primeiro acesso, com `changePassword` e `revokeOtherSessions`; a redefinição também limpa a marca.
@@ -36,12 +36,12 @@ Requisitos de produto que este ADR precisa atender:
 
 ### Sessão
 
-- **Cookie do Better Auth** com `cookiePrefix: "meuproduto"` (`meuproduto.session_token`, HttpOnly, SameSite=Lax), Secure quando `APP_URL` é `https`. **`cookieCache` desligado**: cada leitura da sessão vai ao banco, então sair, troca e redefinição de senha valem na requisição seguinte. O custo é uma consulta por pedido, memorizada no pedido com `React.cache`.
+- **Cookie do Better Auth** com `cookiePrefix: "achados"` (`achados.session_token`, HttpOnly, SameSite=Lax), Secure quando `APP_URL` é `https`. **`cookieCache` desligado**: cada leitura da sessão vai ao banco, então sair, troca e redefinição de senha valem na requisição seguinte. O custo é uma consulta por pedido, memorizada no pedido com `React.cache`.
 - **Duração:** `expiresIn` de 12 horas, renovada por mais 12 quando usada depois de 1 hora (`updateAge`). A renovação só acontece em Actions e Route Handlers (em Server Component o `nextCookies` não grava cookie); na prática, quem só navega tem 12 horas a partir da entrada.
 - **Barreira no servidor:** `exigirSessao` continua sendo a barreira em layouts, páginas, Actions e Route Handlers; lê a sessão com `auth.api.getSession({ headers })`. Layout sozinho não protege endpoint ([Next: segurança de dados](https://nextjs.org/docs/app/guides/data-security)).
-- **Proxy só faz triagem:** `proxy.ts` usa `getSessionCookie(request, { cookiePrefix: "meuproduto" })` para mandar quem não tem cookie ao login. `/api/auth` fica fora do matcher e `/login` sempre passa: a página decide, então cookie vencido ou revogado não cria laço. Ter cookie não prova sessão válida, e o proxy não injeta header de tenant.
+- **Proxy só faz triagem:** `proxy.ts` usa `getSessionCookie(request, { cookiePrefix: "achados" })` para mandar quem não tem cookie ao login. `/api/auth` fica fora do matcher e `/login` sempre passa: a página decide, então cookie vencido ou revogado não cria laço. Ter cookie não prova sessão válida, e o proxy não injeta header de tenant.
 - **O que chega ao navegador:** só o DTO seguro para a interface (nome, e-mail, organização e tenant ativos, papel) e a lista de tenants do seletor (nome e slug). Tokens, ids e o registro de sessão não cruzam a fronteira.
-- **Saíram da base:** o cookie JWE próprio (`jose`), a pré-sessão, o limite de tentativas em memória, `SESSION_SECRET`, `MEUPRODUTO_API_URL`, a API falsa de login (`dev:api`) e o aviso de conexão com a API. Com o banco fora do ar, o login mostra "serviço indisponível".
+- **Saíram da base:** o cookie JWE próprio (`jose`), a pré-sessão, o limite de tentativas em memória, `SESSION_SECRET`, `ACHADOS_API_URL`, a API falsa de login (`dev:api`) e o aviso de conexão com a API. Com o banco fora do ar, o login mostra "serviço indisponível".
 
 ### Organização, tenant e papéis
 
@@ -58,7 +58,7 @@ O plugin `organization` não é registrado: no projeto de referência ele ficava
 ### Tenant ativo e acesso a dados
 
 - **Tenant ativo na URL:** `/t/[slug]/...`. `exigirTenant(slug)` (`shared/sessao/tenant.servidor.ts`, o `requireTenant` do desenho) lê a sessão liberada, busca o tenant ativo pelo slug (tabela sem RLS), lê o vínculo em `tenant_user` **dentro de `withTenant`** a cada request e responde `notFound()` quando o tenant não existe, está suspenso ou não há vínculo: os três casos são iguais por fora. `contextoDaAcao(slug)` faz a mesma checagem para Server Actions e Route Handlers de negócio, devolvendo `Result` em vez de redirecionar. "Meus tenants" vêm de `withUser` (policy `tenant_user_own_memberships`). A raiz `/` leva ao primeiro tenant em ordem de nome, ou mostra "sem acesso"; o seletor da faixa troca para a mesma tela em `/t/<outro>`, sem estado global. O tenant nunca vem de header, corpo ou estado do cliente.
-- **Isolamento no banco por RLS:** toda tabela de negócio tem `tenant_id` e a policy `tenant_id = current_setting('app.tenant_id', true)`. O app conecta como o papel `meuproduto_app`, que não é dono das tabelas, então o RLS vale para ele; migrações e seed rodam como dono (`DATABASE_URL_ADMIN`).
+- **Isolamento no banco por RLS:** toda tabela de negócio tem `tenant_id` e a policy `tenant_id = current_setting('app.tenant_id', true)`. O app conecta como o papel `achados_app`, que não é dono das tabelas, então o RLS vale para ele; migrações e seed rodam como dono (`DATABASE_URL_ADMIN`).
 - **Uma porta de acesso:** consultas de negócio passam por `withTenant(db, tenantId, fn)`, que abre uma transação e faz `set_config('app.tenant_id', ..., true)` local. Sem `withTenant`, nada aparece: a falha é fechada.
 - **Cache:** a chave de qualquer cache inclui o tenant ativo; troca de tenant descarta o contexto anterior ([ADR-0006](0006-estado-http-e-cache.md)).
 - **URL e dados sensíveis:** o slug do tenant é identificador operacional, não segredo. Regra (`ehSlugValido` em `shared/rotas.ts`): minúsculas sem acento, dígitos e hífen, de 2 a 63 caracteres, sem hífen nas pontas nem duplo; slug fora da regra é tratado como inexistente. Ele não deve conter nome de cliente nem dado pessoal: é o nome do escritório, escolhido por quem cria o tenant (a criação ainda não tem tela).
@@ -80,7 +80,7 @@ Apontadas para decisão do responsável; este ADR não as resolve sozinho.
 
 ## Alternativas consideradas
 
-- **Porta de identidade própria com adaptador HTTP para um backend futuro:** foi o primeiro desenho do Meuproduto, a partir da base. Descartado pelo responsável: o backend não existe e o padrão dos seus projetos já resolve identidade e tenant com Better Auth.
+- **Porta de identidade própria com adaptador HTTP para um backend futuro:** foi o primeiro desenho do Achados na Rota, a partir da base. Descartado pelo responsável: o backend não existe e o padrão dos seus projetos já resolve identidade e tenant com Better Auth.
 - **Plugin `organization` do Better Auth:** entrega convites e papéis prontos, mas modela uma única camada e expõe endpoints que não seriam usados; organização e tenant do documento 02 ficariam forçados em organização e times.
 - **Isolamento só por filtro na aplicação, sem RLS:** mais simples, mas um `where` esquecido vaza dados entre tenants. O RLS faz a falha ser fechada.
 - **Tenant no cookie ou no corpo da requisição:** permitiria trocar de tenant sem mudar a URL, mas abre a porta para IDOR e esconde o contexto. Na URL, o servidor confere o vínculo a cada request.
@@ -92,20 +92,20 @@ Identidade, sessão e isolamento passam a ser do próprio produto, com o banco c
 
 ## Verificação de aderência
 
-Execuções de 17/10/2026, contra o Postgres local do Docker (`pnpm --filter meuproduto-web test:e2e`: 39 testes, todos passaram, com o build do ambiente local e com o build de produção sem `.env.local`, como na CI). A CI do GitHub ainda não rodou este conjunto.
+Execuções de 17/10/2026, contra o Postgres local do Docker (`pnpm --filter achados-web test:e2e`: 39 testes, todos passaram, com o build do ambiente local e com o build de produção sem `.env.local`, como na CI). A CI do GitHub ainda não rodou este conjunto.
 
-| Regra                                                         | Evidência                                                                                                                         | Estado                                                                    |
-| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Usuário do tenant A não lê nem altera dados do tenant B       | E2E `isolamento.spec.ts` (404 no tenant B; 3 clientes em cada tenant, contados pelo RLS); integração do `@meuproduto/db` no banco | Leitura: E2E passou. Escrita pela aplicação: ainda sem caso de uso        |
-| Sem `withTenant`, consulta de negócio não retorna linhas      | Integração conectada como `meuproduto_app` (`packages/db/src/isolamento.test.ts`)                                                 | `pnpm --filter @meuproduto/db test:integracao` em 17/10/2026: 26 passaram |
-| Slug de tenant sem vínculo responde 404                       | E2E `isolamento.spec.ts` (tenant de outro escritório e tenant inexistente)                                                        | Passou                                                                    |
-| Rota autenticada sem sessão leva ao login                     | E2E `login.spec.ts` (sem cookie e com cookie inventado, sem laço)                                                                 | Passou                                                                    |
-| Action e Route Handler recusam sem sessão                     | `contextoDaAcao`; E2E da etapa adulterada sem sessão                                                                              | Parcial: ainda não há Action de negócio para testar                       |
-| Admin não usa o sistema sem MFA                               | E2E `mfa.spec.ts` e `sessao.setup.ts` (owner sem 2FA não abre `/t/...`; configura o autenticador e entra com TOTP)                | Passou                                                                    |
-| Redefinição de senha encerra as outras sessões                | E2E `redefinicao.spec.ts` (sessão aberta em outro navegador cai; link de uso único; resposta igual para conta inexistente)        | Passou                                                                    |
-| Sair revoga a sessão no servidor                              | E2E `sessao.spec.ts` (o cookie antigo devolvido ao navegador não reabre o sistema)                                                | Passou                                                                    |
-| Força bruta é limitada entre instâncias                       | E2E `login.spec.ts` (11ª senha errada da mesma conta recusada; contador na tabela `rate_limit`)                                   | Passou com uma instância; várias instâncias não foram testadas            |
-| Nenhum token, senha ou código em log ou resposta ao navegador | E2E `sessao.spec.ts` (token fora do HTML); busca por segredo e papel do banco em `.next/static`; leitura dos logs do E2E          | Parcial: sem eventos de auditoria para conferir                           |
+| Regra                                                         | Evidência                                                                                                                      | Estado                                                                 |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
+| Usuário do tenant A não lê nem altera dados do tenant B       | E2E `isolamento.spec.ts` (404 no tenant B; 3 clientes em cada tenant, contados pelo RLS); integração do `@achados/db` no banco | Leitura: E2E passou. Escrita pela aplicação: ainda sem caso de uso     |
+| Sem `withTenant`, consulta de negócio não retorna linhas      | Integração conectada como `achados_app` (`packages/db/src/isolamento.test.ts`)                                                 | `pnpm --filter @achados/db test:integracao` em 17/10/2026: 26 passaram |
+| Slug de tenant sem vínculo responde 404                       | E2E `isolamento.spec.ts` (tenant de outro escritório e tenant inexistente)                                                     | Passou                                                                 |
+| Rota autenticada sem sessão leva ao login                     | E2E `login.spec.ts` (sem cookie e com cookie inventado, sem laço)                                                              | Passou                                                                 |
+| Action e Route Handler recusam sem sessão                     | `contextoDaAcao`; E2E da etapa adulterada sem sessão                                                                           | Parcial: ainda não há Action de negócio para testar                    |
+| Admin não usa o sistema sem MFA                               | E2E `mfa.spec.ts` e `sessao.setup.ts` (owner sem 2FA não abre `/t/...`; configura o autenticador e entra com TOTP)             | Passou                                                                 |
+| Redefinição de senha encerra as outras sessões                | E2E `redefinicao.spec.ts` (sessão aberta em outro navegador cai; link de uso único; resposta igual para conta inexistente)     | Passou                                                                 |
+| Sair revoga a sessão no servidor                              | E2E `sessao.spec.ts` (o cookie antigo devolvido ao navegador não reabre o sistema)                                             | Passou                                                                 |
+| Força bruta é limitada entre instâncias                       | E2E `login.spec.ts` (11ª senha errada da mesma conta recusada; contador na tabela `rate_limit`)                                | Passou com uma instância; várias instâncias não foram testadas         |
+| Nenhum token, senha ou código em log ou resposta ao navegador | E2E `sessao.spec.ts` (token fora do HTML); busca por segredo e papel do banco em `.next/static`; leitura dos logs do E2E       | Parcial: sem eventos de auditoria para conferir                        |
 
 ## Pendências e exceções
 
@@ -128,3 +128,13 @@ Nenhuma exceção registrada.
 - ADRs de produto: [ADR-002](../produto/adr/ADR-002.md), [ADR-003](../produto/adr/ADR-003.md), [ADR-011](../produto/adr/ADR-011.md)
 - [Better Auth](https://www.better-auth.com/docs) · [PostgreSQL: Row Security Policies](https://www.postgresql.org/docs/current/ddl-rowsecurity.html)
 - [Next.js: autenticação](https://nextjs.org/docs/app/guides/authentication) · [Next.js: segurança de dados](https://nextjs.org/docs/app/guides/data-security) · [Next.js: proxy](https://nextjs.org/docs/app/api-reference/file-conventions/proxy)
+
+## Registro de aplicação — 2026-10-17
+
+Com o produto Achados na Rota ([ADR-0025](0025-app-pwa-do-assinante.md)), o desenho multi-tenant deste ADR deixou de valer para o app do assinante:
+
+- Sem organização, tenant nem `tenant_user`; dado pessoal (favoritos, assinatura) é isolado por pessoa com RLS (`withUser`, policies `*_da_propria_pessoa`). O escopo de parceiro (operadores que validam resgates) volta com o painel do parceiro.
+- Cadastro aberto para assinantes (`SIGNUP_ENABLED=true`), com aceite dos termos gravado pelo servidor (`VERSAO_DOS_TERMOS`) e limite por IP.
+- MFA não é exigido do assinante; a regra `pendenciasDaConta` recebe `exigeMfa`, que valerá para curadores e administradores.
+- Sem `proxy.ts`: o app é público; telas e Actions com dado da pessoa conferem a sessão no servidor. O login aceita `?voltar=` só com caminho interno (`destinoSeguro`).
+- Ids do Better Auth em ULID ([ADR-0024](0024-identificadores-ulid.md)).

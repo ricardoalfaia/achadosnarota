@@ -1,4 +1,4 @@
-import { base } from "@meuproduto/eslint-config/base";
+import { base } from "@achados/eslint-config/base";
 
 export default [
   ...base,

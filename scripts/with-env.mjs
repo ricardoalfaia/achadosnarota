@@ -3,9 +3,9 @@
 //
 //   node scripts/with-env.mjs [--exigir-banco] -- <comando...>
 //
-// --exigir-banco liga MEUPRODUTO_EXIGIR_BANCO=1: os testes de integração do
-// @meuproduto/db FALHAM (em vez de pular) se o Postgres não responder. É o modo
-// do CI (`pnpm --filter @meuproduto/db test:integracao`).
+// --exigir-banco liga ACHADOS_EXIGIR_BANCO=1: os testes de integração do
+// @achados/db FALHAM (em vez de pular) se o Postgres não responder. É o modo
+// do CI (`pnpm --filter @achados/db test:integracao`).
 import { spawn } from "node:child_process";
 
 import { carregarEnv } from "./load-env.mjs";
@@ -13,7 +13,7 @@ import { carregarEnv } from "./load-env.mjs";
 const args = process.argv.slice(2);
 if (args[0] === "--exigir-banco") {
   args.shift();
-  process.env.MEUPRODUTO_EXIGIR_BANCO = "1";
+  process.env.ACHADOS_EXIGIR_BANCO = "1";
 }
 if (args[0] === "--") args.shift();
 if (args.length === 0) {

@@ -1,4 +1,4 @@
-import { Botao, EstadoVazio } from "@meuproduto/ui";
+import { Botao, EstadoVazio } from "@achados/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Construction, FileText, Plus } from "lucide-react";
 import { expect, within } from "storybook/test";

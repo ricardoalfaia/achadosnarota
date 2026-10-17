@@ -16,10 +16,10 @@ import {
 // rateLimit) e a coluna pela chave JS (camelCase): por isso o app passa
 // `authSchema` (abaixo) ao drizzleAdapter.
 //
-// Sem RLS: o Better Auth lê e grava estas tabelas fora de contexto de tenant
-// (login, sessão, rate limit). Dados de negócio continuam barrados pelas
-// policies das tabelas de tenant.
-// O plugin organization NÃO é registrado: organização e tenant são do Meuproduto.
+// Sem RLS: o Better Auth lê e grava estas tabelas fora de contexto de usuário
+// (login, sessão, rate limit). Os ids são ULID, gerados pelo app
+// (`advanced.database.generateId`, ADR-0024). Dados pessoais de uso
+// (favoritos, assinatura) ficam em tabelas com RLS por pessoa.
 
 const criadoEm = () =>
   timestamp("created_at", { withTimezone: true }).notNull().defaultNow();

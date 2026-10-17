@@ -1,4 +1,4 @@
-import { CartaoDeIndicador } from "@meuproduto/ui";
+import { CartaoDeIndicador } from "@achados/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Clock, FileText, PenLine, Users } from "lucide-react";
 import { expect, within } from "storybook/test";

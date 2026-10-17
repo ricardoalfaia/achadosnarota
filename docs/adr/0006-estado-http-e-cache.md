@@ -83,7 +83,7 @@ Consulta não armazena Err como um dado válido. Cancelamento é propagado pelo 
 
 Uma chave ilustrativa é `['web', scopeKey, 'customers', 'list', filters]`. `scopeKey` é um identificador não secreto do contexto autenticado; não é token, cookie ou credencial. Todos os parâmetros relevantes à resposta devem participar da identidade da query. A construção fica centralizada por recurso.
 
-O servidor deriva e valida o contexto autorizado; um ID de tenant enviado pelo cliente nunca comprova acesso ([07 — API](../produto/07-api-eventos-operacoes.md), [ADR-003 de produto](../produto/adr/ADR-003.md)). O cliente pode conhecer um identificador seguro de tenant para navegação e particionamento de cache. Proibir sua visibilidade não cria uma barreira de segurança. No Meuproduto, `scopeKey` inclui a organização ativa da sessão ([ADR-0020](0020-autenticacao-e-sessao.md)); a relação organização × tenant ainda depende do [ADR-002 de produto](../produto/adr/ADR-002.md).
+O servidor deriva e valida o contexto autorizado; um ID de tenant enviado pelo cliente nunca comprova acesso ([07 — API](../produto/07-api-eventos-operacoes.md), [ADR-003 de produto](../produto/adr/ADR-003.md)). O cliente pode conhecer um identificador seguro de tenant para navegação e particionamento de cache. Proibir sua visibilidade não cria uma barreira de segurança. No Achados na Rota, `scopeKey` inclui a organização ativa da sessão ([ADR-0020](0020-autenticacao-e-sessao.md)); a relação organização × tenant ainda depende do [ADR-002 de produto](../produto/adr/ADR-002.md).
 
 No logout ou troca de usuário/tenant: interromper atividade do contexto antigo quando possível, retirar sua UI, limpar/descartar seu QueryClient/cache e impedir que respostas atrasadas repovoem o contexto novo. Preferências visuais podem persistir; dados protegidos não são persistidos no navegador por padrão. Documentos e dados de clientes nunca vão para `localStorage`, IndexedDB ou cache persistente do navegador.
 
@@ -133,3 +133,14 @@ Estado HTTP tem dono e ciclo claros; estado global é reduzido. A arquitetura ex
 **Pendência a decidir:** a regra de filtros navegáveis na URL (P07) colide com o princípio de produto de não pôr dado confidencial em URLs ([README de produto](../produto/README.md), princípio 2). Uma busca livre por nome ou CPF de cliente na URL vai para histórico do navegador, logs de acesso e cabeçalho `Referer`. Até a decisão, filtros por valores fechados (estado, tipo, página) podem ir para a URL; texto livre de busca fica em estado local.
 
 Relacionados: [Result/Error](0004-result-error.md), [DataBoundary](0005-data-boundary.md) e [monorepo e autonomia](0007-monorepo-e-autonomia.md).
+
+## Registro de aplicação — 2026-10-17
+
+Primeiros recursos com política declarada, no `achados-web` ([ADR-0025](0025-app-pwa-do-assinante.md)):
+
+- **Lugares do catálogo** (`features/catalogo/consultas/lugares.ts`): chave `["web","catalogo","lugares",filtro]` sem escopo (dado público), staleTime 5 min, gcTime 30 min, prefetch no Server Component com a consulta direta e `HydrationBoundary`; no navegador, `GET /api/lugares` com cancelamento. Sem comando que invalide no app.
+- **Favoritos** (`features/favoritos/consultas/favoritos.ts`): chave `["web",escopo,"favoritos"]`, staleTime 5 min, refetch ao focar; `GET /api/me/favoritos` privado; `useMutation` sobre a Action como único coordenador do otimismo, com reversão em Err e invalidação no fim.
+- **Escopo e troca de pessoa:** `escopo` é o SHA-256 truncado do id; o QueryClient do navegador é remontado (`key={escopo}`) a cada troca de pessoa. QueryClient por pedido no servidor (`clienteDoPedido`).
+- **Retry:** consultas tentam de novo só em falha de infraestrutura (até 2 vezes, com atraso crescente); comandos nunca.
+- **Filtros na URL × dado confidencial:** a busca do catálogo é texto livre sobre lugares públicos (sem dado pessoal), por isso vai para a URL; a pendência abaixo continua valendo para buscas sobre dados de pessoas.
+- Telas só de leitura (ficha, passaporte, perfil) seguem no Server Component, sem Query.

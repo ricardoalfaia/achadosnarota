@@ -12,7 +12,7 @@ const BASE = {
 } as const;
 
 /** O detalhe usa o verde água da paleta; não muda com o tema. */
-const DETALHE = "var(--pl-verde-agua-500)";
+const DETALHE = "var(--ar-laranja-500)";
 
 type Props = { className?: string };
 

@@ -3,7 +3,7 @@ import { defineConfig } from "drizzle-kit";
 import { carregarEnv } from "../../scripts/load-env.mjs";
 
 // Migrations rodam como DONO do schema (DATABASE_URL_ADMIN). A aplicação usa
-// DATABASE_URL, que aponta para o papel meuproduto_app, sujeito a RLS.
+// DATABASE_URL, que aponta para o papel achados_app, sujeito a RLS.
 // Sem fallback para DATABASE_URL: migrar com o papel da app falharia no meio
 // (ele não pode criar tabelas) e esconderia a configuração errada.
 carregarEnv({ silencioso: true });
@@ -16,8 +16,8 @@ export default defineConfig({
   out: "./migrations",
   dialect: "postgresql",
   dbCredentials: { url },
-  // O papel meuproduto_app é criado fora das migrations (pgRole(...).existing()).
-  entities: { roles: { provider: "", exclude: ["meuproduto_app"] } },
+  // O papel achados_app é criado fora das migrations (pgRole(...).existing()).
+  entities: { roles: { provider: "", exclude: ["achados_app"] } },
   strict: true,
   verbose: true,
 });

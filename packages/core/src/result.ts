@@ -178,7 +178,7 @@ type FailureReporter = (error: AppError) => void;
 // No processo, não no módulo: no Next, a inicialização do servidor e as
 // actions podem ser empacotadas separadamente, cada uma com a sua cópia deste
 // pacote — uma variável de módulo registrada numa não seria vista pela outra.
-const REPORTER_KEY = Symbol.for("meuproduto.actionFailureReporter");
+const REPORTER_KEY = Symbol.for("achados.actionFailureReporter");
 type ReporterHolder = { [REPORTER_KEY]?: FailureReporter | null };
 
 export function setActionFailureReporter(

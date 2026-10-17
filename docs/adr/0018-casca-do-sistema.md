@@ -1,4 +1,4 @@
-# ADR-0018 — Casca do sistema conforme o mockup Meuproduto
+# ADR-0018 — Casca do sistema conforme o mockup Achados na Rota
 
 **Estado:** Proposto  
 **Data:** 2026-10-16  
@@ -8,15 +8,15 @@
 
 ## Contexto
 
-A base de origem trouxe uma casca desenhada para outro produto: menu lateral escuro com grupos e submenus, faixa do topo com indicadores do domínio de origem, mega menu de cadastros e um catálogo extraído de um sistema desktop. Nada disso descreve o Meuproduto.
+A base de origem trouxe uma casca desenhada para outro produto: menu lateral escuro com grupos e submenus, faixa do topo com indicadores do domínio de origem, mega menu de cadastros e um catálogo extraído de um sistema desktop. Nada disso descreve o Achados na Rota.
 
-A referência visual do Meuproduto é o mockup do painel na imagem de identidade da marca ([`docs/produto/marca/quadro-da-marca.png`](../produto/marca/quadro-da-marca.png)): menu lateral claro com itens planos, faixa do topo com busca, notificações e avatar, e a página inicial com saudação, destaque da marca, indicadores, documentos recentes, ações rápidas e modelos mais usados. A identidade (cores, fonte, degradê) está no [ADR-0022](0022-identidade-visual-meuproduto.md).
+A referência visual do Achados na Rota é o mockup do painel na imagem de identidade da marca ([`docs/produto/marca/quadro-da-marca.png`](../produto/marca/quadro-da-marca.png)): menu lateral claro com itens planos, faixa do topo com busca, notificações e avatar, e a página inicial com saudação, destaque da marca, indicadores, documentos recentes, ações rápidas e modelos mais usados. A identidade (cores, fonte, degradê) está no [ADR-0022](0022-identidade-visual-achados.md).
 
 O mockup é uma imagem, não um protótipo navegável: não define medidas exatas, estados de hover, tema escuro ou comportamento em telas estreitas. Essas lacunas são resolvidas com os tokens e componentes do design system e conferidas com o responsável.
 
 ## Decisão proposta
 
-A casca fica em `apps/meuproduto-web/src/shared/casca`, é da aplicação (conhece navegação e sessão) e é composta com primitivas, tokens e hooks de `@meuproduto/ui`. Cada parte é um componente com responsabilidade própria, ligado pelo `Casca`:
+A casca fica em `apps/achados-web/src/shared/casca`, é da aplicação (conhece navegação e sessão) e é composta com primitivas, tokens e hooks de `@achados/ui`. Cada parte é um componente com responsabilidade própria, ligado pelo `Casca`:
 
 | Parte            | Responsabilidade                                     | Estado                     |
 | ---------------- | ---------------------------------------------------- | -------------------------- |
@@ -35,7 +35,7 @@ A casca é composição comum do app ([ADR-0011](0011-estrutura-monorepo.md)). O
 - **Dados:** `navegacao.ts` descreve os itens como dado, sem texto e sem React; os nomes ficam em `messages`. As regras de rota atual são funções puras, testadas.
 - **Rotas e tenant:** [A CONFIRMAR — ADR-0020] com o tenant ativo na URL (`/t/[slug]/...`), os endereços dos itens ficam sob esse prefixo. A casca recebe o slug da rota; não o lê de cookie nem de estado do cliente.
 - **Recolher:** o menu recolhe para uma faixa só com ícones. `recolhido` é a preferência `menuRecolhido` (cookie, lido no servidor: a página já chega recolhida, sem saltar; [ADR-0017](0017-idiomas-e-preferencias.md)).
-- **Aparência:** fundo claro (`surface`), item ativo com fundo `primary-subtle` e texto `primary`, como no mockup. Tokens próprios do menu, se necessários, ficam no bloco `--pl-sidebar-*` de `tokens.css`, com valor por tema.
+- **Aparência:** fundo claro (`surface`), item ativo com fundo `primary-subtle` e texto `primary`, como no mockup. Tokens próprios do menu, se necessários, ficam no bloco `--ar-sidebar-*` de `tokens.css`, com valor por tema.
 - **Itens sem tela:** a rota existe e mostra `EstadoVazio` com o nome da área e a informação de que está em construção. O menu é navegável por inteiro sem fingir que a funcionalidade existe.
 - **Autorização:** esconder um item no menu não é segurança. Quando houver papéis, cada rota verifica no servidor; o menu só reflete o que o servidor já decidiu ([ADR-003 de produto](../produto/adr/ADR-003.md)).
 
@@ -59,7 +59,7 @@ Mega menu e catálogo de cadastros, menu secundário de um módulo do produto de
 ## Alternativas consideradas
 
 - **Manter a casca da base e só trocar as cores:** menos trabalho, mas a estrutura (grupos, mega menu, indicadores do domínio de origem) não corresponde ao produto.
-- **Casca em `@meuproduto/ui`:** daria reuso ao template do [ADR-0023](0023-scaffold-como-template.md), mas a casca conhece navegação e sessão do Meuproduto; o que é genérico (tokens, hooks, componentes de cartão e estado vazio) fica no pacote.
+- **Casca em `@achados/ui`:** daria reuso ao template do [ADR-0023](0023-scaffold-como-template.md), mas a casca conhece navegação e sessão do Achados na Rota; o que é genérico (tokens, hooks, componentes de cartão e estado vazio) fica no pacote.
 - **Guardar o menu recolhido em `localStorage`:** o servidor não lê, e a primeira pintura viria aberta.
 - **Esconder do menu os itens sem tela:** o menu ficaria quase vazio e mudaria a cada entrega; o `EstadoVazio` mostra o caminho do produto sem fingir que existe.
 
@@ -93,5 +93,5 @@ Nenhuma exceção registrada.
 - [ADR-0008](0008-design-system.md) — tokens, tema e componentes
 - [ADR-0016](0016-recursos-do-react-19.md) — recursos do React usados na casca
 - [ADR-0017](0017-idiomas-e-preferencias.md) — preferências
-- [ADR-0022](0022-identidade-visual-meuproduto.md) — identidade visual
+- [ADR-0022](0022-identidade-visual-achados.md) — identidade visual
 - Mockup: [`docs/produto/marca/quadro-da-marca.png`](../produto/marca/quadro-da-marca.png)

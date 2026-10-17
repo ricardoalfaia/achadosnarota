@@ -6,7 +6,7 @@ export const boundaries = {
       {
         patterns: [
           {
-            group: ["@meuproduto/*/src", "@meuproduto/*/src/**", "apps/**"],
+            group: ["@achados/*/src", "@achados/*/src/**", "apps/**"],
             message:
               "Consuma o contrato público do pacote; aplicações não são bibliotecas.",
           },
@@ -17,11 +17,11 @@ export const boundaries = {
       "error",
       {
         selector: "TSTypeAliasDeclaration[id.name='Result']",
-        message: "Result é definido apenas no core canônico @meuproduto/core.",
+        message: "Result é definido apenas no core canônico @achados/core.",
       },
       {
         selector: "TSInterfaceDeclaration[id.name='Result']",
-        message: "Não crie outro contrato Result; importe @meuproduto/core.",
+        message: "Não crie outro contrato Result; importe @achados/core.",
       },
     ],
   },

@@ -8,7 +8,7 @@ pnpm-lock.yaml
 *.snap
 
 # sessão gravada pelo E2E
-apps/meuproduto-web/e2e/.auth/
+apps/achados-web/e2e/.auth/
 
 # gerados pelo drizzle-kit (reescritos a cada db:generate)
 packages/db/migrations/meta/

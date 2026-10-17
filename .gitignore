@@ -17,3 +17,14 @@ next-env.d.ts
 !.env.production
 *.log
 .claude/settings.local.json
+
+# Credenciais locais na raiz (ex.: banco do Neon): nunca versionar.
+/.env.production
+/.env.homolog
+
+# Material de origem já copiado para docs/produto.
+/achados-na-rota-documentacao/
+/achados-na-rota-documentacao.zip
+/page.jpeg
+/pwa.jpeg
+/WhatsApp Image *.jpeg

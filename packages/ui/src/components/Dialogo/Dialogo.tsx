@@ -18,10 +18,11 @@ const LARGURA: Record<TamanhoDoDialogo, string> = {
 
 /**
  * `padrao`: título e descrição sobre a superfície. `destaque`: cabeçalho em
- * degradê azul-escuro com ícone, para janelas de produto (notas de versão,
- * catálogos), como no protótipo.
+ * degradê asfalto com ícone. `cartao`: o modal do protótipo do app, com ícone,
+ * título e conteúdo centralizados e o botão de fechar redondo no canto
+ * (resgate de cupom, leitor de QR Code, planos).
  */
-export type VarianteDoDialogo = "padrao" | "destaque";
+export type VarianteDoDialogo = "padrao" | "destaque" | "cartao";
 
 export type DialogoProps = {
   aberto: boolean;
@@ -33,8 +34,10 @@ export type DialogoProps = {
   rodape?: ReactNode;
   tamanho?: TamanhoDoDialogo;
   variante?: VarianteDoDialogo;
-  /** Ícone ao lado do título; só na variante `destaque`. */
+  /** Ícone ao lado do título (`destaque`) ou acima dele (`cartao`). */
   icone?: ReactNode;
+  /** Força o tema dentro da janela; o leitor de QR Code é escuro nos dois temas. */
+  tema?: "light" | "dark";
   /** Esconde o botão de fechar e ignora o clique fora: a pessoa precisa escolher uma ação. */
   semFechar?: boolean;
   /**
@@ -64,6 +67,7 @@ export function Dialogo({
   tamanho = "md",
   variante = "padrao",
   icone,
+  tema,
   semFechar = false,
   semRolagem = false,
   semVeu = false,
@@ -73,6 +77,7 @@ export function Dialogo({
   const dialogo = useRef<HTMLDialogElement>(null);
   const id = useId();
   const destaque = variante === "destaque";
+  const cartao = variante === "cartao";
 
   useEffect(() => {
     const elemento = dialogo.current;
@@ -89,6 +94,7 @@ export function Dialogo({
   return (
     <dialog
       ref={dialogo}
+      data-theme={tema}
       aria-labelledby={`${id}-titulo`}
       aria-describedby={descricao ? `${id}-descricao` : undefined}
       onCancel={(evento) => {
@@ -112,82 +118,129 @@ export function Dialogo({
         // O navegador dá `overflow: auto` ao dialog modal; sem rolagem, a caixa
         // suspensa pode sair do quadro, porque o dialog está na camada superior.
         semRolagem && "[&:modal]:overflow-visible",
-        presenca.saindo ? "animate-popover-out" : "animate-popover-in"
+        cartao && "rounded-[28px] border-border shadow-2xl",
+        presenca.saindo
+          ? "animate-popover-out"
+          : cartao
+            ? "animate-sheet-in"
+            : "animate-popover-in"
       )}
     >
-      <div className="flex max-h-[calc(100vh-4rem)] flex-col">
-        <header
-          className={cn(
-            "flex justify-between gap-4",
-            destaque
-              ? "items-center bg-linear-135 from-dialog-header-start to-dialog-header-end px-6 py-[18px] text-white dark:border-b dark:border-border"
-              : "items-start px-6 pt-5 pb-3"
-          )}
-        >
-          <div
-            className={cn(
-              "flex min-w-0",
-              destaque ? "items-center gap-3" : "flex-col gap-1"
-            )}
-          >
-            {destaque && icone && (
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-sidebar-neon/20 text-sidebar-neon [&_svg]:size-5">
-                {icone}
-              </span>
-            )}
-            <div className="flex min-w-0 flex-col">
-              <h2
-                id={`${id}-titulo`}
-                className={
-                  destaque
-                    ? "text-xl font-extrabold text-white"
-                    : "text-2xl font-bold"
-                }
-              >
-                {titulo}
-              </h2>
-              {descricao && (
-                <p
-                  id={`${id}-descricao`}
-                  className={
-                    destaque
-                      ? "mt-0.5 text-sm text-white/70"
-                      : "text-foreground-muted"
-                  }
-                >
-                  {descricao}
-                </p>
-              )}
-            </div>
-          </div>
+      {cartao ? (
+        <div className="relative flex max-h-[calc(100vh-4rem)] flex-col overflow-y-auto px-6 pt-7 pb-6 text-center">
           {!semFechar && (
             <BotaoDeIcone
               rotulo="Fechar"
               icone={<IconeFechar />}
-              variante="fantasma"
+              variante="suave"
               tamanho="xs"
               onClick={aoFechar}
-              className={
-                destaque
-                  ? "ml-4 size-9 rounded-[10px] border-white/15 bg-white/10 text-white transition-all hover:scale-105 hover:bg-white/25 hover:text-white [&_svg]:size-5"
-                  : undefined
-              }
+              className="absolute top-4 right-4 text-foreground-muted hover:text-foreground"
             />
           )}
-        </header>
-        {children && (
-          <div
-            className={cn("flex-1 px-6 pb-5", !semRolagem && "overflow-y-auto")}
+          {icone && (
+            <span
+              aria-hidden="true"
+              className="mx-auto mb-3 flex size-12 items-center justify-center rounded-2xl bg-primary-subtle text-brand [&_svg]:size-6"
+            >
+              {icone}
+            </span>
+          )}
+          <h2
+            id={`${id}-titulo`}
+            className="px-8 text-lg leading-tight font-extrabold text-balance"
           >
-            {children}
-          </div>
-        )}
-        {rodape && (
-          <footer className="flex items-center justify-end gap-2 rounded-b-overlay border-t border-border bg-surface-raised px-6 py-3.5">
-            {rodape}
-          </footer>
-        )}
-      </div>
+            {titulo}
+          </h2>
+          {descricao && (
+            <p
+              id={`${id}-descricao`}
+              className="mt-1 text-xs text-foreground-muted"
+            >
+              {descricao}
+            </p>
+          )}
+          {children && <div className="mt-4">{children}</div>}
+          {rodape && <div className="mt-5 flex flex-col gap-2">{rodape}</div>}
+        </div>
+      ) : (
+        <div className="flex max-h-[calc(100vh-4rem)] flex-col">
+          <header
+            className={cn(
+              "flex justify-between gap-4",
+              destaque
+                ? "items-center bg-linear-135 from-dialog-header-start to-dialog-header-end px-6 py-[18px] text-white dark:border-b dark:border-border"
+                : "items-start px-6 pt-5 pb-3"
+            )}
+          >
+            <div
+              className={cn(
+                "flex min-w-0",
+                destaque ? "items-center gap-3" : "flex-col gap-1"
+              )}
+            >
+              {destaque && icone && (
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-white/10 text-brand [&_svg]:size-5">
+                  {icone}
+                </span>
+              )}
+              <div className="flex min-w-0 flex-col">
+                <h2
+                  id={`${id}-titulo`}
+                  className={
+                    destaque
+                      ? "text-xl font-extrabold text-white"
+                      : "text-2xl font-bold"
+                  }
+                >
+                  {titulo}
+                </h2>
+                {descricao && (
+                  <p
+                    id={`${id}-descricao`}
+                    className={
+                      destaque
+                        ? "mt-0.5 text-sm text-white/70"
+                        : "text-foreground-muted"
+                    }
+                  >
+                    {descricao}
+                  </p>
+                )}
+              </div>
+            </div>
+            {!semFechar && (
+              <BotaoDeIcone
+                rotulo="Fechar"
+                icone={<IconeFechar />}
+                variante="fantasma"
+                tamanho="xs"
+                onClick={aoFechar}
+                className={
+                  destaque
+                    ? "ml-4 size-9 rounded-[10px] border-white/15 bg-white/10 text-white transition-all hover:scale-105 hover:bg-white/25 hover:text-white [&_svg]:size-5"
+                    : undefined
+                }
+              />
+            )}
+          </header>
+          {children && (
+            <div
+              className={cn(
+                "flex-1 px-6 pb-5",
+                !semRolagem && "overflow-y-auto"
+              )}
+            >
+              {children}
+            </div>
+          )}
+          {rodape && (
+            <footer className="flex items-center justify-end gap-2 rounded-b-overlay border-t border-border bg-surface-raised px-6 py-3.5">
+              {rodape}
+            </footer>
+          )}
+        </div>
+      )}
     </dialog>
   );
 }

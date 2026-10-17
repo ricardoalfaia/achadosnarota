@@ -4,22 +4,22 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "storybook dev --port 4460 --no-open",
+    "dev": "storybook dev --port 4560 --no-open",
     "build": "storybook build",
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
   "dependencies": {
-    "@meuproduto/ui": "workspace:*",
+    "@achados/ui": "workspace:*",
     "lucide-react": "1.52.0",
     "react": "catalog:",
     "react-dom": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@meuproduto/eslint-config": "workspace:*",
-    "@meuproduto/typescript-config": "workspace:*",
+    "@achados/eslint-config": "workspace:*",
+    "@achados/typescript-config": "workspace:*",
     "@storybook/addon-a11y": "10.6.1",
     "@storybook/addon-docs": "10.6.1",
     "@storybook/addon-vitest": "10.6.1",

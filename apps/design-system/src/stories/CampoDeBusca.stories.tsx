@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CampoDeBusca } from "@meuproduto/ui";
+import { CampoDeBusca } from "@achados/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, within } from "storybook/test";
 

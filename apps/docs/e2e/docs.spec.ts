@@ -25,17 +25,17 @@ test("a página inicial mostra a marca e as áreas do menu em construção", asy
   await page.goto("/pt-BR");
 
   await expect(
-    page.getByRole("img", { name: "Meuproduto" }).first()
+    page.getByRole("img", { name: "Achados na Rota" }).first()
   ).toBeVisible();
   await expect(
     page.getByRole("heading", {
-      name: "Seus documentos ganham vida.",
+      name: "Descubra lugares que valem a pena.",
       level: 1,
     })
   ).toBeVisible();
   const areas = page.getByRole("link", { name: /Em construção/ });
-  await expect(areas).toHaveCount(8);
-  await expect(areas.first()).toContainText("Documentos");
+  await expect(areas).toHaveCount(4);
+  await expect(areas.first()).toContainText("Explorar");
 });
 
 test("páginas abertas direto pelo endereço hidratam sem erro", async ({

@@ -30,7 +30,7 @@ export function Provedores({ idioma, i18n, children }: Props) {
             window.location.assign(trocarIdioma(caminho, idioma, novo));
         },
       }}
-      // `data-theme` troca os tokens do Meuproduto; `class`, os estilos do Fumadocs.
+      // `data-theme` troca os tokens do Achados na Rota; `class`, os estilos do Fumadocs.
       theme={{ attribute: ["class", "data-theme"] }}
     >
       {children}

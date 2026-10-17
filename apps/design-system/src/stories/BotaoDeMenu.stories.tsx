@@ -8,7 +8,7 @@ import {
   IconeMaisOpcoes,
   ItemDeMenu,
   SeparadorDeMenu,
-} from "@meuproduto/ui";
+} from "@achados/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 

@@ -93,7 +93,7 @@ export type BotaoDeIconeProps = Nativo &
     desabilitado?: boolean;
   };
 
-/** Botão quadrado só com ícone. Sem texto visível, o `rotulo` é obrigatório. */
+/** Botão redondo só com ícone. Sem texto visível, o `rotulo` é obrigatório. */
 export function BotaoDeIcone({
   rotulo,
   icone,

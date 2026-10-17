@@ -4,16 +4,16 @@
 **Data:** 2026-10-16  
 **Princípios relacionados:** P01, P09, P12  
 **Responsável pela proposta:** Ricardo Alfaia Barbosa  
-**Aceitação:** pendente; o app de documentação veio da base de origem e foi adaptado ao Meuproduto.
+**Aceitação:** pendente; o app de documentação veio da base de origem e foi adaptado ao Achados na Rota.
 
 ## Contexto
 
 O projeto tem dois públicos de documentação, com necessidades diferentes:
 
 - **Quem desenvolve** lê documentos de produto, princípios e ADRs, em Markdown na pasta `docs/`, referenciados por caminho no `AGENTS.md` e entre os próprios ADRs. Os componentes têm documentação no Storybook ([ADR-0008](0008-design-system.md)).
-- **Quem usa o sistema** (administradores e operadores dos escritórios, [01 — Produto](../produto/01-produto-e-escopo.md)) precisa de guias, com a identidade visual do Meuproduto, em português e inglês.
+- **Quem usa o sistema** (administradores e operadores dos escritórios, [01 — Produto](../produto/01-produto-e-escopo.md)) precisa de guias, com a identidade visual do Achados na Rota, em português e inglês.
 
-A base de origem publicava a pasta técnica como wiki do Azure DevOps. O Meuproduto fica no GitHub, que já mostra Markdown e diagramas Mermaid do próprio repositório.
+A base de origem publicava a pasta técnica como wiki do Azure DevOps. O Achados na Rota fica no GitHub, que já mostra Markdown e diagramas Mermaid do próprio repositório.
 
 ## Decisão proposta
 
@@ -21,7 +21,7 @@ A base de origem publicava a pasta técnica como wiki do Azure DevOps. O Meuprod
 
 Fica em Markdown na pasta `docs/` da raiz, revisada no mesmo PR do código, e é lida no próprio repositório (editor ou GitHub). Não há publicação separada nem cópia: o repositório é a fonte.
 
-- `docs/produto/`: documentos e ADRs de **produto** (`ADR-001` a `ADR-012`). São a fonte do que o Meuproduto deve ser.
+- `docs/produto/`: documentos e ADRs de **produto** (`ADR-001` a `ADR-012`). São a fonte do que o Achados na Rota deve ser.
 - `docs/arquitetura.md` e `docs/adr/`: princípios e ADRs de **frontend** (`0001` em diante).
 - `docs/origem-da-base.md`: de onde veio a base e o que mudou.
 
@@ -33,12 +33,12 @@ O app `apps/docs`, com Fumadocs sobre Next.js 16 e Tailwind 4, criado na base a 
 - **Idiomas:** `pt-BR` (padrão) e `en`, os mesmos do sistema ([ADR-0017](0017-idiomas-e-preferencias.md)). `pagina.mdx` é o português e `pagina.en.mdx`, a tradução. Página sem tradução aparece em português no site em inglês, o que permite traduzir aos poucos.
 - **Endereços:** o idioma é o começo do endereço, `/pt-BR/docs/...` e `/en/docs/...`. Endereço sem idioma é redirecionado ao idioma do navegador, ou ao português. Diferente do sistema, aqui o idioma faz parte do endereço, porque um link de documentação é compartilhado já no idioma de quem vai ler.
 - **Troca de idioma:** recarrega a página. Sem recarregar, o layout raiz é remontado no navegador e o provedor de tema do Fumadocs (`next-themes`) renderiza de novo o seu `<script>`, o que o React acusa como erro.
-- **Identidade visual:** as cores do Fumadocs são ligadas aos tokens semânticos de `@meuproduto/ui/styles/tokens.css`, e as fontes vêm de `@meuproduto/ui/styles/fonts.css`. O tema claro ou escuro usa o mesmo atributo `data-theme` do sistema. O logotipo é `public/logo-meuproduto.png`.
+- **Identidade visual:** as cores do Fumadocs são ligadas aos tokens semânticos de `@achados/ui/styles/tokens.css`, e as fontes vêm de `@achados/ui/styles/fonts.css`. O tema claro ou escuro usa o mesmo atributo `data-theme` do sistema. O logotipo é `public/logo-achados.png`.
 - **Escala de texto:** os tokens definem a escala densa das telas do sistema. O app de documentação a redefine para a escala de leitura (16px) em seu `global.css`. É a única divergência dos tokens, restrita a este app.
 - **Busca:** índice local do próprio Fumadocs (Orama), servido por `/api/search`, sem serviço externo.
-- **Portas:** 4430 para `dev` e `start`, 4431 para o E2E.
+- **Portas:** 4530 para `dev` e `start`, 4531 para o E2E.
 
-O app depende de `@meuproduto/ui` apenas pelos estilos exportados. Não importa código de `apps/meuproduto-web`.
+O app depende de `@achados/ui` apenas pelos estilos exportados. Não importa código de `apps/achados-web`.
 
 ## Alternativas consideradas
 
@@ -46,7 +46,7 @@ O app depende de `@meuproduto/ui` apenas pelos estilos exportados. Não importa 
 - **Nextra:** também sobre Next. O Fumadocs foi preferido pela integração direta com Tailwind 4 e pela busca local embutida.
 - **Um site único para as duas documentações:** mistura públicos e obrigaria a mover os ADRs, quebrando os links atuais.
 - **Wiki do GitHub para a documentação técnica:** fica fora do PR do código e diverge com facilidade.
-- **Rotas de documentação dentro de `apps/meuproduto-web`:** acoplaria o deploy da documentação ao do sistema e traria as dependências de MDX para o app principal.
+- **Rotas de documentação dentro de `apps/achados-web`:** acoplaria o deploy da documentação ao do sistema e traria as dependências de MDX para o app principal.
 
 ## Consequências
 

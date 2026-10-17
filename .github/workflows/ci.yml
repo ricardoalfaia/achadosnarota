@@ -23,12 +23,12 @@ jobs:
       postgres:
         image: postgres:18-alpine
         env:
-          POSTGRES_USER: meuproduto
-          POSTGRES_PASSWORD: meuproduto
-          POSTGRES_DB: meuproduto
-        ports: ["4450:5432"]
+          POSTGRES_USER: achados
+          POSTGRES_PASSWORD: achados
+          POSTGRES_DB: achados
+        ports: ["4550:5432"]
         options: >-
-          --health-cmd "pg_isready -U meuproduto -d meuproduto"
+          --health-cmd "pg_isready -U achados -d achados"
           --health-interval 5s --health-timeout 3s --health-retries 12
     steps:
       - uses: actions/checkout@v4
@@ -46,16 +46,16 @@ jobs:
       # Service container não roda o init do docker/: o papel da app é criado aqui.
       - name: Banco (papel da app e migrations)
         run: |
-          pnpm --filter @meuproduto/db db:setup-app-role
+          pnpm --filter @achados/db db:setup-app-role
           pnpm db:migrate
 
       # Isolamento entre tenants (RLS) contra o banco real; aqui não pode pular.
       - name: Testes de isolamento
-        run: pnpm --filter @meuproduto/db test:integracao
+        run: pnpm --filter @achados/db test:integracao
 
       # As histórias do design system e o E2E rodam em Chromium.
       - name: Navegador do Playwright
-        run: pnpm --filter meuproduto-web exec playwright install --with-deps chromium
+        run: pnpm --filter achados-web exec playwright install --with-deps chromium
 
       - name: Formatação, arquitetura, ambiente, lint, tipos, testes e build
         run: pnpm check

@@ -8,14 +8,14 @@
 
 ## Contexto
 
-O [ADR-0011](0011-estrutura-monorepo.md) definiu apps/packages, pnpm e Turborepo. O [ADR-0012](0012-formatacao-e-hooks.md) cobriu formatação e hooks, e o [ADR-0013](0013-ambientes-e-configuracao.md) cobriu ambientes. Na base de origem, estas decisões de ferramental apareceram durante a configuração inicial e foram registradas aqui; o Meuproduto as herda:
+O [ADR-0011](0011-estrutura-monorepo.md) definiu apps/packages, pnpm e Turborepo. O [ADR-0012](0012-formatacao-e-hooks.md) cobriu formatação e hooks, e o [ADR-0013](0013-ambientes-e-configuracao.md) cobriu ambientes. Na base de origem, estas decisões de ferramental apareceram durante a configuração inicial e foram registradas aqui; o Achados na Rota as herda:
 
 - As mesmas versões de `react`, `typescript`, `eslint`, `vitest` e outras estavam repetidas em até cinco `package.json`; `@types/node` divergia entre `^20` e `^24`.
 - `engines` exigia Node 24, mas nada informava a versão a gerenciadores de Node e à CI.
 - `pnpm test:e2e` chamava o Playwright sem garantir um build; o teste sobe o app com `next start`.
 - O app não tinha testes unitários, apenas E2E.
 - O preset de TypeScript tinha só `strict`; o [ADR-0010](0010-governanca.md) deixou opções adicionais para avaliação.
-- Sem pipeline, toda verificação dependeria de alguém rodar `pnpm check` na própria máquina. A base usava Azure Pipelines; o Meuproduto fica no GitHub.
+- Sem pipeline, toda verificação dependeria de alguém rodar `pnpm check` na própria máquina. A base usava Azure Pipelines; o Achados na Rota fica no GitHub.
 
 ## Decisão proposta
 
@@ -37,7 +37,7 @@ Dependência usada por mais de um projeto tem a versão declarada uma vez no `ca
 - O app tem Vitest para as regras de `src/shared` e das capacidades em `src/features`.
 - `test:e2e` é uma task do Turborepo com `dependsOn: ["build"]`. `pnpm test:e2e` na raiz constrói antes de testar.
 - A vitrine do design system roda suas histórias como testes em Chromium, pelo modo navegador do Vitest ([ADR-0008](0008-design-system.md)). Por isso `pnpm test` e o `pre-push` exigem o Chromium do Playwright instalado.
-- Portas locais ficam na faixa 4400 a 4499, para não colidir com outros sistemas da máquina (que usam 3300 a 3399). Cada aplicação tem uma dezena; a unidade 1 é o servidor do E2E. A tabela está no [README](../../README.md).
+- Portas locais ficam na faixa 4500 a 4599, para não colidir com outros sistemas da máquina (que usam 3300 a 3399). Cada aplicação tem uma dezena; a unidade 1 é o servidor do E2E. A tabela está no [README](../../README.md).
 - No Playwright, quando `CI` está definido, há duas novas tentativas e relatório HTML; localmente, nenhuma nova tentativa.
 
 Não há modo `projects` do Vitest na raiz: ele roda tudo em um processo e perde o cache por projeto.
@@ -74,15 +74,15 @@ Custos e limites:
 
 ## Verificação de aderência
 
-| Regra                                    | Evidência esperada                                                      | Estado                     |
-| ---------------------------------------- | ----------------------------------------------------------------------- | -------------------------- |
-| Versão comum declarada uma vez           | `catalog`; `pnpm install --frozen-lockfile` sem alteração               | Pendente neste repositório |
-| Testes por projeto passam                | `pnpm test` em `core`, `ui`, `data-boundary`, `meuproduto-web` e `docs` | Pendente neste repositório |
-| E2E roda contra build atual              | `pnpm test:e2e`: build seguido dos testes Chromium                      | Pendente neste repositório |
-| Preset rígido sem erros                  | `turbo run typecheck` com `noUncheckedIndexedAccess`                    | Pendente neste repositório |
-| Sequência única de verificação           | `pnpm check`: tasks do Turborepo e os três checks da raiz               | Pendente neste repositório |
-| Pipeline executa a sequência             | Execução real do workflow e proteção da branch `main`                   | Escrito; nunca executado   |
-| Nenhum projeto repete versão do catálogo | Regra no `check:architecture`                                           | Planejado                  |
+| Regra                                    | Evidência esperada                                                   | Estado                     |
+| ---------------------------------------- | -------------------------------------------------------------------- | -------------------------- |
+| Versão comum declarada uma vez           | `catalog`; `pnpm install --frozen-lockfile` sem alteração            | Pendente neste repositório |
+| Testes por projeto passam                | `pnpm test` em `core`, `ui`, `data-boundary`, `achados-web` e `docs` | Pendente neste repositório |
+| E2E roda contra build atual              | `pnpm test:e2e`: build seguido dos testes Chromium                   | Pendente neste repositório |
+| Preset rígido sem erros                  | `turbo run typecheck` com `noUncheckedIndexedAccess`                 | Pendente neste repositório |
+| Sequência única de verificação           | `pnpm check`: tasks do Turborepo e os três checks da raiz            | Pendente neste repositório |
+| Pipeline executa a sequência             | Execução real do workflow e proteção da branch `main`                | Escrito; nunca executado   |
+| Nenhum projeto repete versão do catálogo | Regra no `check:architecture`                                        | Planejado                  |
 
 ## Pendências e exceções
 

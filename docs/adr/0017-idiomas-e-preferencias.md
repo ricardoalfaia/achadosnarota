@@ -8,7 +8,7 @@
 
 ## Contexto
 
-O Meuproduto atende pequenos escritórios no Brasil; o português é o idioma principal. A base de origem já trazia o sistema em dois idiomas, e o responsável pediu manter essa capacidade. As escolhas de quem usa (tema, idioma, menu recolhido) precisam valer em todas as telas e continuar valendo ao voltar.
+O Achados na Rota atende pequenos escritórios no Brasil; o português é o idioma principal. A base de origem já trazia o sistema em dois idiomas, e o responsável pediu manter essa capacidade. As escolhas de quem usa (tema, idioma, menu recolhido) precisam valer em todas as telas e continuar valendo ao voltar.
 
 O tema é guardado em cookie e aplicado no servidor ([ADR-0008](0008-design-system.md)). A sessão real vem do [ADR-0020](0020-autenticacao-e-sessao.md); ainda não há lugar no servidor para gravar preferências por pessoa.
 
@@ -23,7 +23,7 @@ A biblioteca é o `next-intl` 4.14.9, sem prefixo de idioma no endereço. O idio
 - `mensagens.test.ts` garante que os idiomas têm as mesmas chaves, as mesmas variáveis em cada texto e nenhum texto vazio.
 - O fuso horário é fixo em `America/Sao_Paulo`. Escritórios em outros fusos são uma decisão aberta: datas de documentos e assinaturas são registros com valor de prova, e o fuso exibido precisa ser explícito ([06 — Assinaturas](../produto/06-assinaturas-e-creditos.md)).
 
-Os componentes de `@meuproduto/ui` têm textos em português. Para outro idioma, o componente recebe os textos por props, com o português como padrão; o `SeletorDeTema` (`rotulos`) é o primeiro. `@meuproduto/ui` não depende do `next-intl`.
+Os componentes de `@achados/ui` têm textos em português. Para outro idioma, o componente recebe os textos por props, com o português como padrão; o `SeletorDeTema` (`rotulos`) é o primeiro. `@achados/ui` não depende do `next-intl`.
 
 O conteúdo dos documentos gerados (modelos, procurações, contratos) não passa por este mecanismo: é dado do escritório, no idioma em que o modelo foi escrito.
 
@@ -31,7 +31,7 @@ O conteúdo dos documentos gerados (modelos, procurações, contratos) não pass
 
 `src/shared/preferencias` reúne tema, idioma e menu recolhido.
 
-- **Onde ficam:** um cookie por preferência (`meuproduto-tema`, `meuproduto-idioma`, `meuproduto-menu`), válido por um ano. São escolhas visuais, sem dado sensível, e por isso legíveis pelo navegador.
+- **Onde ficam:** um cookie por preferência (`achados-tema`, `achados-idioma`, `achados-menu`), válido por um ano. São escolhas visuais, sem dado sensível, e por isso legíveis pelo navegador.
 - **Leitura no servidor:** o layout raiz lê os cookies e o HTML já sai no tema e no idioma escolhidos, sem piscar no padrão.
 - **Mudança:** `usePreferencias().mudar(chave, valor)` grava o cookie e vale na hora. Trocar de idioma pede a página de novo ao servidor, dentro de uma transição (`useTransition`), para a tela atual continuar utilizável enquanto a nova chega.
 - **Regras puras** em `preferencias.ts`, com teste: valor ausente ou desconhecido no cookie cai no padrão em vez de chegar à tela.
@@ -47,15 +47,15 @@ Preferência em cookie vale por navegador, não por pessoa. Quando houver uma AP
 - **Detectar o idioma pelo navegador (`Accept-Language`):** evita a primeira escolha, mas a pessoa passa a depender da configuração da máquina. Pode ser acrescentado como padrão inicial quando não houver cookie.
 - **Gravar preferências com Server Action:** permitiria cookie `HttpOnly`, mas o tema precisa ser aplicado antes de qualquer resposta do servidor, e não há dado a proteger.
 - **Guardar em `localStorage`:** o servidor não lê, e a primeira pintura viria no padrão.
-- **`@meuproduto/ui` com `next-intl`:** traduziria os componentes direto, mas prenderia a biblioteca de UI a um framework e a uma biblioteca de idiomas, contra o [ADR-0011](0011-estrutura-monorepo.md).
+- **`@achados/ui` com `next-intl`:** traduziria os componentes direto, mas prenderia a biblioteca de UI a um framework e a uma biblioteca de idiomas, contra o [ADR-0011](0011-estrutura-monorepo.md).
 
 ## Consequências
 
-Toda tela nova é traduzível e respeita as preferências. O custo é manter os arquivos de idioma em paridade, o que o teste cobra, e passar textos por props aos componentes de `@meuproduto/ui` usados em telas traduzidas.
+Toda tela nova é traduzível e respeita as preferências. O custo é manter os arquivos de idioma em paridade, o que o teste cobra, e passar textos por props aos componentes de `@achados/ui` usados em telas traduzidas.
 
 Limites desta versão:
 
-- Os componentes de `@meuproduto/ui` além do `SeletorDeTema` continuam só em português.
+- Os componentes de `@achados/ui` além do `SeletorDeTema` continuam só em português.
 - As traduções para inglês foram feitas sem glossário e precisam de revisão.
 - As rotas seguem dinâmicas, como registrado no ADR-0008, porque o layout raiz lê cookies.
 - O `next-intl` traz dependências com script de instalação, marcadas para não executar em `pnpm-workspace.yaml`.
@@ -73,7 +73,7 @@ Limites desta versão:
 
 - API de preferências por pessoa, depois da sessão real.
 - Decisão sobre fuso horário por escritório.
-- Textos de `@meuproduto/ui` por props nos demais componentes, à medida que entrarem em telas traduzidas.
+- Textos de `@achados/ui` por props nos demais componentes, à medida que entrarem em telas traduzidas.
 - Revisão das traduções com quem conhece os termos em inglês.
 
 Nenhuma exceção registrada.
@@ -84,3 +84,9 @@ Nenhuma exceção registrada.
 - [ADR-0013](0013-ambientes-e-configuracao.md) — configuração por ambiente
 - [ADR-0016](0016-recursos-do-react-19.md) — `useTransition` e demais recursos do React
 - [next-intl: uso sem rotas por idioma](https://next-intl.dev/docs/getting-started/app-router/without-i18n-routing)
+
+## Registro de aplicação — 2026-10-17
+
+- Só português (`IDIOMAS = ["pt-BR"]`); o mecanismo do next-intl continua e um idioma novo entra com o arquivo em `messages/`.
+- As telas de acesso usam as mensagens; as telas novas do app escrevem o texto em português direto no componente. Se um segundo idioma for decidido, esses textos passam para `messages/` antes.
+- Tema padrão: o do aparelho (`auto`), com escolha no perfil; o escuro foi aprovado ([ADR-0022](0022-identidade-visual-achados.md)). Preferência de menu recolhido saiu com o menu lateral.

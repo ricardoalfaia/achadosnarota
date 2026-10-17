@@ -1,6 +1,0 @@
-@import "tailwindcss";
-@import "@meuproduto/ui/styles/tokens.css";
-@import "@meuproduto/ui/styles/fonts.css";
-
-@source "../../../../packages/ui/src";
-@source "../../../../packages/data-boundary/src";

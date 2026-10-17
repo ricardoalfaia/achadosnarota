@@ -1,4 +1,4 @@
-import { Etapas } from "@meuproduto/ui";
+import { Etapas } from "@achados/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, within } from "storybook/test";
 

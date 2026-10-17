@@ -1,4 +1,4 @@
-import { SeletorDeData } from "@meuproduto/ui";
+import { SeletorDeData } from "@achados/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const meta = {

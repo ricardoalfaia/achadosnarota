@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Checkbox } from "@meuproduto/ui";
+import { Checkbox } from "@achados/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, within } from "storybook/test";
 

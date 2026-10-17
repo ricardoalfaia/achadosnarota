@@ -1,5 +1,5 @@
 {
-  "name": "@meuproduto/data-boundary",
+  "name": "@achados/data-boundary",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -16,8 +16,8 @@
     "react": "^19.2.8"
   },
   "devDependencies": {
-    "@meuproduto/eslint-config": "workspace:*",
-    "@meuproduto/typescript-config": "workspace:*",
+    "@achados/eslint-config": "workspace:*",
+    "@achados/typescript-config": "workspace:*",
     "@tanstack/react-query": "catalog:",
     "@testing-library/dom": "10.4.2",
     "@testing-library/react": "16.3.3",

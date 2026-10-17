@@ -1,11 +1,11 @@
 @import "tailwindcss";
-@import "@meuproduto/ui/styles/tokens.css";
-@import "@meuproduto/ui/styles/fonts.css";
+@import "@achados/ui/styles/tokens.css";
+@import "@achados/ui/styles/fonts.css";
 @import "fumadocs-ui/css/neutral.css";
 @import "fumadocs-ui/css/preset.css";
 
 /*
- * Os tokens do Meuproduto usam a escala densa das telas do sistema (corpo em 13px).
+ * Os tokens do Achados na Rota usam a escala densa das telas do sistema (corpo em 13px).
  * Documentação é texto corrido: aqui a escala volta ao padrão de leitura (16px).
  */
 @theme {
@@ -30,38 +30,38 @@
 }
 
 /*
- * As cores do Fumadocs passam a vir dos tokens semânticos do Meuproduto, que já
+ * As cores do Fumadocs passam a vir dos tokens semânticos do Achados na Rota, que já
  * têm um valor para cada tema. `.dark` entra no seletor para vencer os valores
  * do tema neutro da biblioteca.
  */
 :root,
 .dark,
 .dark #nd-sidebar {
-  --color-fd-background: var(--pl-background);
-  --color-fd-foreground: var(--pl-foreground);
-  --color-fd-muted: var(--pl-surface-raised);
-  --color-fd-muted-foreground: var(--pl-foreground-muted);
-  --color-fd-popover: var(--pl-surface);
-  --color-fd-popover-foreground: var(--pl-foreground);
-  --color-fd-card: var(--pl-surface);
-  --color-fd-card-foreground: var(--pl-foreground);
-  --color-fd-border: var(--pl-border);
-  --color-fd-primary: var(--pl-primary);
-  --color-fd-primary-foreground: var(--pl-foreground-inverse);
-  --color-fd-secondary: var(--pl-surface-raised);
-  --color-fd-secondary-foreground: var(--pl-foreground);
-  --color-fd-accent: var(--pl-surface-active);
-  --color-fd-accent-foreground: var(--pl-foreground);
-  --color-fd-ring: var(--pl-ring);
-  --color-fd-overlay: var(--pl-overlay);
-  --color-fd-info: var(--pl-info);
-  --color-fd-success: var(--pl-success);
-  --color-fd-warning: var(--pl-warning);
-  --color-fd-error: var(--pl-danger);
+  --color-fd-background: var(--ar-background);
+  --color-fd-foreground: var(--ar-foreground);
+  --color-fd-muted: var(--ar-surface-raised);
+  --color-fd-muted-foreground: var(--ar-foreground-muted);
+  --color-fd-popover: var(--ar-surface);
+  --color-fd-popover-foreground: var(--ar-foreground);
+  --color-fd-card: var(--ar-surface);
+  --color-fd-card-foreground: var(--ar-foreground);
+  --color-fd-border: var(--ar-border);
+  --color-fd-primary: var(--ar-primary);
+  --color-fd-primary-foreground: var(--ar-foreground-inverse);
+  --color-fd-secondary: var(--ar-surface-raised);
+  --color-fd-secondary-foreground: var(--ar-foreground);
+  --color-fd-accent: var(--ar-surface-active);
+  --color-fd-accent-foreground: var(--ar-foreground);
+  --color-fd-ring: var(--ar-ring);
+  --color-fd-overlay: var(--ar-overlay);
+  --color-fd-info: var(--ar-info);
+  --color-fd-success: var(--ar-success);
+  --color-fd-warning: var(--ar-warning);
+  --color-fd-error: var(--ar-danger);
 }
 
 /*
- * Faixa de destaque da página inicial, como o destaque do painel do Meuproduto:
+ * Faixa de destaque da página inicial, como o destaque do painel do Achados na Rota:
  * fundo claro da marca com dois focos suaves do degradê (verde água e roxo).
  * Segue o tema; as cores vêm dos tokens.
  */
@@ -69,15 +69,15 @@
   background:
     radial-gradient(
       55% 75% at 88% -10%,
-      color-mix(in srgb, var(--pl-brand-gradient-start) 22%, transparent),
+      color-mix(in srgb, var(--ar-brand-gradient-start) 22%, transparent),
       transparent 62%
     ),
     radial-gradient(
       40% 60% at 0% 110%,
-      color-mix(in srgb, var(--pl-brand-gradient-end) 14%, transparent),
+      color-mix(in srgb, var(--ar-brand-gradient-end) 14%, transparent),
       transparent 60%
     ),
-    var(--pl-background);
+    var(--ar-background);
 }
 
 html {

@@ -1,4 +1,4 @@
-import { CartaoDeModelo } from "@meuproduto/ui";
+import { CartaoDeModelo } from "@achados/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { FileText, Lock } from "lucide-react";
 

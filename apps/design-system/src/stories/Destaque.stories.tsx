@@ -1,34 +1,34 @@
-import { Botao, Destaque } from "@meuproduto/ui";
+import { Botao, Destaque } from "@achados/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { PenLine, Plus } from "lucide-react";
+import { Compass, Crown } from "lucide-react";
 import { expect, within } from "storybook/test";
 
-import { IlustracaoDeDocumento } from "./ilustracao";
+import { IlustracaoDaRota } from "./ilustracao";
 
 const meta = {
   title: "Painel/Destaque",
   component: Destaque,
   args: {
-    saudacao: "Olá, Marina 👋",
+    saudacao: "Olá, Ana 👋",
     titulo: (
       <>
-        Seus documentos{" "}
-        <span className="text-brand-gradient">ganham vida.</span>
+        Descubra lugares{" "}
+        <span className="text-brand-gradient">que valem a pena.</span>
       </>
     ),
     descricao:
-      "Crie, gerencie e envie para assinatura de forma simples, rápida e segura.",
+      "Comida boa, experiências reais e benefícios para quem está na rota.",
     acoes: (
       <>
-        <Botao tamanho="md" icone={<Plus />}>
-          Gerar documento
+        <Botao tamanho="md" icone={<Compass />}>
+          Explorar lugares
         </Botao>
-        <Botao tamanho="md" variante="contorno" icone={<PenLine />}>
-          Enviar para assinatura
+        <Botao tamanho="md" variante="contorno" icone={<Crown />}>
+          Conhecer o passaporte
         </Botao>
       </>
     ),
-    ilustracao: <IlustracaoDeDocumento />,
+    ilustracao: <IlustracaoDaRota />,
   },
   argTypes: {
     titulo: { control: false },
@@ -45,10 +45,12 @@ export const Padrao: Story = {
   play: async ({ canvasElement }) => {
     const tela = within(canvasElement);
     await expect(
-      tela.getByRole("region", { name: "Seus documentos ganham vida." })
+      tela.getByRole("region", {
+        name: "Descubra lugares que valem a pena.",
+      })
     ).toBeInTheDocument();
     // O botão principal leva o degradê de ação.
-    const principal = tela.getByRole("button", { name: "Gerar documento" });
+    const principal = tela.getByRole("button", { name: "Explorar lugares" });
     await expect(getComputedStyle(principal).backgroundImage).toContain(
       "linear-gradient"
     );
@@ -67,6 +69,6 @@ export const SoTitulo: Story = {
     descricao: undefined,
     acoes: undefined,
     ilustracao: undefined,
-    titulo: "Modelos",
+    titulo: "Favoritos",
   },
 };

@@ -6,7 +6,7 @@ export const DURACAO_DE_SAIDA = 140;
 /**
  * Mantém um elemento montado enquanto a animação de saída roda. `montado` decide
  * se renderiza; `saindo` troca a animação de entrada pela de saída.
- * Sai por `@meuproduto/ui/hooks` para menus da casca das aplicações.
+ * Sai por `@achados/ui/hooks` para menus da casca das aplicações.
  */
 export function usePresenca(aberto: boolean): {
   montado: boolean;

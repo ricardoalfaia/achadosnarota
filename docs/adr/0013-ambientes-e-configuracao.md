@@ -4,13 +4,13 @@
 **Data:** 2026-10-16  
 **Princípios relacionados:** P01, P05, P07, P12  
 **Responsável pela proposta:** Ricardo Alfaia Barbosa  
-**Aceitação:** pendente; a estrutura de ambientes veio da base de origem; a infraestrutura local foi criada para o Meuproduto.
+**Aceitação:** pendente; a estrutura de ambientes veio da base de origem; a infraestrutura local foi criada para o Achados na Rota.
 
 ## Contexto
 
-O `meuproduto-web` precisa rodar em três ambientes: máquina local, homologação e produção. Ambientes e chaves separados são controle obrigatório do produto ([02 — Arquitetura](../produto/02-arquitetura.md), "Decisões de infraestrutura"; [04 — Segurança](../produto/04-seguranca-confidencialidade.md)).
+O `achados-web` precisa rodar em três ambientes: máquina local, homologação e produção. Ambientes e chaves separados são controle obrigatório do produto ([02 — Arquitetura](../produto/02-arquitetura.md), "Decisões de infraestrutura"; [04 — Segurança](../produto/04-seguranca-confidencialidade.md)).
 
-A base de origem já trazia os arquivos `.env.production`, `.env.homolog`, `.env.local` e `.env.example`, uma configuração do app escolhida pelo ambiente e um provider para entregá-la aos componentes. O backend do Meuproduto ainda não existe; o desenvolvimento do M1 ([08 — Plano de entrega](../produto/08-milestones-e-aceite.md)) vai precisar de banco e armazenamento de objetos locais.
+A base de origem já trazia os arquivos `.env.production`, `.env.homolog`, `.env.local` e `.env.example`, uma configuração do app escolhida pelo ambiente e um provider para entregá-la aos componentes. O backend do Achados na Rota ainda não existe; o desenvolvimento do M1 ([08 — Plano de entrega](../produto/08-milestones-e-aceite.md)) vai precisar de banco e armazenamento de objetos locais.
 
 Restrições:
 
@@ -37,20 +37,20 @@ Arquivo versionado não contém segredo. Segredos ficam em `.env.local` ou nos s
 
 O ambiente lógico é `NEXT_PUBLIC_APP_ENV` (`local`, `homolog` ou `production`), independente de `NODE_ENV`. Homologação é um build de produção do Next com `.env.homolog` carregado antes por [scripts/next-com-ambiente.mjs](../../scripts/next-com-ambiente.mjs).
 
-Variáveis do `meuproduto-web` com o Better Auth ([ADR-0020](0020-autenticacao-e-sessao.md)), validadas em [ambiente.ts](../../apps/meuproduto-web/src/shared/config/ambiente.ts):
+Variáveis do `achados-web` com o Better Auth ([ADR-0020](0020-autenticacao-e-sessao.md)), validadas em [ambiente.ts](../../apps/achados-web/src/shared/config/ambiente.ts):
 
 | Variável               | Onde é lida | Observação                                                                                                                                                     |
 | ---------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `NEXT_PUBLIC_APP_ENV`  | Navegador   | Ambiente lógico; entra no bundle.                                                                                                                              |
-| `APP_URL`              | Servidor    | URL pública do app (`http://localhost:4400` no local). Base do Better Auth, única origem confiável e base dos links de e-mail. `https` liga os cookies Secure. |
-| `DATABASE_URL`         | Servidor    | Conexão como `meuproduto_app`, papel que não é dono das tabelas e por isso fica sujeito ao RLS. Vazia nos arquivos versionados de homologação e produção.      |
+| `APP_URL`              | Servidor    | URL pública do app (`http://localhost:4500` no local). Base do Better Auth, única origem confiável e base dos links de e-mail. `https` liga os cookies Secure. |
+| `DATABASE_URL`         | Servidor    | Conexão como `achados_app`, papel que não é dono das tabelas e por isso fica sujeito ao RLS. Vazia nos arquivos versionados de homologação e produção.         |
 | `BETTER_AUTH_SECRET`   | Servidor    | Segredo do Better Auth, mínimo de 32 caracteres; vazio nos arquivos versionados.                                                                               |
 | `SIGNUP_ENABLED`       | Servidor    | `true` abre o cadastro público; vazio ou `false` (padrão) mantém fechado.                                                                                      |
 | `EMAIL_FROM`           | Servidor    | Remetente dos e-mails transacionais.                                                                                                                           |
 | `RESEND_API_KEY`       | Servidor    | Chave do Resend; vazia nos versionados. Sem ela, o e-mail sai no console só no ambiente local; fora dele, o envio falha com erro claro.                        |
 | `EMAIL_CAIXA_DE_TESTE` | Servidor    | Só E2E: arquivo onde os e-mails são gravados. Ignorada se `APP_URL` não for um endereço local.                                                                 |
 
-`DATABASE_URL_ADMIN` (dono das tabelas) é das ferramentas: migrações, seed e bootstrap, carregada por [scripts/load-env.mjs](../../scripts/load-env.mjs). O app recusa subir se a receber com valor. `SESSION_SECRET` (cookie JWE próprio da base) e `MEUPRODUTO_API_URL` (API de identidade externa) saíram. SMTP ficou como pendência, sem variável.
+`DATABASE_URL_ADMIN` (dono das tabelas) é das ferramentas: migrações, seed e bootstrap, carregada por [scripts/load-env.mjs](../../scripts/load-env.mjs). O app recusa subir se a receber com valor. `SESSION_SECRET` (cookie JWE próprio da base) e `ACHADOS_API_URL` (API de identidade externa) saíram. SMTP ficou como pendência, sem variável.
 
 As variáveis do servidor são lidas na primeira chamada de `ambienteServidor()`, e `src/instrumentation.ts` a faz na subida. Não são lidas no import: o `next build` importa os módulos das rotas, e o build da CI não tem segredos.
 
@@ -58,7 +58,7 @@ Uma variável nova entra no `.env.example`, nos dois arquivos de ambiente e no s
 
 ### Leitura validada
 
-[ambiente.ts](../../apps/meuproduto-web/src/shared/config/ambiente.ts) valida com Zod e devolve `Result` do core, com `AppError` de validação que nomeia as variáveis inválidas. São funções puras, testadas sem `process.env`.
+[ambiente.ts](../../apps/achados-web/src/shared/config/ambiente.ts) valida com Zod e devolve `Result` do core, com `AppError` de validação que nomeia as variáveis inválidas. São funções puras, testadas sem `process.env`.
 
 Dois adaptadores convertem o `Result` em exceção com `unwrapOrThrow`, porque configuração inválida deve interromper build e boot e não tem recuperação para o usuário ([ADR-0004](0004-result-error.md)):
 
@@ -69,7 +69,7 @@ Nenhum outro módulo lê `process.env` diretamente. A mensagem de erro nomeia a 
 
 ### Configuração do app por ambiente
 
-[app.config.ts](../../apps/meuproduto-web/src/shared/config/app.config.ts) define o tipo `ConfiguracaoDoApp`, os valores comuns e a função `configuracaoPara(ambiente)`. Cada ambiente tem um arquivo em `shared/config/ambientes/` (`local.ts`, `homolog.ts`, `production.ts`).
+[app.config.ts](../../apps/achados-web/src/shared/config/app.config.ts) define o tipo `ConfiguracaoDoApp`, os valores comuns e a função `configuracaoPara(ambiente)`. Cada ambiente tem um arquivo em `shared/config/ambientes/` (`local.ts`, `homolog.ts`, `production.ts`).
 
 Regra de divisão: valor que muda por implantação ou é segredo vai em variável de ambiente; valor estruturado, público e conhecido no código (rótulos, limites, recursos ligados por ambiente) vai em `app.config`. `app.config` não contém segredo nem endereço interno, porque chega ao navegador.
 
@@ -84,22 +84,22 @@ O provider carrega configuração estática do app. Preferências de um usuário
 
 [docker-compose.yml](../../docker-compose.yml), na raiz, sobe os serviços que o backend vai usar. O padrão foi reaproveitado do projeto scribevox do responsável.
 
-| Serviço               | Imagem / papel                                  | Porta no host | Acesso de desenvolvimento                                      |
-| --------------------- | ----------------------------------------------- | ------------- | -------------------------------------------------------------- |
-| `meuproduto-postgres` | `postgres:18-alpine`                            | 4450          | `postgresql://meuproduto:meuproduto@127.0.0.1:4450/meuproduto` |
-| `meuproduto-storage`  | `chrislusf/seaweedfs:4.48`, S3 compatível       | 4451 (API S3) | chave `meuproduto`, segredo `meuproduto-dev`                   |
-| `storage-bucket`      | Container de inicialização: cria o bucket e sai | —             | bucket privado `meuproduto-documentos`                         |
+| Serviço            | Imagem / papel                                  | Porta no host | Acesso de desenvolvimento                             |
+| ------------------ | ----------------------------------------------- | ------------- | ----------------------------------------------------- |
+| `achados-postgres` | `postgres:18-alpine`                            | 4550          | `postgresql://achados:achados@127.0.0.1:4550/achados` |
+| `achados-storage`  | `chrislusf/seaweedfs:4.48`, S3 compatível       | 4551 (API S3) | chave `achados`, segredo `achados-dev`                |
+| `storage-bucket`   | Container de inicialização: cria o bucket e sai | —             | bucket privado `achados-documentos`                   |
 
 - **Comandos:** `pnpm infra:up` sobe, `pnpm infra:down` para (os volumes continuam) e `pnpm infra:reset` apaga os volumes e recria do zero.
-- **Isolamento:** containers e volumes (`meuproduto-pgdata`, `meuproduto-storage`) são exclusivos do Meuproduto. Nenhum banco é compartilhado com outros projetos da máquina ([04 — Segurança](../produto/04-seguranca-confidencialidade.md): segregação e mínimo privilégio).
-- **Bucket privado:** o storage só tem a identidade `meuproduto` (`docker/seaweedfs/s3.json`), sem identidade anônima; nada é servido sem URL assinada, como pede o [ADR-005 de produto](../produto/adr/ADR-005.md). Verificado em 17/10/2026: acesso anônimo recebe 403 ao listar e ao gravar; o autenticado lista com 200.
-- **Banco próprio do E2E:** o Playwright cria e usa `meuproduto_e2e` no mesmo Postgres (`apps/meuproduto-web/e2e/apoio/banco.ts`); o banco `meuproduto` de desenvolvimento nunca é tocado pelo E2E. Antes, a rodada deixava o owner do seed com uma chave de autenticador que só o teste conhecia. Verificado em 17/10/2026: depois de 39 E2E, o admin do banco de dev seguiu sem 2FA e o do `meuproduto_e2e` ficou com o do teste.
+- **Isolamento:** containers e volumes (`achados-pgdata`, `achados-storage`) são exclusivos do Achados na Rota. Nenhum banco é compartilhado com outros projetos da máquina ([04 — Segurança](../produto/04-seguranca-confidencialidade.md): segregação e mínimo privilégio).
+- **Bucket privado:** o storage só tem a identidade `achados` (`docker/seaweedfs/s3.json`), sem identidade anônima; nada é servido sem URL assinada, como pede o [ADR-005 de produto](../produto/adr/ADR-005.md). Verificado em 17/10/2026: acesso anônimo recebe 403 ao listar e ao gravar; o autenticado lista com 200.
+- **Banco próprio do E2E:** o Playwright cria e usa `achados_e2e` no mesmo Postgres (`apps/achados-web/e2e/apoio/banco.ts`); o banco `achados` de desenvolvimento nunca é tocado pelo E2E. Antes, a rodada deixava o owner do seed com uma chave de autenticador que só o teste conhecia. Verificado em 17/10/2026: depois de 39 E2E, o admin do banco de dev seguiu sem 2FA e o do `achados_e2e` ficou com o do teste.
 - **Portas só em 127.0.0.1:** Postgres e storage não ficam expostos na rede local.
 - **Por que SeaweedFS e não MinIO:** as imagens públicas do MinIO deixaram de ser publicadas em 2025 (`minio/minio` e `quay.io/minio/minio` não baixam mais); um emulador que só existe no cache de uma máquina quebraria o `infra:up` em qualquer outra e no template.
 - **Só para desenvolvimento:** o Postgres sobe com `fsync`, `synchronous_commit` e `full_page_writes` desligados, para ser rápido. Credenciais fixas valem só aqui e não são segredo de nenhum outro ambiente.
 - **Dados:** somente fixtures sintéticas. Documento ou dado pessoal real nunca entra neste ambiente ([09 — Prompt](../produto/09-prompt-claude.md), item 6).
-- **Papéis do banco:** o app conecta como `meuproduto_app`, que não é dono das tabelas; migrações e seed rodam como dono (`DATABASE_URL_ADMIN`). Isso faz o RLS valer para o app ([ADR-0020](0020-autenticacao-e-sessao.md)). O papel é criado por `docker/postgres/init/01-app-role.sql` na primeira subida do volume e, onde o init não roda (volume existente, CI), por `pnpm --filter @meuproduto/db db:setup-app-role`.
-- **Esquema e dados:** o pacote `@meuproduto/db` (Drizzle ORM e drizzle-kit) guarda o schema, as migrações SQL versionadas e um seed idempotente com dois tenants sintéticos, para testar isolamento. O bootstrap de produção é separado do seed. Comandos na raiz: `pnpm db:migrate`, `pnpm db:seed`, `pnpm db:generate` e `pnpm db:studio`.
+- **Papéis do banco:** o app conecta como `achados_app`, que não é dono das tabelas; migrações e seed rodam como dono (`DATABASE_URL_ADMIN`). Isso faz o RLS valer para o app ([ADR-0020](0020-autenticacao-e-sessao.md)). O papel é criado por `docker/postgres/init/01-app-role.sql` na primeira subida do volume e, onde o init não roda (volume existente, CI), por `pnpm --filter @achados/db db:setup-app-role`.
+- **Esquema e dados:** o pacote `@achados/db` (Drizzle ORM e drizzle-kit) guarda o schema, as migrações SQL versionadas e um seed idempotente com dois tenants sintéticos, para testar isolamento. O bootstrap de produção é separado do seed. Comandos na raiz: `pnpm db:migrate`, `pnpm db:seed`, `pnpm db:generate` e `pnpm db:studio`.
 - **Estado honesto:** o storage ainda não é usado pelo frontend. O app já usa o Postgres para identidade, sessão, vínculos e o total de clientes do painel (ADR-0020). O storage prepara o fluxo documental do M3.
 
 ## Alternativas consideradas
@@ -143,7 +143,7 @@ Custos e limites:
 
 - Definir onde cada ambiente é publicado e o Postgres gerenciado de homologação e produção.
 - Transporte SMTP para o e-mail (hoje: Resend, console no local, caixa no E2E).
-- Aceitar ou não o Drizzle como ORM e migrações (era hipótese de [02 — Arquitetura](../produto/02-arquitetura.md); o ADR-0020 o adota em `@meuproduto/db`) e decidir se o Postgres 18 de desenvolvimento acompanha a versão de produção.
+- Aceitar ou não o Drizzle como ORM e migrações (era hipótese de [02 — Arquitetura](../produto/02-arquitetura.md); o ADR-0020 o adota em `@achados/db`) e decidir se o Postgres 18 de desenvolvimento acompanha a versão de produção.
 - `start:homolog` não foi exercitado; `rotuloDoAmbiente` e `useConfiguracao` ainda não têm consumidor na interface.
 - Regra de lint para `process.env`.
 
@@ -158,3 +158,8 @@ Nenhuma exceção registrada.
 - [ADR-005 de produto](../produto/adr/ADR-005.md) — armazenamento privado
 - [Next.js: variáveis de ambiente](https://nextjs.org/docs/app/guides/environment-variables)
 - [Next.js: instrumentation](https://nextjs.org/docs/app/guides/instrumentation)
+
+## Registro de aplicação — 2026-10-17
+
+- Faixa de portas do Achados na Rota: 4500–4599 (o Papelivo ocupa 4450/4451 na mesma máquina). Postgres local em 4550, storage em 4551, app em 4500, E2E em 4501, docs em 4530, Storybook em 4560.
+- **Banco de produção: Neon** (decisão do responsável). Desenvolvimento segue no Postgres 18 do Docker. Antes do primeiro deploy: criar o projeto no Neon com Postgres 18, rodar `db:setup-app-role` e `db:migrate` com a URL direta do dono, e configurar `DATABASE_URL` do app com o pooler e o papel `achados_app`. O cliente já usa `prepare: false`, compatível com o pooler em modo transação.

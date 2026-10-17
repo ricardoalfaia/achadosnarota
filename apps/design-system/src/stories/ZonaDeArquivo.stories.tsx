@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ZonaDeArquivo, type RecusaDeArquivo } from "@meuproduto/ui";
+import { ZonaDeArquivo, type RecusaDeArquivo } from "@achados/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent, within } from "storybook/test";
 

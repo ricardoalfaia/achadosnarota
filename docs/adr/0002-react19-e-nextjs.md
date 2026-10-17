@@ -51,7 +51,7 @@ Esses critérios seguem os contratos de [use](https://react.dev/reference/react/
 
 ### Referências da base
 
-O [useNow](../../packages/ui/src/hooks/use-now.ts) recebe o instante inicial do servidor. Para um texto temporal já renderizado no servidor, explicita melhor o contrato de hidratação que uma cópia inicializada em zero. Validar seus cenários antes de usá-lo em uma tela do Meuproduto.
+O [useNow](../../packages/ui/src/hooks/use-now.ts) recebe o instante inicial do servidor. Para um texto temporal já renderizado no servidor, explicita melhor o contrato de hidratação que uma cópia inicializada em zero. Validar seus cenários antes de usá-lo em uma tela do Achados na Rota.
 
 Hooks de preferência ligados a um app de origem não fazem parte do material genérico. Providers e preferências específicas ficam com a aplicação responsável ou recebem um contrato explícito quando houver compartilhamento real.
 
@@ -59,7 +59,7 @@ O [useFecharAoSair](../../packages/ui/src/hooks/use-fechar-ao-sair.ts) usa `useE
 
 ## Alternativas consideradas
 
-- Tudo cliente: modelo de SPA, com mais código no navegador; não é o padrão dos módulos do Meuproduto.
+- Tudo cliente: modelo de SPA, com mais código no navegador; não é o padrão dos módulos do Achados na Rota.
 - Proibir estado e eventos em componentes: gera hooks artificiais e não garante separação das regras.
 - Obrigar todas as APIs novas em toda tela: dificulta manutenção sem benefício comportamental.
 

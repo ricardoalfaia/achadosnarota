@@ -1,4 +1,4 @@
-import { boundaries } from "@meuproduto/eslint-config/boundaries";
+import { boundaries } from "@achados/eslint-config/boundaries";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
 import { defineConfig, globalIgnores } from "eslint/config";

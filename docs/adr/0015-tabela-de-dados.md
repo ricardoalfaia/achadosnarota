@@ -8,13 +8,13 @@
 
 ## Contexto
 
-O Meuproduto tem listas em quase toda área do menu: documentos, modelos, assinaturas, clientes e equipe ([ADR-0018](0018-casca-do-sistema.md)). Elas precisam de ordenação, filtro, seleção para ações em lote e, em escritórios com histórico longo, de virtualização e carga por páginas.
+O Achados na Rota tem listas em quase toda área do menu: documentos, modelos, assinaturas, clientes e equipe ([ADR-0018](0018-casca-do-sistema.md)). Elas precisam de ordenação, filtro, seleção para ações em lote e, em escritórios com histórico longo, de virtualização e carga por páginas.
 
-A base de origem trouxe uma tabela própria, construída para substituir um grid comercial que concentrava transporte, consulta, visões e edição em um único componente. Este ADR registra o desenho da tabela; o volume e os recursos que o Meuproduto de fato precisa ainda serão levantados com o piloto ([01 — Produto](../produto/01-produto-e-escopo.md), "Premissas a testar").
+A base de origem trouxe uma tabela própria, construída para substituir um grid comercial que concentrava transporte, consulta, visões e edição em um único componente. Este ADR registra o desenho da tabela; o volume e os recursos que o Achados na Rota de fato precisa ainda serão levantados com o piloto ([01 — Produto](../produto/01-produto-e-escopo.md), "Premissas a testar").
 
 ## Decisão proposta
 
-Construir uma tabela própria, `Tabela`, em `@meuproduto/ui`, e separar o que hoje está junto:
+Construir uma tabela própria, `Tabela`, em `@achados/ui`, e separar o que hoje está junto:
 
 | Parte          | Onde          | Responsabilidade                                                                          |
 | -------------- | ------------- | ----------------------------------------------------------------------------------------- |
@@ -106,7 +106,7 @@ Riscos:
 
 ## Verificação de aderência
 
-Na base de origem houve medições em Chromium com 150 mil linhas geradas; elas não são transferidas como evidência do Meuproduto. Medir neste repositório quando houver uma tela real.
+Na base de origem houve medições em Chromium com 150 mil linhas geradas; elas não são transferidas como evidência do Achados na Rota. Medir neste repositório quando houver uma tela real.
 
 | Regra                                                      | Evidência                                                             | Estado                         |
 | ---------------------------------------------------------- | --------------------------------------------------------------------- | ------------------------------ |
@@ -125,7 +125,7 @@ Na base de origem houve medições em Chromium com 150 mil linhas geradas; elas 
 
 - Levantar com o piloto o volume esperado de documentos e clientes e quais recursos da tabela são de fato usados.
 - Definir o contrato de listagem paginada da API e o que ela filtra.
-- Escolher a primeira tela do Meuproduto que usa a tabela (documentos ou clientes).
+- Escolher a primeira tela do Achados na Rota que usa a tabela (documentos ou clientes).
 - Medir desempenho neste repositório e definir limite automático, se necessário.
 
 Nenhuma exceção registrada.

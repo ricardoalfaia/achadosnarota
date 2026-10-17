@@ -10,13 +10,13 @@
 
 A fundação do [ADR-0011](0011-estrutura-monorepo.md) coordena lint, tipos, testes e build, mas não define estilo de código. Sem formatador, cada editor e cada agente produz quebras de linha, ordem de imports e ordem de classes Tailwind diferentes, e os diffs passam a misturar mudança de comportamento com ruído de estilo.
 
-A base de origem já trazia `.prettierrc.json`, `.prettierignore`, lint-staged, Husky e commitlint na raiz. O responsável pediu mantê-los no Meuproduto. A dúvida registrada é onde instalar: na raiz do monorepo ou em cada projeto.
+A base de origem já trazia `.prettierrc.json`, `.prettierignore`, lint-staged, Husky e commitlint na raiz. O responsável pediu mantê-los no Achados na Rota. A dúvida registrada é onde instalar: na raiz do monorepo ou em cada projeto.
 
 Fatos que restringem a escolha:
 
 - Hooks do git pertencem ao repositório, não a um pacote do workspace.
 - O Prettier resolve plugins a partir da pasta do arquivo de configuração.
-- O `@meuproduto/eslint-config` atual (`js.configs.recommended`, `typescript-eslint` recomendado e fronteiras) não contém regras de estilo.
+- O `@achados/eslint-config` atual (`js.configs.recommended`, `typescript-eslint` recomendado e fronteiras) não contém regras de estilo.
 - O Tailwind v4 não tem `tailwind.config.js`; o plugin de classes precisa do caminho do CSS de entrada.
 
 ## Decisão proposta
@@ -37,7 +37,7 @@ As versões são exatas em `devDependencies` da raiz, como o `turbo`. Apps e pac
 
 ### Contratos
 
-- **Configuração:** [.prettierrc.json](../../.prettierrc.json) é a única fonte de estilo. `tailwindStylesheet` aponta para `apps/meuproduto-web/src/app/globals.css`; `tailwindFunctions` cobre `clsx`, `twMerge` e `cn`.
+- **Configuração:** [.prettierrc.json](../../.prettierrc.json) é a única fonte de estilo. `tailwindStylesheet` aponta para `apps/achados-web/src/app/globals.css`; `tailwindFunctions` cobre `clsx`, `twMerge` e `cn`.
 - **Exclusões:** [.prettierignore](../../.prettierignore) e o `.gitignore`, que o Prettier 3 respeita por padrão.
 - **Scripts da raiz:** `pnpm format` grava; `pnpm format:check` apenas verifica. Ambos usam `--cache` do Prettier.
 - **Hook:** `prepare: husky` ativa os hooks em cada `pnpm install`; [.husky/pre-commit](../../.husky/pre-commit) executa `pnpm exec lint-staged` com [lint-staged.config.mjs](../../lint-staged.config.mjs). Nos arquivos de código em stage roda o ESLint e, depois, o Prettier; nos demais, só o Prettier. O ESLint é instalado em cada app e pacote, não na raiz: a configuração agrupa os arquivos pelo projeto (a pasta mais próxima com `eslint.config.mjs`) e roda o ESLint de dentro de cada um, com `--max-warnings 0` e sem `--fix`. Arquivo fora de projeto, como os scripts da raiz, fica só com o Prettier.
@@ -56,7 +56,7 @@ As versões são exatas em `devDependencies` da raiz, como o `turbo`. Apps e pac
 ## Alternativas consideradas
 
 - **Prettier por projeto:** permite estilos e versões diferentes por app, mas duplica configuração e plugins, e o hook da raiz precisaria descobrir qual binário usar para cada arquivo. Não há hoje necessidade de estilos distintos.
-- **Pacote `@meuproduto/prettier-config`:** útil quando repositórios diferentes compartilham a configuração. Dentro de um único repositório, um arquivo na raiz resolve com menos indireção. Pode ser adotado quando o template do [ADR-0023](0023-scaffold-como-template.md) ou outro repositório precisar da mesma configuração.
+- **Pacote `@achados/prettier-config`:** útil quando repositórios diferentes compartilham a configuração. Dentro de um único repositório, um arquivo na raiz resolve com menos indireção. Pode ser adotado quando o template do [ADR-0023](0023-scaffold-como-template.md) ou outro repositório precisar da mesma configuração.
 - **Task `format` no Turborepo por pacote:** ganharia cache remoto, ao custo de script e dependência em cada pacote e de não cobrir arquivos da raiz (`docs`, `scripts`, configurações).
 - **`eslint-plugin-prettier`:** mistura as duas ferramentas, deixa o lint mais lento e reporta estilo como erro de código.
 - **Biome:** formatador e linter rápidos em um binário, mas sem equivalente aos dois plugins usados e com substituição do ESLint de fronteiras já configurado.

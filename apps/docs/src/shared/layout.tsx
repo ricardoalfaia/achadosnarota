@@ -53,20 +53,26 @@ export const traducoes = i18n
   });
 
 /**
- * O logotipo do Meuproduto (símbolo, nome e lema). O texto é azul-escuro sobre
- * fundo transparente: a pílula clara o mantém legível também no tema escuro.
+ * O logotipo do Achados na Rota: o símbolo e o nome em duas linhas, "na Rota"
+ * no laranja da marca. O nome é texto, legível nos dois temas.
  */
 export function Logotipo({ altura = 28 }: { altura?: number }) {
-  // Proporção do arquivo original: 2162 x 727.
-  const largura = Math.round((altura * 2162) / 727);
+  // Proporção do símbolo: 183 x 144.
+  const largura = Math.round((altura * 183) / 144);
   return (
-    <span className="inline-flex rounded-control bg-white px-1.5 py-0.5">
-      <Image
-        src="/logo-meuproduto.png"
-        alt="Meuproduto"
-        width={largura}
-        height={altura}
-      />
+    <span
+      role="img"
+      aria-label="Achados na Rota"
+      className="inline-flex items-center gap-2"
+    >
+      <Image src="/simbolo.png" alt="" width={largura} height={altura} />
+      <span
+        aria-hidden="true"
+        className="flex flex-col text-[13px] leading-[0.95] font-extrabold tracking-tight"
+      >
+        <span>Achados</span>
+        <span className="text-[var(--ar-primary)]">na Rota</span>
+      </span>
     </span>
   );
 }

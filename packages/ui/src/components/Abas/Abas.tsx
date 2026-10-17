@@ -17,11 +17,13 @@ import { cn } from "../../lib/cn";
 import { abaDestino } from "./navegacao";
 
 /**
- * `linha`: abas de página. `pilula`: alternância compacta de visão.
- * `formulario`: as abas do cadastro do protótipo, sobre a faixa cinza, com a
- * aba ativa branca e o painel entrando de cima.
+ * `linha`: abas de página, com o traço laranja sob a ativa (Cupons, Avaliações,
+ * Fotos, Sobre). `pilula`: alternância compacta de visão. `segmentos`: as
+ * pílulas que dividem a largura toda, sobre a faixa cinza arredondada
+ * (Disponíveis, Utilizados, Expirados). `formulario`: as abas de cadastro,
+ * sobre a faixa cinza, com a aba ativa branca e o painel entrando de cima.
  */
-export type VarianteDeAbas = "linha" | "pilula" | "formulario";
+export type VarianteDeAbas = "linha" | "pilula" | "segmentos" | "formulario";
 
 type Contexto = {
   id: string;
@@ -90,14 +92,15 @@ const LISTA: Record<VarianteDeAbas, string> = {
   linha: "flex gap-1 border-b border-border",
   pilula:
     "inline-flex gap-1 rounded-control border border-border bg-surface-hover p-1",
+  segmentos: "flex gap-1 rounded-full bg-surface-hover p-1",
   formulario: "flex gap-1.5 border-b border-border bg-surface-hover px-6",
 };
 
 const INDICADOR: Record<VarianteDeAbas, string> = {
-  linha:
-    "-bottom-px h-[3px] rounded-full bg-ring shadow-[0_0_10px_var(--pl-ring)]",
+  linha: "-bottom-px h-0.5 rounded-full bg-brand",
   pilula:
     "inset-y-1 rounded-md border border-primary-solid-border bg-primary-solid",
+  segmentos: "inset-y-1 rounded-full bg-primary-solid shadow-sm",
   formulario: "-bottom-px h-[3px] bg-ring",
 };
 
@@ -188,9 +191,11 @@ export function ListaDeAbas({
 
 const ABA: Record<VarianteDeAbas, string> = {
   linha:
-    "h-control-md rounded-t-control px-4 text-base hover:text-primary aria-selected:text-primary",
+    "h-control-sm rounded-t-control px-4 text-sm hover:text-primary aria-selected:text-primary",
   pilula:
     "h-7 rounded-md px-3 text-sm hover:text-foreground aria-selected:text-primary-solid-foreground",
+  segmentos:
+    "h-8 flex-1 justify-center rounded-full px-2 text-xs hover:text-foreground aria-selected:text-primary-solid-foreground",
   formulario:
     "px-4.5 py-3 text-[13px] hover:text-primary aria-selected:bg-surface aria-selected:text-primary",
 };
@@ -199,6 +204,7 @@ const ABA: Record<VarianteDeAbas, string> = {
 const PAINEL: Record<VarianteDeAbas, string> = {
   linha: "animate-panel-in pt-4",
   pilula: "animate-panel-in pt-4",
+  segmentos: "animate-panel-in pt-3",
   formulario: "animate-fade-in-down duration-250",
 };
 
@@ -243,7 +249,8 @@ export function Aba({
           className={cn(
             "rounded-full bg-current/12 px-1.5 font-mono text-2xs leading-4 text-foreground group-aria-selected:text-inherit",
             // Sobre o azul sólido da pílula escolhida, o contador escurece para o branco atingir AA.
-            abas.variante === "pilula" && "group-aria-selected:bg-black/15"
+            (abas.variante === "pilula" || abas.variante === "segmentos") &&
+              "group-aria-selected:bg-black/15"
           )}
         >
           {contador}

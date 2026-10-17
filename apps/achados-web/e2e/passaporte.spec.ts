@@ -1,0 +1,68 @@
+import { expect, test } from "@playwright/test";
+
+import { apresentar, VISITANTE } from "./apoio/acesso";
+
+test("com passaporte ativo, o cartão mostra a titular, a validade e o código", async ({
+  page,
+}) => {
+  await page.goto("/passaporte");
+  const cartao = page.getByRole("region", { name: "Cartão do passaporte" });
+  await expect(cartao).toContainText("Passaporte ativo");
+  await expect(cartao).toContainText("Ana Viajante");
+  await expect(cartao).toContainText(/AR-[0-9A-Z]{6}/);
+  await expect(page.getByText("Cupons utilizados")).toBeVisible();
+  await expect(
+    page.getByRole("tab", { name: /Disponíveis \(7\)/ })
+  ).toBeVisible();
+
+  await page.getByRole("tab", { name: "Utilizados (0)" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Nenhum cupom utilizado" })
+  ).toBeVisible();
+});
+
+test("com passaporte ativo, Resgatar avisa que a emissão ainda não está no ar", async ({
+  page,
+}) => {
+  await page.goto("/lugar/rancho-portugues");
+  await page.getByRole("button", { name: "Resgatar" }).first().click();
+  const dialogo = page.getByRole("dialog", {
+    name: "10% de desconto no almoço",
+  });
+  await expect(dialogo).toContainText("Seu passaporte está ativo");
+  // Nenhum código ou QR inventado no navegador.
+  await expect(dialogo.getByRole("img", { name: /QR/ })).toHaveCount(0);
+});
+
+test.describe("sem passaporte", () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
+
+  test("sem conta: cartão inativo, preço do banco, assinatura indisponível", async ({
+    page,
+  }) => {
+    await page.goto("/passaporte");
+    await expect(
+      page.getByRole("region", { name: "Cartão do passaporte" })
+    ).toContainText("Inativo");
+    await expect(page.getByText("R$ 129,00")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Assinar" })).toBeDisabled();
+    await expect(page.getByText("não garante economia")).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Criar conta grátis" })
+    ).toBeVisible();
+  });
+
+  test("com conta e sem passaporte, Resgatar leva a conhecer o passaporte", async ({
+    page,
+  }) => {
+    await apresentar(page, VISITANTE);
+    await page.waitForURL((url) => url.pathname === "/");
+    await page.goto("/lugar/cafe-da-serra");
+    await page.getByRole("button", { name: "Resgatar" }).click();
+    await page
+      .getByRole("dialog")
+      .getByRole("link", { name: "Conhecer o Passaporte" })
+      .click();
+    await expect(page).toHaveURL(/\/passaporte$/);
+  });
+});

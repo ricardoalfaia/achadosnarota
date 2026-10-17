@@ -1,21 +1,21 @@
-// Cria (ou ajusta) o papel da aplicação, meuproduto_app, onde o init do Docker
+// Cria (ou ajusta) o papel da aplicação, achados_app, onde o init do Docker
 // não roda: volume local já existente, Postgres gerenciado (Neon etc.), CI.
 // Equivale a docker/postgres/init/01-app-role.sql.
 //
-// meuproduto_app não é dono das tabelas: as policies de RLS valem para ele. O
+// achados_app não é dono das tabelas: as policies de RLS valem para ele. O
 // dono (DATABASE_URL_ADMIN) roda migrations, seed e bootstrap.
 //
 // Idempotente: cria o papel se faltar, refaz grants e default privileges.
-// A senha vem da própria DATABASE_URL (usuário meuproduto_app); nunca é impressa.
+// A senha vem da própria DATABASE_URL (usuário achados_app); nunca é impressa.
 //
-//   pnpm --filter @meuproduto/db db:setup-app-role
+//   pnpm --filter @achados/db db:setup-app-role
 //
 // Ordem em ambiente novo: setup-app-role → db:migrate (os default privileges
 // cobrem as tabelas criadas depois) — ou o contrário, os GRANT ON ALL TABLES
 // cobrem as que já existem.
 import postgres from "postgres";
 
-const PAPEL = "meuproduto_app";
+const PAPEL = "achados_app";
 const adminUrl = process.env.DATABASE_URL_ADMIN;
 const appUrl = process.env.DATABASE_URL;
 if (!adminUrl) throw new Error("DATABASE_URL_ADMIN não definida.");

@@ -42,7 +42,7 @@ export function Destaque({
       {/* Degradê leve: azul no canto de cima, roxo e verde água no de baixo. */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_85%_15%,var(--pl-primary-subtle),transparent_55%),radial-gradient(circle_at_100%_100%,var(--pl-highlight-subtle),transparent_50%),radial-gradient(circle_at_0%_100%,var(--pl-accent-subtle),transparent_45%)]"
+        className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_85%_15%,var(--ar-primary-subtle),transparent_55%),radial-gradient(circle_at_100%_100%,var(--ar-highlight-subtle),transparent_50%),radial-gradient(circle_at_0%_100%,var(--ar-accent-subtle),transparent_45%)]"
       />
       <div className="flex min-w-0 flex-1 flex-col gap-3">
         {saudacao && (

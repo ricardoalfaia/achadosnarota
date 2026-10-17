@@ -1,5 +1,5 @@
 {
-  "name": "@meuproduto/core",
+  "name": "@achados/core",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -12,8 +12,8 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@meuproduto/eslint-config": "workspace:*",
-    "@meuproduto/typescript-config": "workspace:*",
+    "@achados/eslint-config": "workspace:*",
+    "@achados/typescript-config": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:",

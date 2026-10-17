@@ -129,7 +129,7 @@ function Celula<T>({
           "sticky z-10 border-r border-border bg-surface group-hover:bg-surface-hover",
         coluna.fixa && marcada && MARCADA,
         abreEdicao &&
-          "cursor-text outline-none hover:shadow-[inset_0_0_0_1px_var(--pl-border-strong)] focus-visible:shadow-[inset_0_0_0_2px_var(--pl-ring)]"
+          "cursor-text outline-none hover:shadow-[inset_0_0_0_1px_var(--ar-border-strong)] focus-visible:shadow-[inset_0_0_0_2px_var(--ar-ring)]"
       )}
       style={estiloDaCelula(coluna)}
     >

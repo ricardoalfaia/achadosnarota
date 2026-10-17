@@ -38,7 +38,7 @@ export type DbExecutor = Db | Tx;
 // + HMR muda a assinatura e nasce outra instância; senão o Drizzle seguiria
 // com o schema antigo em memória. O pool antigo nunca é fechado aqui, porque
 // alguém pode ter guardado a referência.
-const CHAVE_GLOBAL = Symbol.for("meuproduto.db.pools");
+const CHAVE_GLOBAL = Symbol.for("achados.db.pools");
 type Registro = { [CHAVE_GLOBAL]?: Map<string, Db> };
 
 const ASSINATURA = Object.entries(schema as Record<string, unknown>)
@@ -61,9 +61,9 @@ function pools(): Map<string, Db> {
 /**
  * Db (Drizzle + postgres.js) para a URL dada, reaproveitado no processo.
  *
- * A app usa DATABASE_URL (papel meuproduto_app, sujeito a RLS) e sempre acessa
- * dados de tenant por withTenant(). DATABASE_URL_ADMIN (dono) é só para
- * migrations, seed e bootstrap.
+ * A app usa DATABASE_URL (papel achados_app, sujeito a RLS) e sempre acessa
+ * dados pessoais por withUser(). DATABASE_URL_ADMIN (dono) é só para
+ * migrations e seed.
  */
 export function criarDb(url: string, opcoes: CriarDbOpcoes = {}): Db {
   const max = opcoes.max ?? 10;

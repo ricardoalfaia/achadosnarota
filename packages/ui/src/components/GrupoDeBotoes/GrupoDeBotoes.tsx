@@ -27,8 +27,8 @@ export function GrupoDeBotoes({
         "[&_[data-botao]]:relative [&_[data-botao]]:rounded-none",
         "[&_[data-botao]:focus-visible]:z-10 [&_[data-botao]:hover]:z-10",
         "[&>:not(:first-child)]:-ml-px",
-        "[&>:first-child>[data-botao]]:rounded-l-control [&>[data-botao]:first-child]:rounded-l-control",
-        "[&>:last-child>[data-botao]]:rounded-r-control [&>[data-botao]:last-child]:rounded-r-control",
+        "[&>:first-child>[data-botao]]:rounded-l-full [&>[data-botao]:first-child]:rounded-l-full",
+        "[&>:last-child>[data-botao]]:rounded-r-full [&>[data-botao]:last-child]:rounded-r-full",
         className
       )}
     >

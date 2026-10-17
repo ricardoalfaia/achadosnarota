@@ -3,11 +3,11 @@
 **Estado:** Proposto  
 **Data:** 2026-10-16  
 **Princípios:** P01, P02, P03, P09, P12  
-**Aceitação:** detalhes estruturais propostos para revisão; a estrutura veio da base de origem e foi adaptada ao Meuproduto por autorização do responsável.
+**Aceitação:** detalhes estruturais propostos para revisão; a estrutura veio da base de origem e foi adaptada ao Achados na Rota por autorização do responsável.
 
 ## Contexto
 
-O Meuproduto nasce de uma base anterior, copiada sem histórico git ([origem da base](../origem-da-base.md)). A base já tinha a estrutura de apps/packages com pnpm e Turborepo e um app Next.js gerado por `npx create-next-app@latest`. Para o Meuproduto, o responsável pediu a mesma estrutura, sem os projetos e o domínio do cliente de origem.
+O Achados na Rota nasce de uma base anterior, copiada sem histórico git ([origem da base](../origem-da-base.md)). A base já tinha a estrutura de apps/packages com pnpm e Turborepo e um app Next.js gerado por `npx create-next-app@latest`. Para o Achados na Rota, o responsável pediu a mesma estrutura, sem os projetos e o domínio do cliente de origem.
 
 Os documentos de produto ([02 — Arquitetura](../produto/02-arquitetura.md)) tratam o restante da pilha (backend, banco, fila, worker) como hipótese a verificar. Este ADR cobre o que existe no repositório; a entrada de novos serviços segue o [ADR-0007](0007-monorepo-e-autonomia.md).
 
@@ -17,9 +17,9 @@ Usar **pnpm workspace** para dependências e **Turborepo** para o grafo de taref
 
 ```text
 apps/
-  meuproduto-web/            # app Next.js do produto
+  achados-web/            # app Next.js do produto
     src/app/               # convenções de rota, layout e composição Next
-    src/features/          # capacidades de negócio do Meuproduto
+    src/features/          # capacidades de negócio do Achados na Rota
     src/shared/            # composição comum apenas deste app (casca, sessão, config)
     e2e/                   # jornadas e smoke Playwright deste app
   design-system/           # Storybook de tokens e componentes (ADR-0008)
@@ -45,21 +45,21 @@ Criar subpastas por comportamento real. `features/<capacidade>` pode separar `co
 
 ### Pacotes iniciais
 
-| Pacote                             | Contrato                                                     | Limite                                                                                                         |
-| ---------------------------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
-| `@meuproduto/core`                 | Result, AppError, combinadores e codec                       | Sem React, Next, Query, DOM ou domínio de uma aplicação.                                                       |
-| `@meuproduto/ui`                   | Componentes cliente, incluindo Select e SeletorDePeriodo     | Sem transporte, cache HTTP ou import de aplicação.                                                             |
-| `@meuproduto/ui/hooks`             | Hooks cliente explicitamente exportados                      | Não usar como API servidor.                                                                                    |
-| `@meuproduto/ui/dates`             | Funções puras de calendário                                  | Pode ser consumido no servidor sem importar o barrel cliente.                                                  |
-| `@meuproduto/ui/zod`               | Schemas dos valores dos campos                               | Sem regras específicas de negócio.                                                                             |
-| `@meuproduto/ui/estilos`           | Funções puras de classes (`estiloDoBotao`)                   | Pode ser chamado em Server Component.                                                                          |
-| `@meuproduto/ui/styles/tokens.css` | Tokens semânticos para Tailwind 4                            | Única fonte de cores, sombras e fontes (ADR-0008).                                                             |
-| `@meuproduto/data-boundary`        | DataBoundary e props                                         | Peer React/Query compatível; não instala provider global por convenção.                                        |
-| `@meuproduto/db`                   | Schema Drizzle, migrações SQL, seed sintético e `withTenant` | Server-only; nunca importado por código cliente. Em implementação ([ADR-0020](0020-autenticacao-e-sessao.md)). |
-| `@meuproduto/typescript-config`    | Presets base, React e Next                                   | Sem opções específicas de um app.                                                                              |
-| `@meuproduto/eslint-config`        | Regras comuns e fronteiras objetivas                         | Lint não comprova coesão nem garante segurança dos payloads.                                                   |
+| Pacote                          | Contrato                                                     | Limite                                                                                                         |
+| ------------------------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| `@achados/core`                 | Result, AppError, combinadores e codec                       | Sem React, Next, Query, DOM ou domínio de uma aplicação.                                                       |
+| `@achados/ui`                   | Componentes cliente, incluindo Select e SeletorDePeriodo     | Sem transporte, cache HTTP ou import de aplicação.                                                             |
+| `@achados/ui/hooks`             | Hooks cliente explicitamente exportados                      | Não usar como API servidor.                                                                                    |
+| `@achados/ui/dates`             | Funções puras de calendário                                  | Pode ser consumido no servidor sem importar o barrel cliente.                                                  |
+| `@achados/ui/zod`               | Schemas dos valores dos campos                               | Sem regras específicas de negócio.                                                                             |
+| `@achados/ui/estilos`           | Funções puras de classes (`estiloDoBotao`)                   | Pode ser chamado em Server Component.                                                                          |
+| `@achados/ui/styles/tokens.css` | Tokens semânticos para Tailwind 4                            | Única fonte de cores, sombras e fontes (ADR-0008).                                                             |
+| `@achados/data-boundary`        | DataBoundary e props                                         | Peer React/Query compatível; não instala provider global por convenção.                                        |
+| `@achados/db`                   | Schema Drizzle, migrações SQL, seed sintético e `withTenant` | Server-only; nunca importado por código cliente. Em implementação ([ADR-0020](0020-autenticacao-e-sessao.md)). |
+| `@achados/typescript-config`    | Presets base, React e Next                                   | Sem opções específicas de um app.                                                                              |
+| `@achados/eslint-config`        | Regras comuns e fronteiras objetivas                         | Lint não comprova coesão nem garante segurança dos payloads.                                                   |
 
-Não manter dois cores ou cópias de UI ativa. Não criar pacotes de auth, HTTP, domínio, Query ou storage sem seus contratos reais; `@meuproduto/db` entra com o contrato do ADR-0020.
+Não manter dois cores ou cópias de UI ativa. Não criar pacotes de auth, HTTP, domínio, Query ou storage sem seus contratos reais; `@achados/db` entra com o contrato do ADR-0020.
 
 ### Compilação e dependências
 
@@ -75,7 +75,7 @@ O app configura PostCSS/Tailwind e inclui explicitamente as fontes de UI/DataBou
 
 ### Infraestrutura local
 
-`docker-compose.yml` na raiz sobe o PostgreSQL e o armazenamento de objetos compatível com S3 que o backend vai usar, com containers e volumes exclusivos do Meuproduto. Portas, credenciais de desenvolvimento e limites estão no [ADR-0013](0013-ambientes-e-configuracao.md). Não são tasks do Turborepo: sobem por `pnpm infra:up`, independentes do grafo de pacotes.
+`docker-compose.yml` na raiz sobe o PostgreSQL e o armazenamento de objetos compatível com S3 que o backend vai usar, com containers e volumes exclusivos do Achados na Rota. Portas, credenciais de desenvolvimento e limites estão no [ADR-0013](0013-ambientes-e-configuracao.md). Não são tasks do Turborepo: sobem por `pnpm infra:up`, independentes do grafo de pacotes.
 
 ## Alternativas consideradas
 

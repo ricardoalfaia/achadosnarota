@@ -7,13 +7,13 @@
 
 ## Contexto
 
-O Meuproduto começa em um monorepo derivado de uma base anterior ([origem da base](../origem-da-base.md)). Não há aplicação legada a migrar nem projetos existentes a incorporar. Os consumidores declarados hoje são o app `meuproduto-web` (Next.js), a vitrine `design-system` (Storybook) e a documentação de negócio `docs` (Fumadocs).
+O Achados na Rota começa em um monorepo derivado de uma base anterior ([origem da base](../origem-da-base.md)). Não há aplicação legada a migrar nem projetos existentes a incorporar. Os consumidores declarados hoje são o app `achados-web` (Next.js), a vitrine `design-system` (Storybook) e a documentação de negócio `docs` (Fumadocs).
 
 O documento de produto [02 — Arquitetura](../produto/02-arquitetura.md) prevê, como hipótese, um backend Node.js, um worker de PDF e eventos e componentes GoLink reutilizáveis "apenas após inventário técnico". Onde esses serviços vão morar, se neste repositório ou em outro, ainda não está decidido. O mesmo monorepo também deve servir de base para novos produtos ([ADR-0023](0023-scaffold-como-template.md)).
 
 ## Decisão proposta
 
-Monorepo com aplicações autônomas, contratos públicos e compartilhamento explícito de capacidades. O [ADR-0011](0011-estrutura-monorepo.md) define apps/packages, o escopo `@meuproduto`, pnpm e Turborepo; topologia de implantação permanece posterior.
+Monorepo com aplicações autônomas, contratos públicos e compartilhamento explícito de capacidades. O [ADR-0011](0011-estrutura-monorepo.md) define apps/packages, o escopo `@achados`, pnpm e Turborepo; topologia de implantação permanece posterior.
 
 ### Compartilhamento
 
@@ -45,7 +45,7 @@ Componentes GoLink citados nos documentos de produto seguem a mesma regra: audit
 
 ### Base para outros produtos
 
-O monorepo é base de novos produtos por um template derivado, não por cópias manuais divergentes ([ADR-0023](0023-scaffold-como-template.md)). Isso reforça a autonomia: pacotes genéricos não conhecem o Meuproduto, e o que é do Meuproduto fica em apps ou em pacotes nomeados por domínio.
+O monorepo é base de novos produtos por um template derivado, não por cópias manuais divergentes ([ADR-0023](0023-scaffold-como-template.md)). Isso reforça a autonomia: pacotes genéricos não conhecem o Achados na Rota, e o que é do Achados na Rota fica em apps ou em pacotes nomeados por domínio.
 
 ## Alternativas consideradas
 

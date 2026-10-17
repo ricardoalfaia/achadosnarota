@@ -1,5 +1,5 @@
 {
-  "extends": "@meuproduto/typescript-config/base.json",
+  "extends": "@achados/typescript-config/base.json",
   "compilerOptions": {
     "types": ["node"]
   },

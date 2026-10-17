@@ -1,5 +1,5 @@
 {
-  "id": "2c04ef80-0e48-4516-8228-efc16934097f",
+  "id": "fafdb278-b2c0-4e19-93cb-98693fe987a8",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -534,20 +534,19 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.client": {
-      "name": "client",
+    "public.category": {
+      "name": "category",
       "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
+          "notNull": true
         },
-        "tenant_id": {
-          "name": "tenant_id",
-          "type": "uuid",
+        "slug": {
+          "name": "slug",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -557,6 +556,19 @@
           "primaryKey": false,
           "notNull": true
         },
+        "icon": {
+          "name": "icon",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp with time zone",
@@ -565,74 +577,52 @@
           "default": "now()"
         }
       },
-      "indexes": {
-        "client_tenant_id_idx": {
-          "name": "client_tenant_id_idx",
-          "columns": [
-            {
-              "expression": "tenant_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "client_tenant_id_tenant_id_fk": {
-          "name": "client_tenant_id_tenant_id_fk",
-          "tableFrom": "client",
-          "tableTo": "tenant",
-          "columnsFrom": [
-            "tenant_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "restrict",
-          "onUpdate": "no action"
-        }
-      },
+      "indexes": {},
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "client_tenant_id_id_unique": {
-          "name": "client_tenant_id_id_unique",
+        "category_slug_unique": {
+          "name": "category_slug_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "tenant_id",
-            "id"
+            "slug"
           ]
         }
       },
       "policies": {
-        "client_tenant_isolation": {
-          "name": "client_tenant_isolation",
+        "category_leitura_publica": {
+          "name": "category_leitura_publica",
           "as": "PERMISSIVE",
-          "for": "ALL",
+          "for": "SELECT",
           "to": [
-            "meuproduto_app"
+            "achados_app"
           ],
-          "using": "tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid",
-          "withCheck": "tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid"
+          "using": "true"
         }
       },
-      "checkConstraints": {},
+      "checkConstraints": {
+        "category_id_ulid": {
+          "name": "category_id_ulid",
+          "value": "\"id\" ~ '^[0-9A-HJKMNP-TV-Z]{26}$'"
+        }
+      },
       "isRLSEnabled": true
     },
-    "public.organization": {
-      "name": "organization",
+    "public.city": {
+      "name": "city",
       "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
+          "notNull": true
+        },
+        "state": {
+          "name": "state",
+          "type": "char(2)",
+          "primaryKey": false,
+          "notNull": true
         },
         "name": {
           "name": "name",
@@ -658,41 +648,77 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "organization_slug_unique": {
-          "name": "organization_slug_unique",
+        "city_slug_unique": {
+          "name": "city_slug_unique",
           "nullsNotDistinct": false,
           "columns": [
             "slug"
           ]
         }
       },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
+      "policies": {
+        "city_leitura_publica": {
+          "name": "city_leitura_publica",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "achados_app"
+          ],
+          "using": "true"
+        }
+      },
+      "checkConstraints": {
+        "city_id_ulid": {
+          "name": "city_id_ulid",
+          "value": "\"id\" ~ '^[0-9A-HJKMNP-TV-Z]{26}$'"
+        },
+        "city_state_uf": {
+          "name": "city_state_uf",
+          "value": "\"city\".\"state\" ~ '^[A-Z]{2}$'"
+        }
+      },
+      "isRLSEnabled": true
     },
-    "public.tenant_user": {
-      "name": "tenant_user",
+    "public.place_media": {
+      "name": "place_media",
       "schema": "",
       "columns": {
-        "tenant_id": {
-          "name": "tenant_id",
-          "type": "uuid",
-          "primaryKey": false,
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
           "notNull": true
         },
-        "user_id": {
-          "name": "user_id",
+        "place_id": {
+          "name": "place_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "role": {
-          "name": "role",
-          "type": "tenant_role",
-          "typeSchema": "public",
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "alt": {
+          "name": "alt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
-          "default": "'member'"
+          "default": 0
         },
         "created_at": {
           "name": "created_at",
@@ -703,11 +729,11 @@
         }
       },
       "indexes": {
-        "tenant_user_user_id_idx": {
-          "name": "tenant_user_user_id_idx",
+        "place_media_place_id_idx": {
+          "name": "place_media_place_id_idx",
           "columns": [
             {
-              "expression": "user_id",
+              "expression": "place_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -720,25 +746,12 @@
         }
       },
       "foreignKeys": {
-        "tenant_user_tenant_id_tenant_id_fk": {
-          "name": "tenant_user_tenant_id_tenant_id_fk",
-          "tableFrom": "tenant_user",
-          "tableTo": "tenant",
+        "place_media_place_id_place_id_fk": {
+          "name": "place_media_place_id_place_id_fk",
+          "tableFrom": "place_media",
+          "tableTo": "place",
           "columnsFrom": [
-            "tenant_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "tenant_user_user_id_user_id_fk": {
-          "name": "tenant_user_user_id_user_id_fk",
-          "tableFrom": "tenant_user",
-          "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
+            "place_id"
           ],
           "columnsTo": [
             "id"
@@ -747,54 +760,55 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {
-        "tenant_user_tenant_id_user_id_pk": {
-          "name": "tenant_user_tenant_id_user_id_pk",
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "place_media_place_position": {
+          "name": "place_media_place_position",
+          "nullsNotDistinct": false,
           "columns": [
-            "tenant_id",
-            "user_id"
+            "place_id",
+            "position"
           ]
         }
       },
-      "uniqueConstraints": {},
       "policies": {
-        "tenant_user_tenant_isolation": {
-          "name": "tenant_user_tenant_isolation",
-          "as": "PERMISSIVE",
-          "for": "ALL",
-          "to": [
-            "meuproduto_app"
-          ],
-          "using": "tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid",
-          "withCheck": "tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid"
-        },
-        "tenant_user_own_memberships": {
-          "name": "tenant_user_own_memberships",
+        "place_media_leitura_publica": {
+          "name": "place_media_leitura_publica",
           "as": "PERMISSIVE",
           "for": "SELECT",
           "to": [
-            "meuproduto_app"
+            "achados_app"
           ],
-          "using": "user_id = nullif(current_setting('app.user_id', true), '')"
+          "using": "exists (select 1 from place p where p.id = place_id and p.status = 'published')"
         }
       },
-      "checkConstraints": {},
+      "checkConstraints": {
+        "place_media_id_ulid": {
+          "name": "place_media_id_ulid",
+          "value": "\"id\" ~ '^[0-9A-HJKMNP-TV-Z]{26}$'"
+        }
+      },
       "isRLSEnabled": true
     },
-    "public.tenant": {
-      "name": "tenant",
+    "public.place": {
+      "name": "place",
       "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
+          "notNull": true
         },
-        "organization_id": {
-          "name": "organization_id",
-          "type": "uuid",
+        "city_id": {
+          "name": "city_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category_id": {
+          "name": "category_id",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -810,13 +824,74 @@
           "primaryKey": false,
           "notNull": true
         },
+        "specialty": {
+          "name": "specialty",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "summary": {
+          "name": "summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tags": {
+          "name": "tags",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::text[]"
+        },
+        "address": {
+          "name": "address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "phone": {
+          "name": "phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "website": {
+          "name": "website",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "latitude": {
+          "name": "latitude",
+          "type": "numeric(9, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "longitude": {
+          "name": "longitude",
+          "type": "numeric(9, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
         "status": {
           "name": "status",
-          "type": "tenant_status",
+          "type": "place_status",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
-          "default": "'active'"
+          "default": "'draft'"
+        },
+        "published_at": {
+          "name": "published_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -824,14 +899,36 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
         }
       },
       "indexes": {
-        "tenant_organization_id_idx": {
-          "name": "tenant_organization_id_idx",
+        "place_city_id_idx": {
+          "name": "place_city_id_idx",
           "columns": [
             {
-              "expression": "organization_id",
+              "expression": "city_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "place_category_id_idx": {
+          "name": "place_category_id_idx",
+          "columns": [
+            {
+              "expression": "category_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -844,12 +941,25 @@
         }
       },
       "foreignKeys": {
-        "tenant_organization_id_organization_id_fk": {
-          "name": "tenant_organization_id_organization_id_fk",
-          "tableFrom": "tenant",
-          "tableTo": "organization",
+        "place_city_id_city_id_fk": {
+          "name": "place_city_id_city_id_fk",
+          "tableFrom": "place",
+          "tableTo": "city",
           "columnsFrom": [
-            "organization_id"
+            "city_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "place_category_id_category_id_fk": {
+          "name": "place_category_id_category_id_fk",
+          "tableFrom": "place",
+          "tableTo": "category",
+          "columnsFrom": [
+            "category_id"
           ],
           "columnsTo": [
             "id"
@@ -860,36 +970,744 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "tenant_slug_unique": {
-          "name": "tenant_slug_unique",
+        "place_slug_unique": {
+          "name": "place_slug_unique",
           "nullsNotDistinct": false,
           "columns": [
             "slug"
           ]
         }
       },
-      "policies": {},
+      "policies": {
+        "place_leitura_publica": {
+          "name": "place_leitura_publica",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "achados_app"
+          ],
+          "using": "status = 'published'"
+        }
+      },
+      "checkConstraints": {
+        "place_id_ulid": {
+          "name": "place_id_ulid",
+          "value": "\"id\" ~ '^[0-9A-HJKMNP-TV-Z]{26}$'"
+        },
+        "place_phone_digits": {
+          "name": "place_phone_digits",
+          "value": "\"place\".\"phone\" ~ '^[0-9]{10,13}$'"
+        },
+        "place_published_at": {
+          "name": "place_published_at",
+          "value": "\"place\".\"status\" <> 'published' or \"place\".\"published_at\" is not null"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.editorial_review": {
+      "name": "editorial_review",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "place_id": {
+          "name": "place_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "score": {
+          "name": "score",
+          "type": "numeric(2, 1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "summary": {
+          "name": "summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "caveats": {
+          "name": "caveats",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "visited_on": {
+          "name": "visited_on",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "seal": {
+          "name": "seal",
+          "type": "editorial_seal",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "review_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'draft'"
+        },
+        "published_at": {
+          "name": "published_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "editorial_review_place_id_idx": {
+          "name": "editorial_review_place_id_idx",
+          "columns": [
+            {
+              "expression": "place_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "editorial_review_one_published": {
+          "name": "editorial_review_one_published",
+          "columns": [
+            {
+              "expression": "place_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "status = 'published'",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "editorial_review_place_id_place_id_fk": {
+          "name": "editorial_review_place_id_place_id_fk",
+          "tableFrom": "editorial_review",
+          "tableTo": "place",
+          "columnsFrom": [
+            "place_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "editorial_review_leitura_publica": {
+          "name": "editorial_review_leitura_publica",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "achados_app"
+          ],
+          "using": "status = 'published'\n        and exists (select 1 from place p where p.id = place_id and p.status = 'published')"
+        }
+      },
+      "checkConstraints": {
+        "editorial_review_id_ulid": {
+          "name": "editorial_review_id_ulid",
+          "value": "\"id\" ~ '^[0-9A-HJKMNP-TV-Z]{26}$'"
+        },
+        "editorial_review_score": {
+          "name": "editorial_review_score",
+          "value": "\"editorial_review\".\"score\" between 0 and 5"
+        },
+        "editorial_review_published_at": {
+          "name": "editorial_review_published_at",
+          "value": "\"editorial_review\".\"status\" <> 'published' or \"editorial_review\".\"published_at\" is not null"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.offer": {
+      "name": "offer",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "place_id": {
+          "name": "place_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "terms": {
+          "name": "terms",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "offer_kind",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "icon": {
+          "name": "icon",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "limit_per_user": {
+          "name": "limit_per_user",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "valid_from": {
+          "name": "valid_from",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "valid_until": {
+          "name": "valid_until",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "offer_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'draft'"
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "offer_place_id_idx": {
+          "name": "offer_place_id_idx",
+          "columns": [
+            {
+              "expression": "place_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "offer_place_id_place_id_fk": {
+          "name": "offer_place_id_place_id_fk",
+          "tableFrom": "offer",
+          "tableTo": "place",
+          "columnsFrom": [
+            "place_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "offer_leitura_publica": {
+          "name": "offer_leitura_publica",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "achados_app"
+          ],
+          "using": "status = 'active'\n        and (valid_from is null or valid_from <= now())\n        and (valid_until is null or valid_until > now())\n        and exists (select 1 from place p where p.id = place_id and p.status = 'published')"
+        }
+      },
+      "checkConstraints": {
+        "offer_id_ulid": {
+          "name": "offer_id_ulid",
+          "value": "\"id\" ~ '^[0-9A-HJKMNP-TV-Z]{26}$'"
+        },
+        "offer_limit_per_user": {
+          "name": "offer_limit_per_user",
+          "value": "\"offer\".\"limit_per_user\" >= 1"
+        },
+        "offer_valid_range": {
+          "name": "offer_valid_range",
+          "value": "\"offer\".\"valid_until\" is null or \"offer\".\"valid_from\" is null or \"offer\".\"valid_until\" > \"offer\".\"valid_from\""
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.plan": {
+      "name": "plan",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "price_cents": {
+          "name": "price_cents",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "currency": {
+          "name": "currency",
+          "type": "char(3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'BRL'"
+        },
+        "period": {
+          "name": "period",
+          "type": "plan_period",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'year'"
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "plan_leitura_publica": {
+          "name": "plan_leitura_publica",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "achados_app"
+          ],
+          "using": "active"
+        }
+      },
+      "checkConstraints": {
+        "plan_id_ulid": {
+          "name": "plan_id_ulid",
+          "value": "\"id\" ~ '^[0-9A-HJKMNP-TV-Z]{26}$'"
+        },
+        "plan_price_positive": {
+          "name": "plan_price_positive",
+          "value": "\"plan\".\"price_cents\" > 0"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.subscription": {
+      "name": "subscription",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "plan_id": {
+          "name": "plan_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "subscription_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "provider_subscription_id": {
+          "name": "provider_subscription_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "starts_at": {
+          "name": "starts_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ends_at": {
+          "name": "ends_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "subscription_user_id_idx": {
+          "name": "subscription_user_id_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "subscription_provider_id": {
+          "name": "subscription_provider_id",
+          "columns": [
+            {
+              "expression": "provider_subscription_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "provider_subscription_id is not null",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "subscription_user_id_user_id_fk": {
+          "name": "subscription_user_id_user_id_fk",
+          "tableFrom": "subscription",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "subscription_plan_id_plan_id_fk": {
+          "name": "subscription_plan_id_plan_id_fk",
+          "tableFrom": "subscription",
+          "tableTo": "plan",
+          "columnsFrom": [
+            "plan_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "subscription_leitura_da_propria_pessoa": {
+          "name": "subscription_leitura_da_propria_pessoa",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "achados_app"
+          ],
+          "using": "user_id = nullif(current_setting('app.user_id', true), '')"
+        }
+      },
+      "checkConstraints": {
+        "subscription_id_ulid": {
+          "name": "subscription_id_ulid",
+          "value": "\"id\" ~ '^[0-9A-HJKMNP-TV-Z]{26}$'"
+        },
+        "subscription_active_period": {
+          "name": "subscription_active_period",
+          "value": "\"subscription\".\"status\" <> 'active' or (\"subscription\".\"starts_at\" is not null and \"subscription\".\"ends_at\" is not null and \"subscription\".\"ends_at\" > \"subscription\".\"starts_at\")"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.favorite": {
+      "name": "favorite",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "place_id": {
+          "name": "place_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "favorite_place_id_idx": {
+          "name": "favorite_place_id_idx",
+          "columns": [
+            {
+              "expression": "place_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "favorite_user_id_user_id_fk": {
+          "name": "favorite_user_id_user_id_fk",
+          "tableFrom": "favorite",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "favorite_place_id_place_id_fk": {
+          "name": "favorite_place_id_place_id_fk",
+          "tableFrom": "favorite",
+          "tableTo": "place",
+          "columnsFrom": [
+            "place_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "favorite_user_id_place_id_pk": {
+          "name": "favorite_user_id_place_id_pk",
+          "columns": [
+            "user_id",
+            "place_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {
+        "favorite_da_propria_pessoa": {
+          "name": "favorite_da_propria_pessoa",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "achados_app"
+          ],
+          "using": "user_id = nullif(current_setting('app.user_id', true), '')",
+          "withCheck": "user_id = nullif(current_setting('app.user_id', true), '')"
+        }
+      },
       "checkConstraints": {},
-      "isRLSEnabled": false
+      "isRLSEnabled": true
     }
   },
   "enums": {
-    "public.tenant_role": {
-      "name": "tenant_role",
+    "public.place_status": {
+      "name": "place_status",
       "schema": "public",
       "values": [
-        "owner",
-        "admin",
-        "member",
-        "viewer"
+        "draft",
+        "published",
+        "archived"
       ]
     },
-    "public.tenant_status": {
-      "name": "tenant_status",
+    "public.review_status": {
+      "name": "review_status",
       "schema": "public",
       "values": [
+        "draft",
+        "in_review",
+        "approved",
+        "published",
+        "superseded",
+        "withdrawn"
+      ]
+    },
+    "public.editorial_seal": {
+      "name": "editorial_seal",
+      "schema": "public",
+      "values": [
+        "featured",
+        "beloved",
+        "verified",
+        "new"
+      ]
+    },
+    "public.offer_kind": {
+      "name": "offer_kind",
+      "schema": "public",
+      "values": [
+        "discount",
+        "courtesy"
+      ]
+    },
+    "public.offer_status": {
+      "name": "offer_status",
+      "schema": "public",
+      "values": [
+        "draft",
+        "pending_review",
         "active",
-        "suspended"
+        "paused",
+        "expired",
+        "archived"
+      ]
+    },
+    "public.plan_period": {
+      "name": "plan_period",
+      "schema": "public",
+      "values": [
+        "year"
+      ]
+    },
+    "public.subscription_status": {
+      "name": "subscription_status",
+      "schema": "public",
+      "values": [
+        "pending",
+        "active",
+        "past_due",
+        "canceled",
+        "expired",
+        "refunded"
       ]
     }
   },

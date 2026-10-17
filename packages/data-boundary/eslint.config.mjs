@@ -1,3 +1,3 @@
-import { react } from "@meuproduto/eslint-config/react";
+import { react } from "@achados/eslint-config/react";
 
 export default react;

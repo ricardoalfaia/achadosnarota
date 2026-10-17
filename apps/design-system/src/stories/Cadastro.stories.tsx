@@ -29,7 +29,7 @@ import {
   Visoes,
   type ColunaDaTabela,
   type Visao,
-} from "@meuproduto/ui";
+} from "@achados/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { FileText, LayoutTemplate, PenLine, ScrollText } from "lucide-react";
 import { expect, userEvent, waitFor, within } from "storybook/test";

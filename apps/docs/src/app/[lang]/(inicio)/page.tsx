@@ -2,17 +2,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   ArrowRight,
-  ChartColumn,
   ChevronRight,
+  Compass,
   FileText,
+  Heart,
   LayoutGrid,
-  LayoutTemplate,
-  PenLine,
-  Plug,
   Rocket,
-  Settings,
-  Users,
-  UsersRound,
+  Ticket,
+  UserRound,
   type LucideIcon,
 } from "lucide-react";
 
@@ -30,16 +27,12 @@ const SECOES: { slug: string[]; icone: LucideIcon }[] = [
   { slug: ["modulos"], icone: LayoutGrid },
 ];
 
-// Os mesmos ícones de cada área no menu lateral do sistema.
+// Um ícone para cada área da barra de navegação do app.
 const ICONE_DO_MODULO: Record<Modulo, LucideIcon> = {
-  documentos: FileText,
-  modelos: LayoutTemplate,
-  assinaturas: PenLine,
-  clientes: Users,
-  equipe: UsersRound,
-  relatorios: ChartColumn,
-  integracoes: Plug,
-  configuracoes: Settings,
+  explorar: Compass,
+  favoritos: Heart,
+  passaporte: Ticket,
+  perfil: UserRound,
 };
 
 /** Quantas páginas aparecem no painel de acesso rápido. */
@@ -72,7 +65,7 @@ export default async function PaginaInicial({ params }: PageProps<"/[lang]">) {
               />
               {inicio.selo}
             </span>
-            <h1 className="md:text-5xl text-4xl leading-tight font-extrabold tracking-tight text-balance text-foreground">
+            <h1 className="text-4xl leading-tight font-extrabold tracking-tight text-balance text-foreground md:text-5xl">
               {inicio.titulo}{" "}
               <span className="text-brand-gradient">
                 {inicio.tituloDestaque}
@@ -84,7 +77,7 @@ export default async function PaginaInicial({ params }: PageProps<"/[lang]">) {
             <BuscaDoInicio rotulo={inicio.buscar} />
             <Link
               href={comIdioma(lang, "/docs")}
-              className="inline-flex items-center gap-2 rounded-control bg-brand-gradient-action px-6 py-3 font-semibold text-white shadow-lg transition-transform hover:-translate-y-0.5"
+              className="bg-brand-gradient-action inline-flex items-center gap-2 rounded-control px-6 py-3 font-semibold text-white shadow-lg transition-transform hover:-translate-y-0.5"
             >
               {inicio.comecar}
               <ArrowRight className="size-4" aria-hidden />
@@ -207,7 +200,8 @@ export default async function PaginaInicial({ params }: PageProps<"/[lang]">) {
         <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-6 text-sm text-foreground-muted">
           <Logotipo altura={32} />
           <span>
-            © {new Date().getFullYear()} Meuproduto. {textos.rodape.direitos}
+            © {new Date().getFullYear()} Achados na Rota.{" "}
+            {textos.rodape.direitos}
           </span>
         </div>
       </footer>

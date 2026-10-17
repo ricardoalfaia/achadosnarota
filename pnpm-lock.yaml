@@ -75,9 +75,103 @@ importers:
         specifier: 2.11.7
         version: 2.11.7
 
+  apps/achados-web:
+    dependencies:
+      '@achados/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@achados/data-boundary':
+        specifier: workspace:*
+        version: link:../../packages/data-boundary
+      '@achados/db':
+        specifier: workspace:*
+        version: link:../../packages/db
+      '@achados/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      '@tanstack/react-query':
+        specifier: 'catalog:'
+        version: 5.104.1(react@19.2.8)
+      better-auth:
+        specifier: 1.7.5
+        version: 1.7.5(drizzle-kit@0.31.11)(drizzle-orm@0.45.3(kysely@0.29.6)(postgres@3.4.9))(next@16.3.8(@babel/core@7.29.7(supports-color@7.2.0))(@playwright/test@1.63.0)(@types/node@24.19.2)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(vitest@5.0.3)
+      drizzle-orm:
+        specifier: 0.45.3
+        version: 0.45.3(kysely@0.29.6)(postgres@3.4.9)
+      lucide-react:
+        specifier: 1.52.0
+        version: 1.52.0(@types/react@19.3.0)(react@19.2.8)
+      next:
+        specifier: 16.3.8
+        version: 16.3.8(@babel/core@7.29.7(supports-color@7.2.0))(@playwright/test@1.63.0)(@types/node@24.19.2)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      next-intl:
+        specifier: 4.14.9
+        version: 4.14.9(@swc/helpers@0.5.23)(@types/react@19.3.0)(next@16.3.8(@babel/core@7.29.7(supports-color@7.2.0))(@playwright/test@1.63.0)(@types/node@24.19.2)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
+      qrcode:
+        specifier: 1.5.4
+        version: 1.5.4
+      react:
+        specifier: 'catalog:'
+        version: 19.2.8
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.2.8(react@19.2.8)
+      server-only:
+        specifier: 0.0.1
+        version: 0.0.1
+      zod:
+        specifier: 'catalog:'
+        version: 4.6.5
+    devDependencies:
+      '@achados/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
+      '@achados/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
+      '@playwright/test':
+        specifier: 1.63.0
+        version: 1.63.0
+      '@tailwindcss/postcss':
+        specifier: ^4
+        version: 4.3.3
+      '@types/node':
+        specifier: 'catalog:'
+        version: 24.19.2
+      '@types/qrcode':
+        specifier: 1.5.6
+        version: 1.5.6
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.3.0
+      '@types/react-dom':
+        specifier: 'catalog:'
+        version: 19.3.0(@types/react@19.3.0)
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.5(jiti@2.7.0)(supports-color@7.2.0)
+      eslint-config-next:
+        specifier: 16.3.8
+        version: 16.3.8(@typescript-eslint/parser@8.71.1(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3))(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)
+      postgres:
+        specifier: 3.4.9
+        version: 3.4.9
+      tailwindcss:
+        specifier: 'catalog:'
+        version: 4.3.3
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vite:
+        specifier: 'catalog:'
+        version: 8.3.2(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
+      vitest:
+        specifier: 'catalog:'
+        version: 5.0.3(@types/node@24.19.2)(@vitest/browser-playwright@5.0.3)(@vitest/ui@5.0.3)(jsdom@30.1.2(@noble/hashes@2.4.0))(vite@8.3.2(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+
   apps/design-system:
     dependencies:
-      '@meuproduto/ui':
+      '@achados/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       lucide-react:
@@ -93,10 +187,10 @@ importers:
         specifier: 'catalog:'
         version: 4.6.5
     devDependencies:
-      '@meuproduto/eslint-config':
+      '@achados/eslint-config':
         specifier: workspace:*
         version: link:../../packages/eslint-config
-      '@meuproduto/typescript-config':
+      '@achados/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
       '@storybook/addon-a11y':
@@ -153,7 +247,7 @@ importers:
 
   apps/docs:
     dependencies:
-      '@meuproduto/ui':
+      '@achados/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       fumadocs-core:
@@ -181,10 +275,10 @@ importers:
         specifier: 'catalog:'
         version: 4.6.5
     devDependencies:
-      '@meuproduto/eslint-config':
+      '@achados/eslint-config':
         specifier: workspace:*
         version: link:../../packages/eslint-config
-      '@meuproduto/typescript-config':
+      '@achados/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
       '@playwright/test':
@@ -224,106 +318,12 @@ importers:
         specifier: 'catalog:'
         version: 5.0.3(@types/node@24.19.2)(@vitest/browser-playwright@5.0.3)(@vitest/ui@5.0.3)(jsdom@30.1.2(@noble/hashes@2.4.0))(vite@8.3.2(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
 
-  apps/meuproduto-web:
-    dependencies:
-      '@meuproduto/core':
-        specifier: workspace:*
-        version: link:../../packages/core
-      '@meuproduto/data-boundary':
-        specifier: workspace:*
-        version: link:../../packages/data-boundary
-      '@meuproduto/db':
-        specifier: workspace:*
-        version: link:../../packages/db
-      '@meuproduto/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
-      '@tanstack/react-query':
-        specifier: 'catalog:'
-        version: 5.104.1(react@19.2.8)
-      better-auth:
-        specifier: 1.7.5
-        version: 1.7.5(drizzle-kit@0.31.11)(drizzle-orm@0.45.3(kysely@0.29.6)(postgres@3.4.9))(next@16.3.8(@babel/core@7.29.7(supports-color@7.2.0))(@playwright/test@1.63.0)(@types/node@24.19.2)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(vitest@5.0.3)
-      drizzle-orm:
-        specifier: 0.45.3
-        version: 0.45.3(kysely@0.29.6)(postgres@3.4.9)
-      lucide-react:
-        specifier: 1.52.0
-        version: 1.52.0(@types/react@19.3.0)(react@19.2.8)
-      next:
-        specifier: 16.3.8
-        version: 16.3.8(@babel/core@7.29.7(supports-color@7.2.0))(@playwright/test@1.63.0)(@types/node@24.19.2)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      next-intl:
-        specifier: 4.14.9
-        version: 4.14.9(@swc/helpers@0.5.23)(@types/react@19.3.0)(next@16.3.8(@babel/core@7.29.7(supports-color@7.2.0))(@playwright/test@1.63.0)(@types/node@24.19.2)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
-      qrcode:
-        specifier: 1.5.4
-        version: 1.5.4
-      react:
-        specifier: 'catalog:'
-        version: 19.2.8
-      react-dom:
-        specifier: 'catalog:'
-        version: 19.2.8(react@19.2.8)
-      server-only:
-        specifier: 0.0.1
-        version: 0.0.1
-      zod:
-        specifier: 'catalog:'
-        version: 4.6.5
-    devDependencies:
-      '@meuproduto/eslint-config':
-        specifier: workspace:*
-        version: link:../../packages/eslint-config
-      '@meuproduto/typescript-config':
-        specifier: workspace:*
-        version: link:../../packages/typescript-config
-      '@playwright/test':
-        specifier: 1.63.0
-        version: 1.63.0
-      '@tailwindcss/postcss':
-        specifier: ^4
-        version: 4.3.3
-      '@types/node':
-        specifier: 'catalog:'
-        version: 24.19.2
-      '@types/qrcode':
-        specifier: 1.5.6
-        version: 1.5.6
-      '@types/react':
-        specifier: 'catalog:'
-        version: 19.3.0
-      '@types/react-dom':
-        specifier: 'catalog:'
-        version: 19.3.0(@types/react@19.3.0)
-      eslint:
-        specifier: 'catalog:'
-        version: 9.39.5(jiti@2.7.0)(supports-color@7.2.0)
-      eslint-config-next:
-        specifier: 16.3.8
-        version: 16.3.8(@typescript-eslint/parser@8.71.1(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3))(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)
-      postgres:
-        specifier: 3.4.9
-        version: 3.4.9
-      tailwindcss:
-        specifier: 'catalog:'
-        version: 4.3.3
-      typescript:
-        specifier: 'catalog:'
-        version: 5.9.3
-      vite:
-        specifier: 'catalog:'
-        version: 8.3.2(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
-      vitest:
-        specifier: 'catalog:'
-        version: 5.0.3(@types/node@24.19.2)(@vitest/browser-playwright@5.0.3)(@vitest/ui@5.0.3)(jsdom@30.1.2(@noble/hashes@2.4.0))(vite@8.3.2(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
-
   packages/core:
     devDependencies:
-      '@meuproduto/eslint-config':
+      '@achados/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
-      '@meuproduto/typescript-config':
+      '@achados/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
       '@types/node':
@@ -344,10 +344,10 @@ importers:
 
   packages/data-boundary:
     devDependencies:
-      '@meuproduto/eslint-config':
+      '@achados/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
-      '@meuproduto/typescript-config':
+      '@achados/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
       '@tanstack/react-query':
@@ -389,7 +389,7 @@ importers:
 
   packages/db:
     dependencies:
-      '@meuproduto/core':
+      '@achados/core':
         specifier: workspace:*
         version: link:../core
       drizzle-orm:
@@ -398,11 +398,14 @@ importers:
       postgres:
         specifier: 3.4.9
         version: 3.4.9
+      ulid:
+        specifier: 3.0.2
+        version: 3.0.2
     devDependencies:
-      '@meuproduto/eslint-config':
+      '@achados/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
-      '@meuproduto/typescript-config':
+      '@achados/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
       '@types/node':
@@ -453,10 +456,10 @@ importers:
 
   packages/ui:
     dependencies:
-      '@fontsource-variable/inter':
+      '@fontsource-variable/jetbrains-mono':
         specifier: 5.3.0
         version: 5.3.0
-      '@fontsource-variable/jetbrains-mono':
+      '@fontsource-variable/plus-jakarta-sans':
         specifier: 5.3.0
         version: 5.3.0
       '@tanstack/react-table':
@@ -475,10 +478,10 @@ importers:
         specifier: 3.7.0
         version: 3.7.0
     devDependencies:
-      '@meuproduto/eslint-config':
+      '@achados/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
-      '@meuproduto/typescript-config':
+      '@achados/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
       '@types/node':
@@ -1396,11 +1399,11 @@ packages:
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
 
-  '@fontsource-variable/inter@5.3.0':
-    resolution: {integrity: sha512-OupL48va4JNofb97w6NYeF9S7W/kHNKM0Er8Dem5nqi4jeOLrVJDoE8tZEpnMJmtkvNbB1EIPPwHcdkF6b1oUA==}
-
   '@fontsource-variable/jetbrains-mono@5.3.0':
     resolution: {integrity: sha512-F32xpS2NsGYoQi2ADSkKTgpJj7ozajsGgDJ8woTnqjmIB+dxDIqImjl4pXZVEExu8UFZ2ndhmX18EBS/hdz3Lw==}
+
+  '@fontsource-variable/plus-jakarta-sans@5.3.0':
+    resolution: {integrity: sha512-/l/4r0yyWK9JzAlmA0LiYgGgmJe/Gswt4jTJEzr5QhJfwMbvJZDmYWyW0M4X7yCK69BajMVlV/Lx8g7WDc1+sw==}
 
   '@formatjs/fast-memoize@3.1.7':
     resolution: {integrity: sha512-zXfhLpvA6T7+efdt9JLbBwZ00tT7NsBMDVnDu8rpHeNNv8KfRZAMo2gkG0k9lK/Nzc//3kJ9pImsfuJxk3KhUA==}
@@ -5779,6 +5782,10 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
+  ulid@3.0.2:
+    resolution: {integrity: sha512-yu26mwteFYzBAot7KVMqFGCVpsF6g8wXfJzQUHvu1no3+rRRSFcSV2nKeYvNPLD2J4b08jYBDhHUjeH0ygIl9w==}
+    hasBin: true
+
   unbox-primitive@1.1.0:
     resolution: {integrity: sha512-nWJ91DjeOkej/TA8pXQ3myruKpKEYgqvpw9lz4OPHj/NWFNluYrjbz9j01CJ8yKQd2g4jFoOkINCTW2I5LEEyw==}
     engines: {node: '>= 0.4'}
@@ -6826,9 +6833,9 @@ snapshots:
 
   '@floating-ui/utils@0.2.12': {}
 
-  '@fontsource-variable/inter@5.3.0': {}
-
   '@fontsource-variable/jetbrains-mono@5.3.0': {}
+
+  '@fontsource-variable/plus-jakarta-sans@5.3.0': {}
 
   '@formatjs/fast-memoize@3.1.7': {}
 
@@ -11396,6 +11403,8 @@ snapshots:
       - supports-color
 
   typescript@5.9.3: {}
+
+  ulid@3.0.2: {}
 
   unbox-primitive@1.1.0:
     dependencies:

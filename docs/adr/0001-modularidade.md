@@ -7,7 +7,7 @@
 
 ## Contexto
 
-O Meuproduto começa sem código legado, mas a experiência com sistemas que concentram responsabilidades mostra o custo: mudanças locais ficam difíceis de testar. Separar arquivos por extensão ou mover toda a lógica para um hook grande apenas desloca o problema. Precisamos de unidades que possam mudar independentemente, com dependências legíveis.
+O Achados na Rota começa sem código legado, mas a experiência com sistemas que concentram responsabilidades mostra o custo: mudanças locais ficam difíceis de testar. Separar arquivos por extensão ou mover toda a lógica para um hook grande apenas desloca o problema. Precisamos de unidades que possam mudar independentemente, com dependências legíveis.
 
 ## Decisão proposta
 

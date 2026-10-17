@@ -3,31 +3,32 @@ import { expect } from "storybook/test";
 
 // As classes aparecem por extenso para o Tailwind detectá-las no build.
 const ESCALA = [
-  ["text-4xl", 28, "Números de destaque"],
-  ["text-3xl", 22, "Título de página"],
-  ["text-2xl", 18, "Título de seção"],
-  ["text-xl", 16, "Título de card"],
-  ["text-lg", 14, "Texto em destaque"],
-  ["text-base", 13, "Corpo (padrão do body)"],
-  ["text-sm", 12, "Texto secundário"],
-  ["text-xs", 11, "Rótulos de seção e label flutuante"],
-  ["text-2xs", 10, "Selos e etiquetas em maiúsculas"],
+  ["text-4xl", 36, "Números de destaque"],
+  ["text-3xl", 30, "Título grande"],
+  ["text-2xl", 24, "Nome do lugar na ficha"],
+  ["text-xl", 20, "Título do passaporte"],
+  ["text-lg", 18, "Título de diálogo"],
+  ["text-base", 16, "Corpo (padrão do body e dos campos)"],
+  ["text-sm", 14, "Título de cartão e de seção"],
+  ["text-xs", 12, "Texto de cartão, regras e etiquetas"],
+  ["text-2xs", 10, "Selos e legendas pequenas"],
 ] as const;
 
-// Os pesos da identidade visual: Bold títulos, Semibold destaques, Medium
-// navegação, Regular texto.
+// Os pesos do protótipo: ExtraBold títulos, Bold nomes e ações, Semibold
+// destaques, Medium etiquetas, Regular texto.
 const PESOS = [
-  ["font-bold", "700", "Bold · títulos"],
+  ["font-extrabold", "800", "ExtraBold · títulos"],
+  ["font-bold", "700", "Bold · nomes e ações"],
   ["font-semibold", "600", "Semibold · destaques"],
-  ["font-medium", "500", "Medium · navegação"],
+  ["font-medium", "500", "Medium · etiquetas"],
   ["font-normal", "400", "Regular · texto"],
 ] as const;
 
 const RAIOS = [
-  ["rounded-control", "8px", "Campos e botões"],
-  ["rounded-card", "12px", "Cards e painéis"],
-  ["rounded-overlay", "16px", "Menus, popovers e modais"],
-  ["rounded-full", "total", "Selos, avatares e pílulas"],
+  ["rounded-control", "12px", "Campos"],
+  ["rounded-card", "16px", "Cartões"],
+  ["rounded-overlay", "24px", "Diálogos e cartões de destaque"],
+  ["rounded-full", "total", "Botões, selos, avatares e pílulas"],
 ] as const;
 
 function Escala() {
@@ -59,11 +60,11 @@ function Escala() {
 function Pesos() {
   return (
     <div className="flex flex-col gap-6">
-      <p className="text-4xl font-bold">Inter</p>
+      <p className="text-4xl font-extrabold">Plus Jakarta Sans</p>
       <div className="flex flex-col gap-3">
         {PESOS.map(([classe, peso, uso]) => (
           <p key={classe} className={`text-xl ${classe}`}>
-            Seus documentos ganham vida.{" "}
+            Descubra lugares que valem a pena.{" "}
             <span className="text-sm font-normal text-foreground-muted">
               {peso} · {uso}
             </span>
@@ -71,8 +72,7 @@ function Pesos() {
         ))}
       </div>
       <p className="font-mono text-base">
-        font-mono para códigos, datas e valores: DOC-04291 · 16/10/2026 ·
-        1.284,55
+        font-mono para códigos e valores: AR-9F4JW3 · 16/10/2026 · R$ 129,00
       </p>
       <p className="text-2xs font-bold tracking-wider text-foreground-muted uppercase">
         Rótulo de seção em text-2xs
@@ -115,7 +115,7 @@ export const EscalaDeTamanhos: Story = {
         `${amostra.dataset.px}px`
       );
     }
-    await expect(getComputedStyle(document.body).fontSize).toBe("13px");
+    await expect(getComputedStyle(document.body).fontSize).toBe("16px");
   },
 };
 export const PesosEMono: Story = {
@@ -123,7 +123,7 @@ export const PesosEMono: Story = {
   render: () => <Pesos />,
   play: async () => {
     await expect(getComputedStyle(document.body).fontFamily).toContain(
-      "Inter Variable"
+      "Plus Jakarta Sans Variable"
     );
   },
 };

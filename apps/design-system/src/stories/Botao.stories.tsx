@@ -10,7 +10,7 @@ import {
   IconeLixeira,
   IconeMais,
   IconeSeta,
-} from "@meuproduto/ui";
+} from "@achados/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent, within } from "storybook/test";
 
@@ -21,7 +21,7 @@ const meta = {
   argTypes: {
     variante: {
       control: "inline-radio",
-      options: ["solido", "contorno", "fantasma"],
+      options: ["solido", "contorno", "suave", "flutuante", "fantasma"],
     },
     intencao: { control: "inline-radio", options: ["padrao", "perigo"] },
     tamanho: { control: "inline-radio", options: ["xs", "sm", "md", "lg"] },
@@ -54,15 +54,15 @@ function Linha({ titulo, children }: { titulo: string; children: ReactNode }) {
   );
 }
 
-/** As três variantes, na intenção padrão e na de perigo. */
+/** As variantes, na intenção padrão e na de perigo. */
 export const Variantes: Story = {
   render: () => (
     <div className="flex flex-col gap-8 rounded-card border border-border bg-surface p-6">
       <Linha titulo="Sólido: a ação principal">
-        <Botao icone={<IconeMais />}>Novo cadastro</Botao>
-        <Botao icone={<IconeCheck />}>Salvar</Botao>
+        <Botao icone={<IconeCheck />}>Resgatar</Botao>
+        <Botao icone={<IconeMais />}>Criar conta</Botao>
         <Botao intencao="perigo" icone={<IconeLixeira />}>
-          Excluir documento
+          Excluir conta
         </Botao>
       </Linha>
       <Linha titulo="Contorno: ações secundárias">
@@ -76,6 +76,32 @@ export const Variantes: Story = {
           Inativar
         </Botao>
       </Linha>
+      <Linha titulo="Suave: ação neutra sem borda">
+        <Botao variante="suave">Voltar</Botao>
+        <BotaoDeIcone
+          variante="suave"
+          rotulo="Notificações"
+          icone={<IconeAtualizar />}
+        />
+      </Linha>
+      <div className="flex flex-col gap-3 rounded-card bg-passport p-4">
+        <span className="text-2xs font-bold tracking-wider text-white uppercase">
+          Flutuante: sobre foto
+        </span>
+        <div className="flex flex-wrap items-center gap-3">
+          <BotaoDeIcone
+            variante="flutuante"
+            rotulo="Voltar"
+            icone={<IconeSeta />}
+          />
+          <BotaoDeIcone
+            variante="flutuante"
+            rotulo="Favoritar"
+            icone={<IconeMais />}
+          />
+          <Botao variante="flutuante">Ver fotos</Botao>
+        </div>
+      </div>
       <Linha titulo="Fantasma: ações de apoio">
         <Botao variante="fantasma">Cancelar</Botao>
         <Botao variante="fantasma" icone={<IconeAtualizar />}>
@@ -103,7 +129,7 @@ export const Tamanhos: Story = {
     const alturas = [...canvasElement.querySelectorAll("button")].map(
       (botao) => botao.getBoundingClientRect().height
     );
-    await expect(alturas).toEqual([28, 36, 44, 56]);
+    await expect(alturas).toEqual([32, 40, 44, 52]);
   },
 };
 

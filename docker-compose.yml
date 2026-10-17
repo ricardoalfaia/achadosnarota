@@ -1,14 +1,14 @@
-# Infraestrutura de desenvolvimento do Meuproduto.
+# Infraestrutura de desenvolvimento do Achados na Rota.
 #
 # Mesmo padrão do scribevox: tudo local, sem custo e sem credencial remota.
-# Containers e volumes são só do Meuproduto; nenhum banco é compartilhado com
+# Containers e volumes são só do Achados na Rota; nenhum banco é compartilhado com
 # outros projetos da máquina (isolamento e mínimo privilégio, docs/produto/04).
 #
-# Portas na faixa 4400, como o resto do monorepo (README, "Portas"), e só em
+# Portas na faixa 4500, como o resto do monorepo (README, "Portas"), e só em
 # 127.0.0.1: nada fica exposto na rede local.
-#   4450  PostgreSQL 18      postgresql://meuproduto:meuproduto@127.0.0.1:4450/meuproduto
-#   4451  Storage S3         http://127.0.0.1:4451  (chave meuproduto / meuproduto-dev,
-#                            bucket privado meuproduto-documentos)
+#   4550  PostgreSQL 18      postgresql://achados:achados@127.0.0.1:4550/achados
+#   4551  Storage S3         http://127.0.0.1:4551  (chave achados / achados-dev,
+#                            bucket privado achados-documentos)
 #
 #   pnpm infra:up      sobe os serviços
 #   pnpm infra:down    para os serviços (os volumes continuam)
@@ -20,12 +20,12 @@
 services:
   postgres:
     image: postgres:18-alpine
-    container_name: meuproduto-postgres
+    container_name: achados-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: meuproduto
-      POSTGRES_PASSWORD: meuproduto
-      POSTGRES_DB: meuproduto
+      POSTGRES_USER: achados
+      POSTGRES_PASSWORD: achados
+      POSTGRES_DB: achados
       POSTGRES_INITDB_ARGS: "--data-checksums"
     # Acelera o banco de desenvolvimento; nunca use isso em produção.
     command:
@@ -37,36 +37,36 @@ services:
       - -c
       - full_page_writes=off
     ports:
-      - "127.0.0.1:4450:5432"
+      - "127.0.0.1:4550:5432"
     volumes:
       # O Postgres 18 quer a montagem em /var/lib/postgresql (o PGDATA vai num
       # subdiretório), para permitir pg_upgrade --link entre versões.
-      - meuproduto-pgdata:/var/lib/postgresql
-      # Cria o papel da aplicação (meuproduto_app, sujeito a RLS) na primeira
-      # subida do volume. Volume já existente: pnpm --filter @meuproduto/db
+      - achados-pgdata:/var/lib/postgresql
+      # Cria o papel da aplicação (achados_app, sujeito a RLS) na primeira
+      # subida do volume. Volume já existente: pnpm --filter @achados/db
       # db:setup-app-role, que faz o mesmo e é idempotente.
       - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U meuproduto -d meuproduto"]
+      test: ["CMD-SHELL", "pg_isready -U achados -d achados"]
       interval: 5s
       timeout: 3s
       retries: 12
 
   # Armazenamento de objetos compatível com S3 para os PDFs (SeaweedFS: a imagem
   # pública do MinIO deixou de ser publicada em 2025). Só a identidade
-  # `meuproduto` acessa: não há identidade anônima, então nenhum objeto é público
+  # `achados` acessa: não há identidade anônima, então nenhum objeto é público
   # e nada é servido sem URL assinada, como em produção (docs/produto/adr/ADR-005).
   storage:
     image: chrislusf/seaweedfs:4.48
-    container_name: meuproduto-storage
+    container_name: achados-storage
     restart: unless-stopped
     command: >
       server -dir=/data -s3 -s3.port=8333 -s3.config=/etc/seaweedfs/s3.json
       -master.volumeSizeLimitMB=64 -volume.max=0
     ports:
-      - "127.0.0.1:4451:8333"
+      - "127.0.0.1:4551:8333"
     volumes:
-      - meuproduto-storage:/data
+      - achados-storage:/data
       - ./docker/seaweedfs/s3.json:/etc/seaweedfs/s3.json:ro
     healthcheck:
       test:
@@ -81,15 +81,15 @@ services:
   # Cria o bucket uma vez e sai.
   storage-bucket:
     image: chrislusf/seaweedfs:4.48
-    container_name: meuproduto-storage-bucket
+    container_name: achados-storage-bucket
     depends_on:
       storage:
         condition: service_healthy
     entrypoint: >
-      sh -c "echo 's3.bucket.create -name meuproduto-documentos' |
+      sh -c "echo 's3.bucket.create -name achados-documentos' |
              weed shell -master=storage:9333 2>&1 | grep -v 'already exists' || true"
     restart: "no"
 
 volumes:
-  meuproduto-pgdata:
-  meuproduto-storage:
+  achados-pgdata:
+  achados-storage:

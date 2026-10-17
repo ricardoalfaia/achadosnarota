@@ -15,8 +15,8 @@ const GRUPOS: {
       ["surface-raised", "bg-surface-raised"],
       ["surface-hover", "bg-surface-hover"],
       ["surface-active", "bg-surface-active"],
-      ["surface-header", "bg-surface-header"],
-      ["surface-sidebar", "bg-surface-sidebar"],
+      ["header", "bg-header"],
+      ["chip", "bg-chip"],
       ["overlay", "bg-overlay"],
     ],
   },
@@ -28,7 +28,7 @@ const GRUPOS: {
       ["foreground-muted", "bg-foreground-muted"],
       ["foreground-subtle", "bg-foreground-subtle"],
       ["foreground-inverse", "bg-foreground-inverse"],
-      ["sidebar-foreground", "bg-sidebar-foreground"],
+      ["foreground-brand", "bg-foreground-brand"],
     ],
   },
   {
@@ -41,11 +41,13 @@ const GRUPOS: {
   },
   {
     titulo: "Marca",
-    nota: "primary é texto, ícone e contorno; primary-solid é preenchimento.",
+    nota: "brand é o laranja do logotipo, só para ícone e elemento gráfico; primary é texto e contorno (AA); primary-solid é preenchimento com texto branco (AA).",
     tokens: [
+      ["brand", "bg-brand"],
       ["primary", "bg-primary"],
       ["primary-hover", "bg-primary-hover"],
       ["primary-subtle", "bg-primary-subtle"],
+      ["primary-border", "bg-primary-border"],
       ["primary-solid", "bg-primary-solid"],
       ["primary-solid-hover", "bg-primary-solid-hover"],
       ["primary-solid-foreground", "bg-primary-solid-foreground"],
@@ -55,12 +57,20 @@ const GRUPOS: {
     ],
   },
   {
-    titulo: "Acento e destaque",
-    nota: "accent é o verde água; highlight é o roxo. Ícones e fundos suaves dos cartões.",
+    titulo: "Acento, destaque e selos",
+    nota: "accent é o âmbar da curadoria; star e rating, a estrela e o número da nota; highlight é o céu. Os selos sobre foto têm texto branco (AA).",
     tokens: [
       ["accent", "bg-accent"],
       ["accent-subtle", "bg-accent-subtle"],
       ["accent-border", "bg-accent-border"],
+      ["accent-on-dark", "bg-accent-on-dark"],
+      ["star", "bg-star"],
+      ["rating", "bg-rating"],
+      ["seal-featured", "bg-seal-featured"],
+      ["seal-beloved", "bg-seal-beloved"],
+      ["seal-verified", "bg-seal-verified"],
+      ["seal-new", "bg-seal-new"],
+      ["favorite", "bg-favorite"],
       ["highlight", "bg-highlight"],
       ["highlight-subtle", "bg-highlight-subtle"],
       ["highlight-border", "bg-highlight-border"],
@@ -87,16 +97,26 @@ const GRUPOS: {
 
 // A paleta da marca (camada 1), lida direto das variáveis: ela não gera classes.
 const MARCA = [
-  ["Azul Escuro", "Confiança", "--pl-azul-escuro-900", "#0B2D6B"],
-  ["Verde Água", "Inovação", "--pl-verde-agua-500", "#00C2A8"],
-  ["Azul Principal", "Tecnologia", "--pl-azul-500", "#3B82F6"],
-  ["Roxo", "Criatividade", "--pl-roxo-500", "#8B5CF6"],
-  ["Fundo Claro", "Leveza", "--pl-fundo-claro", "#F4F7FB"],
+  [
+    "Laranja da Rota",
+    "Marca, ícones, item ativo",
+    "--ar-laranja-500",
+    "#F15A24",
+  ],
+  ["Laranja de ação", "Botão e selo (AA)", "--ar-laranja-600", "#D4440F"],
+  ["Asfalto", "Logotipo, passaporte", "--ar-asfalto-900", "#0A1E2E"],
+  ["Âmbar", "Estrela, coroa, curadoria", "--ar-ambar-500", "#F59E0B"],
+  ["Céu", "Selo Mais querido", "--ar-ceu-700", "#0369A1"],
+  ["Verde", "Selo Verificado", "--ar-verde-700", "#15803D"],
+  ["Fundo", "Telas", "--ar-ardosia-50", "#F8FAFC"],
 ] as const;
 
 const DEGRADES = [
-  ["bg-brand-gradient", "Decorativo: verde água → azul → roxo"],
-  ["bg-brand-gradient-action", "Botão principal: verde água → azul"],
+  [
+    "bg-brand-gradient",
+    'Botão central e "na Rota": laranja em degradê (decorativo)',
+  ],
+  ["bg-passport", "Cartão do passaporte: asfalto com brilhos laranja e âmbar"],
 ] as const;
 
 const ESTADOS = [
@@ -173,9 +193,8 @@ function Degrades() {
           </li>
         ))}
       </ul>
-      <p className="text-4xl font-bold">
-        Seus documentos{" "}
-        <span className="text-brand-gradient">ganham vida.</span>
+      <p className="text-4xl font-extrabold">
+        Achados <span className="text-brand-gradient">na Rota</span>
       </p>
       <p className="text-sm text-foreground-muted">
         <code className="font-mono">text-brand-gradient</code>: só em título
@@ -235,10 +254,12 @@ export const DegradesDaMarca: Story = {
   name: "Degradês",
   render: () => <Degrades />,
   play: async ({ canvasElement }) => {
-    const acao = canvasElement.querySelector(".bg-brand-gradient-action");
-    await expect(getComputedStyle(acao as Element).backgroundImage).toContain(
-      "linear-gradient"
-    );
+    for (const classe of [".bg-brand-gradient", ".bg-passport"]) {
+      const amostra = canvasElement.querySelector(classe);
+      await expect(
+        getComputedStyle(amostra as Element).backgroundImage
+      ).toContain("linear-gradient");
+    }
   },
 };
 export const FeedbackEAcao: Story = {
@@ -276,7 +297,7 @@ export const LadoALado: Story = {
       getComputedStyle(
         canvasElement.querySelector(`[data-theme="${tema}"]`) as HTMLElement
       ).backgroundColor;
-    await expect(fundo("light")).toBe("rgb(244, 247, 251)");
-    await expect(fundo("dark")).toBe("rgb(7, 19, 48)");
+    await expect(fundo("light")).toBe("rgb(248, 250, 252)");
+    await expect(fundo("dark")).toBe("rgb(6, 19, 30)");
   },
 };

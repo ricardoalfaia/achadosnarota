@@ -1,9 +1,9 @@
 "use client";
 
-// Design system — tokens, primitivos e padrões de admin.
-// Nenhum conhecimento de domínio aqui: sem Ticket, Tenant, Site.
+// Design system — tokens, primitivos e padrões de interface.
+// Nenhum conhecimento de domínio aqui: sem Lugar, Oferta, Passaporte.
 //
-// Os campos usam os tokens semânticos de `@meuproduto/ui/styles/tokens.css`; o app importa
+// Os campos usam os tokens semânticos de `@achados/ui/styles/tokens.css`; o app importa
 // esse arquivo e declara `@source` apontando para as fontes compartilhadas.
 
 export {
@@ -89,6 +89,11 @@ export {
   type IntencaoDoSeloDeStatus,
   type Visao,
 } from "./components/Cadastro";
+export {
+  CaixaDeIcone,
+  type TamanhoDaCaixaDeIcone,
+  type TomDaCaixaDeIcone,
+} from "./components/CaixaDeIcone";
 export { CaixaSuspensa } from "./components/CaixaSuspensa";
 export {
   CampoDeBusca,
@@ -125,10 +130,17 @@ export {
 } from "./components/Dialogo";
 export { Dica, type LadoDaDica } from "./components/Dica";
 export { Esqueleto, EsqueletoDeTexto } from "./components/Esqueleto";
+export {
+  Etiqueta,
+  type TamanhoDaEtiqueta,
+  type TomDaEtiqueta,
+} from "./components/Etiqueta";
 export { EstadoVazio } from "./components/EstadoVazio";
 export { Etapas, type Etapa, type EstadoDaEtapa } from "./components/Etapas";
 export { GrupoDeBotoes } from "./components/GrupoDeBotoes";
 export { CampoSkeleton } from "./components/CampoSkeleton";
+export { formatarNota, Nota } from "./components/Nota";
+export { Pilula } from "./components/Pilula";
 export { Checkbox, type CheckboxProps } from "./components/Checkbox";
 export { Select, type SelectProps } from "./components/Select";
 export { Selo, type VarianteDoSelo } from "./components/Selo";

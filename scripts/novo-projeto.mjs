@@ -4,8 +4,8 @@ import path from "node:path";
 
 // Renomeia o scaffold para um produto novo (ADR-0023). Lê o nome atual do
 // `name` do package.json da raiz (`<nome>-monorepo`) e troca, nos arquivos
-// versionados, as três grafias dele: `meuproduto` → escopo, `Meuproduto` →
-// nome de exibição e `MEUPRODUTO` → escopo em maiúsculas (variáveis de
+// versionados, as três grafias dele: `achados` → escopo, `Achados na Rota` →
+// nome de exibição e `ACHADOS` → escopo em maiúsculas (variáveis de
 // ambiente). Também renomeia pastas e arquivos que levam o nome.
 //
 //   node scripts/novo-projeto.mjs --escopo acme --nome "Acme"

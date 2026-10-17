@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "@meuproduto/ui/styles/tokens.css";
-@import "@meuproduto/ui/styles/fonts.css";
+@import "@achados/ui/styles/tokens.css";
+@import "@achados/ui/styles/fonts.css";
 
 @source "../../../packages/ui/src";

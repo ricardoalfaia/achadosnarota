@@ -3,7 +3,7 @@ import { useEffect, useEffectEvent, type RefObject } from "react";
 /**
  * Fecha a caixa suspensa com clique fora de `raiz` ou com Esc. No Esc o foco
  * volta para `gatilho`, para quem navega por teclado não cair no `<body>`.
- * Sai por `@meuproduto/ui/hooks` para menus da casca das aplicações.
+ * Sai por `@achados/ui/hooks` para menus da casca das aplicações.
  */
 export function useFecharAoSair(
   raiz: RefObject<HTMLElement | null>,

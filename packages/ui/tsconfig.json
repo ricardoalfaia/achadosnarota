@@ -1,4 +1,4 @@
 {
-  "extends": "@meuproduto/typescript-config/react.json",
+  "extends": "@achados/typescript-config/react.json",
   "include": ["src/**/*.ts", "src/**/*.tsx"]
 }

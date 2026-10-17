@@ -1,4 +1,4 @@
-import { SeletorDePeriodo } from "@meuproduto/ui";
+import { SeletorDePeriodo } from "@achados/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const meta = {

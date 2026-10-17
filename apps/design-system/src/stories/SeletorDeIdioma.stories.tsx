@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { SeletorDeIdioma, type OpcaoDeIdioma } from "@meuproduto/ui";
+import { SeletorDeIdioma, type OpcaoDeIdioma } from "@achados/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, within } from "storybook/test";
 

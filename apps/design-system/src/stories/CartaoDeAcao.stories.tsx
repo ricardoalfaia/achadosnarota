@@ -1,4 +1,4 @@
-import { CartaoDeAcao } from "@meuproduto/ui";
+import { CartaoDeAcao } from "@achados/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { FilePlus, LayoutGrid, PenLine, UserPlus } from "lucide-react";
 import { expect, within } from "storybook/test";

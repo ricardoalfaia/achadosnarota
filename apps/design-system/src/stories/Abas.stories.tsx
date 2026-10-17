@@ -1,11 +1,5 @@
 import type { ReactNode } from "react";
-import {
-  Aba,
-  Abas,
-  CampoDeTexto,
-  ListaDeAbas,
-  PainelDaAba,
-} from "@meuproduto/ui";
+import { Aba, Abas, CampoDeTexto, ListaDeAbas, PainelDaAba } from "@achados/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 
@@ -244,6 +238,37 @@ export const MantendoOEstado: Story = {
     await userEvent.click(tela.getByRole("tab", { name: "Dados gerais" }));
     await expect(tela.getByLabelText("Título do documento")).toHaveValue(
       "Contrato Exemplo"
+    );
+  },
+};
+
+/** Pílulas que dividem a largura toda: o filtro de cupons do passaporte. */
+export const Segmentos: Story = {
+  render: () => (
+    <div className="max-w-sm">
+      <Abas valorInicial="disponiveis" variante="segmentos">
+        <ListaDeAbas rotulo="Filtrar cupons">
+          <Aba valor="disponiveis">Disponíveis (3)</Aba>
+          <Aba valor="utilizados">Utilizados (12)</Aba>
+          <Aba valor="expirados">Expirados (2)</Aba>
+        </ListaDeAbas>
+        <PainelDaAba valor="disponiveis">
+          <Conteudo>Cupons que você pode usar agora.</Conteudo>
+        </PainelDaAba>
+        <PainelDaAba valor="utilizados">
+          <Conteudo>Cupons já validados pelos estabelecimentos.</Conteudo>
+        </PainelDaAba>
+        <PainelDaAba valor="expirados">
+          <Conteudo>Cupons que passaram da validade.</Conteudo>
+        </PainelDaAba>
+      </Abas>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const tela = within(canvasElement);
+    await userEvent.click(tela.getByRole("tab", { name: "Utilizados (12)" }));
+    await expect(tela.getByRole("tabpanel")).toHaveTextContent(
+      "validados pelos estabelecimentos"
     );
   },
 };

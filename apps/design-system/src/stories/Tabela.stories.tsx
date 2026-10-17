@@ -8,7 +8,7 @@ import {
   Tabela,
   type ColunaDaTabela,
   type EdicaoDeCelula,
-} from "@meuproduto/ui";
+} from "@achados/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 

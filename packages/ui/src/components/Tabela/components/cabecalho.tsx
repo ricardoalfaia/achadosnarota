@@ -65,7 +65,7 @@ function TituloDaColuna<T>({
         "relative flex shrink-0 items-center bg-surface-raised text-xs font-bold text-foreground select-none",
         coluna.fixa && "sticky z-10 border-r border-border",
         sendoArrastada && "opacity-40",
-        recebeASolta && "shadow-[inset_2px_0_0_var(--pl-ring)]"
+        recebeASolta && "shadow-[inset_2px_0_0_var(--ar-ring)]"
       )}
       style={estiloDaCelula(coluna)}
     >

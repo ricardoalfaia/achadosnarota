@@ -13,8 +13,8 @@
       "pattern": "packages/*"
     }
   ],
-  "typescript.tsdk": "apps/meuproduto-web/node_modules/typescript/lib",
-  "tailwindCSS.experimental.configFile": "apps/meuproduto-web/src/app/globals.css",
+  "typescript.tsdk": "apps/achados-web/node_modules/typescript/lib",
+  "tailwindCSS.experimental.configFile": "apps/achados-web/src/app/globals.css",
   "tailwindCSS.classFunctions": ["clsx", "twMerge", "cn"],
   "cSpell.language": "en,pt-BR",
   "cSpell.words": [
@@ -176,7 +176,7 @@
     "padrao",
     "padroes",
     "pageerror",
-    "meuproduto",
+    "achados",
     "parametro",
     "parametros",
     "pedaco",

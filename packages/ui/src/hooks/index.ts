@@ -4,6 +4,7 @@
 // definir e validar os entrypoints; este comentário não impõe uma fronteira de build.
 export * from "./use-debounce";
 export * from "./use-fullscreen";
+export * from "./use-instalacao-pwa";
 export * from "./use-keyboard-shortcut";
 export * from "./use-media-query";
 export * from "./use-mounted";

@@ -1,0 +1,3 @@
+# Prompt de auditoria independente — Claude
+
+Revise a implementação do Achados na Rota contra PRD, ADRs, LGPD e critérios de aceite. Não altere código antes de emitir achados. Priorize: autorização horizontal de parceiros, integridade de resgates concorrentes, webhooks falsificados/repetidos, edição indevida de notas editoriais, vazamento de evidências, cache de dados privados, acessibilidade, SEO, observabilidade e rollback. Para cada achado, informe severidade, cenário de exploração/falha, arquivo/linha, correção sugerida e teste de regressão. Separe fatos verificados de hipóteses. Termine com recomendação GO/NO-GO para piloto, nunca para produção sem validação jurídica e operacional.
