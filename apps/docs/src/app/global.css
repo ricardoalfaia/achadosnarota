@@ -1,0 +1,90 @@
+@import "tailwindcss";
+@import "@meuproduto/ui/styles/tokens.css";
+@import "@meuproduto/ui/styles/fonts.css";
+@import "fumadocs-ui/css/neutral.css";
+@import "fumadocs-ui/css/preset.css";
+
+/*
+ * Os tokens do Meuproduto usam a escala densa das telas do sistema (corpo em 13px).
+ * Documentação é texto corrido: aqui a escala volta ao padrão de leitura (16px).
+ */
+@theme {
+  --text-xs: 0.75rem;
+  --text-xs--line-height: calc(1 / 0.75);
+  --text-sm: 0.875rem;
+  --text-sm--line-height: calc(1.25 / 0.875);
+  --text-base: 1rem;
+  --text-base--line-height: calc(1.5 / 1);
+  --text-lg: 1.125rem;
+  --text-lg--line-height: calc(1.75 / 1.125);
+  --text-xl: 1.25rem;
+  --text-xl--line-height: calc(1.75 / 1.25);
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: calc(2 / 1.5);
+  --text-3xl: 1.875rem;
+  --text-3xl--line-height: calc(2.25 / 1.875);
+  --text-4xl: 2.25rem;
+  --text-4xl--line-height: calc(2.5 / 2.25);
+  --text-5xl: 3rem;
+  --text-5xl--line-height: 1;
+}
+
+/*
+ * As cores do Fumadocs passam a vir dos tokens semânticos do Meuproduto, que já
+ * têm um valor para cada tema. `.dark` entra no seletor para vencer os valores
+ * do tema neutro da biblioteca.
+ */
+:root,
+.dark,
+.dark #nd-sidebar {
+  --color-fd-background: var(--pl-background);
+  --color-fd-foreground: var(--pl-foreground);
+  --color-fd-muted: var(--pl-surface-raised);
+  --color-fd-muted-foreground: var(--pl-foreground-muted);
+  --color-fd-popover: var(--pl-surface);
+  --color-fd-popover-foreground: var(--pl-foreground);
+  --color-fd-card: var(--pl-surface);
+  --color-fd-card-foreground: var(--pl-foreground);
+  --color-fd-border: var(--pl-border);
+  --color-fd-primary: var(--pl-primary);
+  --color-fd-primary-foreground: var(--pl-foreground-inverse);
+  --color-fd-secondary: var(--pl-surface-raised);
+  --color-fd-secondary-foreground: var(--pl-foreground);
+  --color-fd-accent: var(--pl-surface-active);
+  --color-fd-accent-foreground: var(--pl-foreground);
+  --color-fd-ring: var(--pl-ring);
+  --color-fd-overlay: var(--pl-overlay);
+  --color-fd-info: var(--pl-info);
+  --color-fd-success: var(--pl-success);
+  --color-fd-warning: var(--pl-warning);
+  --color-fd-error: var(--pl-danger);
+}
+
+/*
+ * Faixa de destaque da página inicial, como o destaque do painel do Meuproduto:
+ * fundo claro da marca com dois focos suaves do degradê (verde água e roxo).
+ * Segue o tema; as cores vêm dos tokens.
+ */
+.fundo-de-destaque {
+  background:
+    radial-gradient(
+      55% 75% at 88% -10%,
+      color-mix(in srgb, var(--pl-brand-gradient-start) 22%, transparent),
+      transparent 62%
+    ),
+    radial-gradient(
+      40% 60% at 0% 110%,
+      color-mix(in srgb, var(--pl-brand-gradient-end) 14%, transparent),
+      transparent 60%
+    ),
+    var(--pl-background);
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+html > body[data-scroll-locked] {
+  margin-right: 0px !important;
+  --removed-body-scroll-bar-size: 0px !important;
+}

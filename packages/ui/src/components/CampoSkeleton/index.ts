@@ -1,0 +1,1 @@
+export { CampoSkeleton } from "./CampoSkeleton";

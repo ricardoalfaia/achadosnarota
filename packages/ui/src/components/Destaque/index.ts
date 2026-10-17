@@ -1,0 +1,1 @@
+export { Destaque } from "./Destaque";

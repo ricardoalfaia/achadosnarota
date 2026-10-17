@@ -1,0 +1,7 @@
+/*
+ * Fontes do design system, servidas pela própria aplicação (sem CDN externo).
+ * Variáveis no eixo de peso: Inter de 100 a 900, JetBrains Mono de 100 a 800.
+ * Importar uma vez por aplicação, junto de tokens.css.
+ */
+@import "@fontsource-variable/inter/index.css";
+@import "@fontsource-variable/jetbrains-mono/index.css";

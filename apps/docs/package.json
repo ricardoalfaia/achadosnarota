@@ -1,0 +1,41 @@
+{
+  "name": "docs",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 4430",
+    "build": "next build",
+    "start": "next start --port 4430",
+    "lint": "eslint . --max-warnings 0",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@meuproduto/ui": "workspace:*",
+    "fumadocs-core": "16.16.2",
+    "fumadocs-mdx": "15.4.6",
+    "fumadocs-ui": "npm:@fumadocs/base-ui@16.16.2",
+    "lucide-react": "1.52.0",
+    "next": "16.3.8",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@meuproduto/eslint-config": "workspace:*",
+    "@meuproduto/typescript-config": "workspace:*",
+    "@playwright/test": "1.63.0",
+    "@tailwindcss/postcss": "^4",
+    "@types/mdx": "2.0.14",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-next": "16.3.8",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  }
+}

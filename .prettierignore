@@ -1,0 +1,17 @@
+node_modules
+.next
+out
+build
+dist
+pnpm-lock.yaml
+*.lock
+*.snap
+
+# sessão gravada pelo E2E
+apps/meuproduto-web/e2e/.auth/
+
+# gerados pelo drizzle-kit (reescritos a cada db:generate)
+packages/db/migrations/meta/
+
+# documentos de produto: preservados como foram escritos
+docs/produto/

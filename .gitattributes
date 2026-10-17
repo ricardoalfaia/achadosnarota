@@ -1,0 +1,13 @@
+# Finais de linha LF em todo o repositório, alinhado ao endOfLine do Prettier.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.avif binary
+*.woff binary
+*.woff2 binary
+*.pdf binary

@@ -1,0 +1,828 @@
+/*
+ * Tokens do design system Meuproduto para Tailwind v4.
+ *
+ * Camada 1 (paleta): valores brutos da marca. Não geram classes.
+ * Camada 2 (semântica): significado de uso, um valor para cada tema via light-dark().
+ * @theme inline: expõe a camada 2 como classes (bg-surface, text-foreground...).
+ *
+ * Componentes usam só as classes da camada 2. O tema segue o sistema operacional;
+ * data-theme="light" ou data-theme="dark" em qualquer elemento força um deles.
+ * Origem dos valores: identidade visual Meuproduto (docs/produto/marca/quadro-da-marca.png: quadro da marca e
+ * mockup do painel). Os nomes semânticos vêm da base anterior e foram mantidos.
+ */
+
+:root {
+  color-scheme: light dark;
+
+  /* ── Camada 1: paleta ─────────────────────────────────────────────── */
+  /* Azul Escuro (confiança): títulos, texto forte, fundo do logo invertido. */
+  --pl-azul-escuro-950: #06173a;
+  --pl-azul-escuro-900: #0b2d6b;
+  --pl-azul-escuro-800: #133a80;
+  --pl-azul-escuro-700: #1c4994;
+
+  /* Verde Água (inovação): início do degradê, destaque. */
+  --pl-verde-agua-800: #006657;
+  --pl-verde-agua-700: #007a6a;
+  --pl-verde-agua-600: #00a08b;
+  --pl-verde-agua-500: #00c2a8;
+  --pl-verde-agua-400: #2ed8bf;
+  --pl-verde-agua-300: #5ee0cb;
+  --pl-verde-agua-50: #e6faf6;
+
+  /* Azul Principal (tecnologia): a cor primária. */
+  --pl-azul-700: #1d4ed8;
+  --pl-azul-600: #2563eb;
+  --pl-azul-500: #3b82f6;
+  --pl-azul-400: #60a5fa;
+  --pl-azul-300: #93c5fd;
+  --pl-azul-50: #eff6ff;
+
+  /* Roxo (criatividade): fim do degradê, acento. */
+  --pl-roxo-700: #6d28d9;
+  --pl-roxo-600: #7c3aed;
+  --pl-roxo-500: #8b5cf6;
+  --pl-roxo-400: #a78bfa;
+  --pl-roxo-50: #f5f3ff;
+
+  /* Fundo Claro (leveza). */
+  --pl-fundo-claro: #f4f7fb;
+
+  /* Feedback */
+  --pl-esmeralda-700: #047857;
+  --pl-esmeralda-500: #10b981;
+  --pl-esmeralda-400: #34d399;
+  --pl-esmeralda-50: #ecfdf5;
+
+  --pl-ambar-700: #b45309;
+  --pl-ambar-500: #f59e0b;
+  --pl-ambar-300: #f3c46b;
+  --pl-ambar-50: #fffbeb;
+
+  --pl-rosa-800: #9f1239;
+  --pl-rosa-700: #be123c;
+  --pl-rosa-600: #e11d48;
+  --pl-rosa-500: #f43f5e;
+  --pl-rosa-400: #fb7185;
+  --pl-rosa-100: #ffe4e6;
+}
+
+/*
+ * ── Camada 2: semântica (claro, escuro) ─────────────────────────────────
+ * Declarada também em [data-theme]: light-dark() é resolvido no elemento que
+ * declara o token, então um trecho com data-theme próprio precisa redeclará-los
+ * para o tema valer dali para dentro.
+ */
+:root,
+[data-theme] {
+  /* Superfícies, da página até o item selecionado. O escuro é azul-marinho. */
+  --pl-background: light-dark(var(--pl-fundo-claro), #071330);
+  --pl-surface: light-dark(#ffffff, #0c1c40);
+  --pl-surface-raised: light-dark(#f8fafd, #10234b);
+  --pl-surface-hover: light-dark(#f1f5fb, #142a56);
+  --pl-surface-active: light-dark(#ebf2fd, #1a3364);
+  --pl-surface-header: light-dark(#ffffff, #0a1838);
+  --pl-surface-sidebar: light-dark(var(--pl-azul-escuro-900), #061029);
+  --pl-overlay: light-dark(rgb(6 23 58 / 0.55), rgb(3 8 22 / 0.72));
+
+  /* Texto: azul-escuro da marca e cinza-azulado */
+  --pl-foreground: light-dark(var(--pl-azul-escuro-900), #e6edf8);
+  --pl-foreground-muted: light-dark(#52627f, #9fb0cc);
+  /* Só texto grande ou decorativo: não atinge contraste AA em texto pequeno. */
+  --pl-foreground-subtle: light-dark(#94a3bd, #6a7ea3);
+  --pl-foreground-inverse: light-dark(#ffffff, #071330);
+  --pl-sidebar-foreground: light-dark(#ffffff, #d5def0);
+
+  /* Linhas e foco */
+  --pl-border: light-dark(#e3e9f2, #1b2d55);
+  --pl-border-strong: light-dark(#cdd7e6, #26396a);
+  --pl-ring: light-dark(var(--pl-azul-500), var(--pl-azul-400));
+
+  /*
+   * Marca como texto, ícone e contorno. O azul principal (#3b82f6) não atinge
+   * AA sobre branco (3,7:1): o texto usa o 600 no claro e o 400 no escuro.
+   */
+  --pl-primary: light-dark(var(--pl-azul-600), var(--pl-azul-400));
+  --pl-primary-hover: light-dark(var(--pl-azul-700), var(--pl-azul-300));
+  --pl-primary-subtle: light-dark(
+    var(--pl-azul-50),
+    color-mix(in srgb, var(--pl-azul-400) 14%, transparent)
+  );
+
+  /* Marca como preenchimento (chip escolhido, item ativo): azul sólido com texto branco. */
+  --pl-primary-solid: var(--pl-azul-600);
+  --pl-primary-solid-hover: var(--pl-azul-700);
+  --pl-primary-solid-foreground: #ffffff;
+  --pl-primary-solid-border: light-dark(
+    transparent,
+    color-mix(in srgb, var(--pl-azul-400) 45%, transparent)
+  );
+
+  /*
+   * Botão principal: o degradê de ação da marca (verde água → azul) no claro,
+   * como "Gerar documento" no mockup; no escuro, azul em degradê curto. Os tons
+   * são os mais escuros de cada cor para o texto branco atingir AA.
+   */
+  --pl-primary-solid-start: light-dark(
+    var(--pl-verde-agua-700),
+    var(--pl-azul-600)
+  );
+  --pl-primary-solid-start-hover: light-dark(
+    var(--pl-verde-agua-800),
+    var(--pl-azul-700)
+  );
+  --pl-primary-solid-end: light-dark(var(--pl-azul-600), var(--pl-azul-700));
+  --pl-primary-solid-glow: light-dark(rgb(59 130 246 / 0.25), transparent);
+  --pl-primary-solid-glow-strong: light-dark(
+    rgb(59 130 246 / 0.4),
+    transparent
+  );
+
+  /* Acento (verde água) e destaque (roxo): ícones, fundos suaves de cartões. */
+  --pl-accent: light-dark(var(--pl-verde-agua-700), var(--pl-verde-agua-400));
+  --pl-accent-subtle: light-dark(
+    var(--pl-verde-agua-50),
+    color-mix(in srgb, var(--pl-verde-agua-500) 14%, transparent)
+  );
+  --pl-accent-border: color-mix(
+    in srgb,
+    var(--pl-verde-agua-500) 35%,
+    transparent
+  );
+
+  --pl-highlight: light-dark(var(--pl-roxo-600), var(--pl-roxo-400));
+  --pl-highlight-subtle: light-dark(
+    var(--pl-roxo-50),
+    color-mix(in srgb, var(--pl-roxo-500) 16%, transparent)
+  );
+  --pl-highlight-border: color-mix(
+    in srgb,
+    var(--pl-roxo-500) 35%,
+    transparent
+  );
+
+  /*
+   * Degradê da marca: verde água → azul → roxo. Decorativo (faixas, ilustração,
+   * bordas); texto sobre ele não tem contraste garantido.
+   */
+  --pl-brand-gradient-start: light-dark(
+    var(--pl-verde-agua-500),
+    var(--pl-verde-agua-400)
+  );
+  --pl-brand-gradient-mid: light-dark(var(--pl-azul-500), var(--pl-azul-400));
+  --pl-brand-gradient-end: light-dark(var(--pl-roxo-500), var(--pl-roxo-400));
+  /* Texto em degradê ("ganham vida."): tons que atingem 3:1, só em título grande. */
+  --pl-brand-text-start: light-dark(
+    var(--pl-verde-agua-600),
+    var(--pl-verde-agua-400)
+  );
+  --pl-brand-text-mid: light-dark(var(--pl-azul-500), var(--pl-azul-400));
+  --pl-brand-text-end: light-dark(var(--pl-roxo-500), var(--pl-roxo-400));
+
+  /* Ação destrutiva como preenchimento; no escuro, translúcido com texto rosa. */
+  --pl-danger-solid: light-dark(
+    var(--pl-rosa-700),
+    color-mix(in srgb, var(--pl-rosa-600) 18%, transparent)
+  );
+  --pl-danger-solid-hover: light-dark(
+    var(--pl-rosa-800),
+    color-mix(in srgb, var(--pl-rosa-600) 28%, transparent)
+  );
+  --pl-danger-solid-foreground: light-dark(#ffffff, var(--pl-rosa-400));
+  --pl-danger-solid-border: light-dark(
+    var(--pl-rosa-700),
+    color-mix(in srgb, var(--pl-rosa-600) 45%, transparent)
+  );
+
+  /* Feedback: texto, fundo e borda */
+  --pl-success: light-dark(var(--pl-esmeralda-700), var(--pl-esmeralda-400));
+  --pl-success-subtle: light-dark(
+    var(--pl-esmeralda-50),
+    color-mix(in srgb, var(--pl-esmeralda-500) 14%, transparent)
+  );
+  --pl-success-border: color-mix(
+    in srgb,
+    var(--pl-esmeralda-500) 35%,
+    transparent
+  );
+
+  --pl-warning: light-dark(var(--pl-ambar-700), var(--pl-ambar-300));
+  --pl-warning-subtle: light-dark(
+    var(--pl-ambar-50),
+    color-mix(in srgb, var(--pl-ambar-500) 10%, transparent)
+  );
+  --pl-warning-border: color-mix(in srgb, var(--pl-ambar-500) 35%, transparent);
+
+  --pl-danger: light-dark(var(--pl-rosa-700), var(--pl-rosa-400));
+  --pl-danger-subtle: light-dark(
+    var(--pl-rosa-100),
+    color-mix(in srgb, var(--pl-rosa-600) 14%, transparent)
+  );
+  --pl-danger-border: color-mix(in srgb, var(--pl-rosa-600) 35%, transparent);
+
+  --pl-info: var(--pl-primary);
+  --pl-info-subtle: light-dark(
+    var(--pl-azul-50),
+    color-mix(in srgb, var(--pl-azul-400) 16%, transparent)
+  );
+  --pl-info-border: color-mix(in srgb, var(--pl-azul-500) 35%, transparent);
+
+  /* Sombras: no escuro as camadas se separam por borda, a sombra só reforça. */
+  --pl-shadow-color: light-dark(rgb(11 45 107 / 0.08), rgb(0 0 0 / 0.55));
+  --pl-shadow-color-strong: light-dark(rgb(11 45 107 / 0.16), rgb(0 0 0 / 0.7));
+  --pl-shadow-edge: light-dark(
+    transparent,
+    color-mix(in srgb, var(--pl-azul-400) 6%, transparent)
+  );
+
+  /*
+   * ── Menu lateral ──────────────────────────────────────────────────────
+   * O fundo é escuro nos dois temas (azul-escuro da marca em degradê no claro,
+   * marinho profundo no escuro), por isso tem texto, destaque e camadas próprios.
+   */
+  --pl-sidebar-start: light-dark(var(--pl-azul-escuro-900), #061029);
+  --pl-sidebar-end: light-dark(#082255, #061029);
+  --pl-sidebar-border: light-dark(rgb(255 255 255 / 0.08), #1b2d55);
+  --pl-sidebar-muted: rgb(255 255 255 / 0.65);
+  --pl-sidebar-close: rgb(255 255 255 / 0.6);
+
+  /* Destaque do menu: verde água claro nos dois temas. */
+  --pl-sidebar-accent: var(--pl-verde-agua-300);
+  --pl-sidebar-accent-border: light-dark(
+    var(--pl-verde-agua-500),
+    var(--pl-verde-agua-400)
+  );
+  --pl-sidebar-link: light-dark(var(--pl-verde-agua-300), var(--pl-azul-400));
+
+  /* Itens do menu */
+  --pl-sidebar-item: light-dark(rgb(255 255 255 / 0.85), #d5def0);
+  --pl-sidebar-item-hover: light-dark(rgb(255 255 255 / 0.1), #142a56);
+  --pl-sidebar-item-active: rgb(59 130 246 / 0.22);
+  --pl-sidebar-subitem: light-dark(rgb(255 255 255 / 0.85), #b9c6dd);
+  --pl-sidebar-subitem-hover: rgb(255 255 255 / 0.08);
+  --pl-sidebar-subitem-active-start: light-dark(
+    rgb(59 130 246 / 0.2),
+    rgb(96 165 250 / 0.16)
+  );
+  --pl-sidebar-subitem-active-end: light-dark(
+    rgb(59 130 246 / 0.2),
+    rgb(96 165 250 / 0.02)
+  );
+
+  /* Grupo aberto: moldura, cabeçalho branco no claro e elevado no escuro */
+  --pl-sidebar-group-border: light-dark(rgb(255 255 255 / 0.55), #26396a);
+  --pl-sidebar-group: light-dark(transparent, #0c1c40);
+  --pl-sidebar-group-head: light-dark(#ffffff, #10234b);
+
+  /* Faixa recolhida (só ícones) e submenu flutuante ao lado dela */
+  --pl-sidebar-rail-item: light-dark(rgb(255 255 255 / 0.55), #9fb0cc);
+  --pl-sidebar-rail-item-hover: light-dark(rgb(255 255 255 / 0.08), #142a56);
+  --pl-sidebar-rail-item-hover-foreground: light-dark(#ffffff, #e6edf8);
+  --pl-sidebar-rail-item-active: light-dark(
+    rgb(59 130 246 / 0.2),
+    rgb(96 165 250 / 0.1)
+  );
+  --pl-sidebar-flyout: light-dark(#0a2660, #0c1c40);
+  --pl-sidebar-flyout-border: light-dark(rgb(255 255 255 / 0.12), #26396a);
+  --pl-sidebar-flyout-title: light-dark(rgb(255 255 255 / 0.5), #6a7ea3);
+
+  /* Rodapé: cartão da empresa/usuário, selos de versão */
+  --pl-sidebar-footer: light-dark(rgb(0 0 0 / 0.2), transparent);
+  --pl-sidebar-card-start: light-dark(rgb(255 255 255 / 0.12), #0e1f45);
+  --pl-sidebar-card-end: light-dark(rgb(0 194 168 / 0.08), #0a1838);
+  --pl-sidebar-card-hover-start: light-dark(rgb(255 255 255 / 0.18), #0e1f45);
+  --pl-sidebar-card-hover-end: light-dark(rgb(0 194 168 / 0.16), #0a1838);
+  --pl-sidebar-card-active-start: light-dark(rgb(0 194 168 / 0.25), #0e1f45);
+  --pl-sidebar-card-active-end: light-dark(rgb(59 130 246 / 0.4), #0a1838);
+  --pl-sidebar-card-border: light-dark(rgb(0 194 168 / 0.35), #26396a);
+  --pl-sidebar-card-border-hover: light-dark(var(--pl-verde-agua-300), #2f4a80);
+  --pl-sidebar-card-shadow: light-dark(rgb(6 23 58 / 0.25), transparent);
+  --pl-sidebar-card-shadow-hover: light-dark(
+    rgb(0 194 168 / 0.35),
+    transparent
+  );
+  --pl-sidebar-card-shadow-active: light-dark(
+    rgb(0 194 168 / 0.55),
+    transparent
+  );
+  --pl-sidebar-neon: var(--pl-verde-agua-500);
+  --pl-sidebar-avatar: var(--pl-azul-escuro-800);
+  --pl-sidebar-avatar-border: rgb(0 194 168 / 0.6);
+  --pl-sidebar-presence: var(--pl-esmeralda-500);
+  --pl-sidebar-presence-ring: light-dark(#082255, #0c1c40);
+  --pl-sidebar-chip: light-dark(rgb(255 255 255 / 0.08), #0c1c40);
+  --pl-sidebar-chip-border: light-dark(transparent, #1b2d55);
+  --pl-badge-ok: light-dark(var(--pl-esmeralda-700), rgb(52 211 153 / 0.16));
+  --pl-badge-ok-foreground: light-dark(#ffffff, var(--pl-esmeralda-400));
+  --pl-badge-ok-border: light-dark(transparent, rgb(52 211 153 / 0.4));
+
+  /* Menu secundário: claro no tema claro, marinho no escuro. */
+  --pl-sidebar-secondary: light-dark(#f8fafd, #061029);
+  --pl-sidebar-secondary-link: light-dark(var(--pl-foreground), #d5def0);
+  --pl-sidebar-secondary-link-hover: light-dark(#eef2f8, #142a56);
+  --pl-sidebar-secondary-link-active: light-dark(
+    #e6eefa,
+    rgb(96 165 250 / 0.12)
+  );
+  --pl-sidebar-secondary-link-active-ring: light-dark(
+    transparent,
+    rgb(96 165 250 / 0.18)
+  );
+
+  /* ── Faixa do topo ───────────────────────────────────────────────────── */
+  --pl-header: light-dark(#ffffff, rgb(10 24 56 / 0.94));
+  /* Pílulas e caixa de busca: cinza-azulado no claro, cartão no escuro. */
+  --pl-header-pill: light-dark(#f1f5fb, #0c1c40);
+  --pl-header-control: light-dark(#ffffff, #0c1c40);
+  --pl-popover-border: light-dark(#e3e9f2, #26396a);
+  --pl-ring-glow: light-dark(rgb(59 130 246 / 0.25), rgb(96 165 250 / 0.22));
+  --pl-header-status: light-dark(#059669, #9fb0cc);
+  --pl-notification-badge: var(--pl-rosa-500);
+  /* Verde água claro de texto e selo, igual nos dois temas. */
+  --pl-neon: var(--pl-verde-agua-300);
+
+  /* Painel de notificações: ícone por tipo, item não lido, módulo */
+  --pl-notification-warn: #d97706;
+  --pl-notification-warn-bg: light-dark(#fff4e5, rgb(217 119 6 / 0.18));
+  --pl-notification-risk: light-dark(var(--pl-rosa-600), #fda4af);
+  --pl-notification-risk-bg: light-dark(#ffe4e6, rgb(225 29 72 / 0.18));
+  --pl-notification-ok: light-dark(#059669, var(--pl-esmeralda-400));
+  --pl-notification-ok-bg: light-dark(#dcfce7, rgb(5 150 105 / 0.18));
+  --pl-notification-info: light-dark(var(--pl-azul-700), var(--pl-azul-300));
+  --pl-notification-info-bg: light-dark(
+    var(--pl-azul-50),
+    rgb(59 130 246 / 0.16)
+  );
+  --pl-notification-unread: rgb(59 130 246 / 0.05);
+  --pl-notification-unread-hover: rgb(59 130 246 / 0.1);
+  --pl-notification-count-active: rgb(59 130 246 / 0.16);
+  --pl-notification-count-active-foreground: light-dark(
+    var(--pl-azul-escuro-900),
+    var(--pl-azul-300)
+  );
+  --pl-notification-module: light-dark(
+    var(--pl-azul-escuro-900),
+    var(--pl-azul-400)
+  );
+  --pl-notification-shadow: light-dark(rgb(11 45 107 / 0.32), rgb(0 0 0 / 0.7));
+
+  /* ── Menu do usuário e janelas em destaque ───────────────────────────── */
+  --pl-user-menu-shadow: light-dark(rgb(11 45 107 / 0.3), rgb(0 0 0 / 0.7));
+  --pl-user-menu-shadow-edge: light-dark(
+    rgb(11 45 107 / 0.05),
+    rgb(96 165 250 / 0.06)
+  );
+  --pl-dialog-header-start: light-dark(var(--pl-azul-escuro-900), #10234b);
+  --pl-dialog-header-end: light-dark(var(--pl-azul-escuro-700), #0a1838);
+  /* Etiqueta de uma chave de menu e cartão de versão anterior. */
+  --pl-chip: light-dark(#f1f5fb, #10234b);
+  --pl-release-card: light-dark(#ffffff, #10234b);
+  --pl-badge-new-start: light-dark(
+    var(--pl-verde-agua-700),
+    rgb(96 165 250 / 0.18)
+  );
+  --pl-badge-new-end: light-dark(var(--pl-azul-600), rgb(96 165 250 / 0.18));
+  --pl-badge-new-foreground: light-dark(#ffffff, var(--pl-azul-300));
+  --pl-badge-new-border: light-dark(transparent, rgb(96 165 250 / 0.4));
+  --pl-badge-new-shadow: light-dark(rgb(59 130 246 / 0.4), transparent);
+
+  /* Borda sutil da sombra do painel de notificações. */
+  --pl-notification-shadow-edge: light-dark(
+    rgb(11 45 107 / 0.04),
+    rgb(96 165 250 / 0.06)
+  );
+
+  /*
+   * ── Painel da marca das telas de acesso ───────────────────────────────
+   * Escuro nos dois temas, como o menu lateral: azul-escuro da marca em
+   * degradê no claro, marinho profundo no escuro. O texto é branco.
+   */
+  --pl-brand-panel-start: light-dark(var(--pl-azul-escuro-700), #10234b);
+  --pl-brand-panel-end: light-dark(var(--pl-azul-escuro-950), #061029);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+/* `dark:` acompanha a mesma regra dos tokens. Preferir os tokens; usar só no que não é cor. */
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:not([data-theme="light"], [data-theme="light"] *)) {
+      @slot;
+    }
+  }
+}
+
+@theme inline {
+  /* Só as cores do design system existem: bg-zinc-500, text-red-600 etc. deixam de gerar CSS. */
+  --color-*: initial;
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  --color-background: var(--pl-background);
+  --color-surface: var(--pl-surface);
+  --color-surface-raised: var(--pl-surface-raised);
+  --color-surface-hover: var(--pl-surface-hover);
+  --color-surface-active: var(--pl-surface-active);
+  --color-surface-header: var(--pl-surface-header);
+  --color-surface-sidebar: var(--pl-surface-sidebar);
+  --color-overlay: var(--pl-overlay);
+
+  --color-foreground: var(--pl-foreground);
+  --color-foreground-muted: var(--pl-foreground-muted);
+  --color-foreground-subtle: var(--pl-foreground-subtle);
+  --color-foreground-inverse: var(--pl-foreground-inverse);
+  --color-sidebar-foreground: var(--pl-sidebar-foreground);
+
+  /* Menu lateral */
+  --color-sidebar-start: var(--pl-sidebar-start);
+  --color-sidebar-end: var(--pl-sidebar-end);
+  --color-sidebar-border: var(--pl-sidebar-border);
+  --color-sidebar-muted: var(--pl-sidebar-muted);
+  --color-sidebar-close: var(--pl-sidebar-close);
+  --color-sidebar-accent: var(--pl-sidebar-accent);
+  --color-sidebar-accent-border: var(--pl-sidebar-accent-border);
+  --color-sidebar-link: var(--pl-sidebar-link);
+  --color-sidebar-item: var(--pl-sidebar-item);
+  --color-sidebar-item-hover: var(--pl-sidebar-item-hover);
+  --color-sidebar-item-active: var(--pl-sidebar-item-active);
+  --color-sidebar-subitem: var(--pl-sidebar-subitem);
+  --color-sidebar-subitem-hover: var(--pl-sidebar-subitem-hover);
+  --color-sidebar-subitem-active-start: var(--pl-sidebar-subitem-active-start);
+  --color-sidebar-subitem-active-end: var(--pl-sidebar-subitem-active-end);
+  --color-sidebar-group-border: var(--pl-sidebar-group-border);
+  --color-sidebar-group: var(--pl-sidebar-group);
+  --color-sidebar-group-head: var(--pl-sidebar-group-head);
+  --color-sidebar-rail-item: var(--pl-sidebar-rail-item);
+  --color-sidebar-rail-item-hover: var(--pl-sidebar-rail-item-hover);
+  --color-sidebar-rail-item-hover-foreground: var(
+    --pl-sidebar-rail-item-hover-foreground
+  );
+  --color-sidebar-rail-item-active: var(--pl-sidebar-rail-item-active);
+  --color-sidebar-flyout: var(--pl-sidebar-flyout);
+  --color-sidebar-flyout-border: var(--pl-sidebar-flyout-border);
+  --color-sidebar-flyout-title: var(--pl-sidebar-flyout-title);
+  --color-sidebar-footer: var(--pl-sidebar-footer);
+  --color-sidebar-card-start: var(--pl-sidebar-card-start);
+  --color-sidebar-card-end: var(--pl-sidebar-card-end);
+  --color-sidebar-card-hover-start: var(--pl-sidebar-card-hover-start);
+  --color-sidebar-card-hover-end: var(--pl-sidebar-card-hover-end);
+  --color-sidebar-card-active-start: var(--pl-sidebar-card-active-start);
+  --color-sidebar-card-active-end: var(--pl-sidebar-card-active-end);
+  --color-sidebar-card-border: var(--pl-sidebar-card-border);
+  --color-sidebar-card-border-hover: var(--pl-sidebar-card-border-hover);
+  --color-sidebar-neon: var(--pl-sidebar-neon);
+  --color-sidebar-avatar: var(--pl-sidebar-avatar);
+  --color-sidebar-avatar-border: var(--pl-sidebar-avatar-border);
+  --color-sidebar-presence: var(--pl-sidebar-presence);
+  --color-sidebar-presence-ring: var(--pl-sidebar-presence-ring);
+  --color-sidebar-chip: var(--pl-sidebar-chip);
+  --color-sidebar-chip-border: var(--pl-sidebar-chip-border);
+  --color-badge-ok: var(--pl-badge-ok);
+  --color-badge-ok-foreground: var(--pl-badge-ok-foreground);
+  --color-badge-ok-border: var(--pl-badge-ok-border);
+  --color-sidebar-secondary: var(--pl-sidebar-secondary);
+  --color-sidebar-secondary-link: var(--pl-sidebar-secondary-link);
+  --color-sidebar-secondary-link-hover: var(--pl-sidebar-secondary-link-hover);
+  --color-sidebar-secondary-link-active: var(
+    --pl-sidebar-secondary-link-active
+  );
+  --color-sidebar-secondary-link-active-ring: var(
+    --pl-sidebar-secondary-link-active-ring
+  );
+
+  /* Faixa do topo */
+  --color-header: var(--pl-header);
+  --color-header-pill: var(--pl-header-pill);
+  --color-header-control: var(--pl-header-control);
+  --color-popover-border: var(--pl-popover-border);
+  --color-header-status: var(--pl-header-status);
+  --color-notification-badge: var(--pl-notification-badge);
+  --color-neon: var(--pl-neon);
+  --color-notification-warn: var(--pl-notification-warn);
+  --color-notification-warn-bg: var(--pl-notification-warn-bg);
+  --color-notification-risk: var(--pl-notification-risk);
+  --color-notification-risk-bg: var(--pl-notification-risk-bg);
+  --color-notification-ok: var(--pl-notification-ok);
+  --color-notification-ok-bg: var(--pl-notification-ok-bg);
+  --color-notification-info: var(--pl-notification-info);
+  --color-notification-info-bg: var(--pl-notification-info-bg);
+  --color-notification-unread: var(--pl-notification-unread);
+  --color-notification-unread-hover: var(--pl-notification-unread-hover);
+  --color-notification-count-active: var(--pl-notification-count-active);
+  --color-notification-count-active-foreground: var(
+    --pl-notification-count-active-foreground
+  );
+  --color-notification-module: var(--pl-notification-module);
+  --color-dialog-header-start: var(--pl-dialog-header-start);
+  --color-dialog-header-end: var(--pl-dialog-header-end);
+  --color-chip: var(--pl-chip);
+  --color-release-card: var(--pl-release-card);
+  --color-badge-new-start: var(--pl-badge-new-start);
+  --color-badge-new-end: var(--pl-badge-new-end);
+  --color-badge-new-foreground: var(--pl-badge-new-foreground);
+  --color-badge-new-border: var(--pl-badge-new-border);
+  --color-brand-panel-start: var(--pl-brand-panel-start);
+  --color-brand-panel-end: var(--pl-brand-panel-end);
+
+  --color-border: var(--pl-border);
+  --color-border-strong: var(--pl-border-strong);
+  --color-ring: var(--pl-ring);
+
+  --color-primary: var(--pl-primary);
+  --color-primary-hover: var(--pl-primary-hover);
+  --color-primary-subtle: var(--pl-primary-subtle);
+  --color-primary-solid: var(--pl-primary-solid);
+  --color-primary-solid-hover: var(--pl-primary-solid-hover);
+  --color-primary-solid-foreground: var(--pl-primary-solid-foreground);
+  --color-primary-solid-border: var(--pl-primary-solid-border);
+  --color-primary-solid-start: var(--pl-primary-solid-start);
+  --color-primary-solid-start-hover: var(--pl-primary-solid-start-hover);
+  --color-primary-solid-end: var(--pl-primary-solid-end);
+  --color-danger-solid: var(--pl-danger-solid);
+  --color-danger-solid-hover: var(--pl-danger-solid-hover);
+  --color-danger-solid-foreground: var(--pl-danger-solid-foreground);
+  --color-danger-solid-border: var(--pl-danger-solid-border);
+
+  --color-success: var(--pl-success);
+  --color-success-subtle: var(--pl-success-subtle);
+  --color-success-border: var(--pl-success-border);
+  --color-warning: var(--pl-warning);
+  --color-warning-subtle: var(--pl-warning-subtle);
+  --color-warning-border: var(--pl-warning-border);
+  --color-danger: var(--pl-danger);
+  --color-danger-subtle: var(--pl-danger-subtle);
+  --color-danger-border: var(--pl-danger-border);
+  --color-info: var(--pl-info);
+  --color-info-subtle: var(--pl-info-subtle);
+  --color-info-border: var(--pl-info-border);
+
+  /* Acento (verde água) e destaque (roxo) da marca */
+  --color-accent: var(--pl-accent);
+  --color-accent-subtle: var(--pl-accent-subtle);
+  --color-accent-border: var(--pl-accent-border);
+  --color-highlight: var(--pl-highlight);
+  --color-highlight-subtle: var(--pl-highlight-subtle);
+  --color-highlight-border: var(--pl-highlight-border);
+
+  --shadow-sm:
+    0 1px 3px var(--pl-shadow-color), 0 1px 2px var(--pl-shadow-color);
+  --shadow-md:
+    0 4px 14px -2px var(--pl-shadow-color),
+    0 2px 6px -1px var(--pl-shadow-color);
+  --shadow-lg:
+    0 16px 36px -6px var(--pl-shadow-color-strong),
+    0 6px 16px -4px var(--pl-shadow-color), 0 0 0 1px var(--pl-shadow-edge);
+  /* Brilho do botão principal, em repouso e ao passar o mouse. */
+  --shadow-glow: 0 3px 12px var(--pl-primary-solid-glow);
+  --shadow-glow-strong: 0 6px 18px var(--pl-primary-solid-glow-strong);
+  --shadow-xl:
+    0 24px 60px -12px var(--pl-shadow-color-strong),
+    0 8px 24px -6px var(--pl-shadow-color), 0 0 0 1px var(--pl-shadow-edge);
+  /* Cartão da empresa no menu lateral: em repouso, ao passar o mouse e aberto. */
+  --shadow-sidebar-card: 0 4px 16px var(--pl-sidebar-card-shadow);
+  --shadow-sidebar-card-hover: 0 6px 20px var(--pl-sidebar-card-shadow-hover);
+  --shadow-sidebar-card-active: 0 0 18px var(--pl-sidebar-card-shadow-active);
+  --shadow-sidebar-avatar: 0 3px 10px rgb(0 194 168 / 0.35);
+  --shadow-sidebar-presence: 0 0 4px var(--pl-esmeralda-500);
+  /* Faixa do topo */
+  --shadow-ring-glow: 0 0 0 3px var(--pl-ring-glow);
+  --shadow-live-dot: 0 0 0 2px rgb(16 185 129 / 0.25);
+  --shadow-status-dot: 0 0 0 2px rgb(16 185 129 / 0.3);
+  --shadow-kbd: 0 1px 2px rgb(0 0 0 / 0.05);
+  --shadow-notification:
+    0 18px 44px -10px var(--pl-notification-shadow),
+    0 0 0 1px var(--pl-notification-shadow-edge);
+  --shadow-user-menu:
+    0 16px 40px -8px var(--pl-user-menu-shadow),
+    0 0 0 1px var(--pl-user-menu-shadow-edge);
+  --shadow-badge-new: 0 1px 4px var(--pl-badge-new-shadow);
+  /* Emblema da marca no menu lateral. */
+  --drop-shadow-emblem: 0 4px 10px rgb(59 130 246 / 0.35);
+
+  /*
+   * Tipografia densa do protótipo: text-base é o corpo, em 13px. A escala inteira
+   * é ancorada nele; tamanhos acima de 4xl não existem.
+   */
+  --text-*: initial;
+  --text-2xs: 0.625rem; /* 10px: selos e etiquetas em maiúsculas */
+  --text-2xs--line-height: calc(0.875 / 0.625);
+  --text-xs: 0.6875rem; /* 11px: rótulos de seção, label flutuante */
+  --text-xs--line-height: calc(1 / 0.6875);
+  --text-sm: 0.75rem; /* 12px: texto secundário */
+  --text-sm--line-height: calc(1 / 0.75);
+  --text-base: 0.8125rem; /* 13px: corpo */
+  --text-base--line-height: calc(1.25 / 0.8125);
+  --text-lg: 0.875rem; /* 14px: texto em destaque */
+  --text-lg--line-height: calc(1.25 / 0.875);
+  --text-xl: 1rem; /* 16px: título de card */
+  --text-xl--line-height: calc(1.5 / 1);
+  --text-2xl: 1.125rem; /* 18px: título de seção */
+  --text-2xl--line-height: calc(1.75 / 1.125);
+  --text-3xl: 1.375rem; /* 22px: título de página */
+  --text-3xl--line-height: calc(1.75 / 1.375);
+  --text-4xl: 1.75rem; /* 28px: números de destaque */
+  --text-4xl--line-height: calc(2.25 / 1.75);
+
+  /* Raios por papel; a escala numérica do Tailwind continua disponível para casos pontuais. */
+  --radius-control: 0.5rem; /* 8px: campos e botões */
+  --radius-card: 0.75rem; /* 12px: cards e painéis */
+  --radius-overlay: 1rem; /* 16px: menus, popovers e modais */
+
+  /* Altura dos controles (campos, botões): h-control-xs a h-control-lg. */
+  --spacing-control-xs: 1.75rem;
+  --spacing-control-sm: 2.25rem;
+  --spacing-control-md: 2.75rem;
+  --spacing-control-lg: 3.5rem;
+
+  /* Os arquivos vêm de fonts.css; sem ele, o navegador usa as fontes de sistema da lista. */
+  --font-sans:
+    "Inter Variable", Inter, ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+  --font-mono:
+    "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, SFMono-Regular,
+    Menlo, Consolas, monospace;
+}
+
+/* Base de toda aplicação: fundo, cor, fonte e tamanho do corpo. */
+@layer base {
+  body {
+    @apply bg-background font-sans text-base text-foreground antialiased;
+  }
+}
+
+/*
+ * Degradês da marca como classes. `bg-brand-gradient` é decorativo (verde água →
+ * azul → roxo); `bg-brand-gradient-action` é o do botão principal (verde água →
+ * azul), nos tons em que o texto branco atinge AA; `text-brand-gradient` pinta o
+ * texto com o degradê ("ganham vida."), só em título grande.
+ */
+@utility bg-brand-gradient {
+  background-image: linear-gradient(
+    120deg,
+    var(--pl-brand-gradient-start),
+    var(--pl-brand-gradient-mid),
+    var(--pl-brand-gradient-end)
+  );
+}
+
+@utility bg-brand-gradient-action {
+  background-image: linear-gradient(
+    135deg,
+    var(--pl-verde-agua-700),
+    var(--pl-azul-600)
+  );
+}
+
+@utility text-brand-gradient {
+  background-image: linear-gradient(
+    90deg,
+    var(--pl-brand-text-start),
+    var(--pl-brand-text-mid),
+    var(--pl-brand-text-end)
+  );
+  background-clip: text;
+  color: transparent;
+}
+
+/*
+ * Movimento. Uma curva e três animações cobrem abrir, fechar e trocar conteúdo:
+ * ease-smooth desacelera no fim, como no protótipo (cubic-bezier(0.16, 1, 0.3, 1)).
+ */
+@theme {
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Caixa suspensa abre; --popover-offset inverte o sentido quando abre para cima. */
+  --animate-popover-in: popover-in 200ms var(--ease-smooth) both;
+  /* Caixa suspensa fecha. A duração acompanha DURACAO_DE_SAIDA em use-presenca.ts. */
+  --animate-popover-out: popover-out 140ms ease-in both;
+  /* Conteúdo que troca no lugar: painel de aba, etapa de formulário. */
+  --animate-panel-in: panel-in 260ms var(--ease-smooth) both;
+
+  /* Só opacidade, para o que já usa translate para se posicionar (dica). */
+  --animate-fade-in: fade-in 160ms ease-out both;
+  --animate-fade-out: fade-out 140ms ease-in both;
+  /* Sobe 8px ao aparecer (fadeInUp do protótipo): menus do menu lateral. */
+  --animate-fade-in-up: fade-in-up 220ms var(--ease-smooth) both;
+  /* Desce 8px ao aparecer (fadeInDown do protótipo): menus da faixa do topo. */
+  --animate-fade-in-down: fade-in-down 200ms var(--ease-smooth) both;
+  /* Ponto "ao vivo" que pulsa (pulse-live do protótipo). */
+  --animate-pulse-live: pulse-live 2s infinite;
+  /* Brilho de fundo do painel da marca, nas telas de acesso. */
+  --animate-pulse-ambient: pulse-ambient 12s ease-in-out infinite alternate;
+  /* Barra que enche enquanto um slide do carrossel está na vez; o fim dela troca o slide. */
+  --animate-progress-fill: progress-fill 8s linear both;
+  /* Traço que se desenha uma vez (pede pathLength="1" e stroke-dasharray="1"). */
+  --animate-stroke-draw: stroke-draw 2.8s var(--ease-smooth) both;
+
+  @keyframes progress-fill {
+    from {
+      scale: 0 1;
+    }
+  }
+
+  @keyframes stroke-draw {
+    from {
+      stroke-dashoffset: 1;
+    }
+  }
+
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      translate: 0 8px;
+    }
+  }
+
+  @keyframes fade-in-down {
+    from {
+      opacity: 0;
+      translate: 0 -8px;
+    }
+  }
+
+  @keyframes pulse-live {
+    50% {
+      scale: 1.3;
+      opacity: 0.6;
+    }
+  }
+
+  @keyframes pulse-ambient {
+    0% {
+      scale: 1;
+      translate: 0 0;
+      opacity: 0.8;
+    }
+    50% {
+      scale: 1.12;
+      translate: -20px 15px;
+      opacity: 1;
+    }
+    100% {
+      scale: 0.95;
+      translate: 15px -15px;
+      opacity: 0.85;
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes popover-in {
+    from {
+      opacity: 0;
+      translate: 0 var(--popover-offset, -6px);
+      scale: 0.98;
+    }
+  }
+
+  @keyframes popover-out {
+    to {
+      opacity: 0;
+      translate: 0 var(--popover-offset, -6px);
+      scale: 0.98;
+    }
+  }
+
+  @keyframes panel-in {
+    from {
+      opacity: 0;
+      translate: 0 6px;
+    }
+  }
+}
+
+/* Com um diálogo modal aberto, a página atrás não rola. */
+html:has(dialog[open]) {
+  overflow: hidden;
+}
+
+/* Quem pede menos movimento no sistema recebe as mudanças sem animação. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

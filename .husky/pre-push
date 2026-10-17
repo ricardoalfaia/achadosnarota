@@ -1,0 +1,7 @@
+# Verifica antes do push só os projetos alterados em relação à main remota.
+# Sem origin/main (primeiro push), verifica todos.
+if git rev-parse --verify --quiet origin/main >/dev/null; then
+  TURBO_SCM_BASE=origin/main pnpm exec turbo run lint typecheck test --affected
+else
+  pnpm exec turbo run lint typecheck test
+fi

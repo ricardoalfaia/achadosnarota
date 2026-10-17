@@ -1,0 +1,312 @@
+{
+  "Casca": {
+    "menuLateral": "Side menu",
+    "menuPrincipal": "Main menu",
+    "irParaOInicio": "Meuproduto: go to home",
+    "recolherMenu": "Collapse menu",
+    "expandirMenu": "Expand menu"
+  },
+  "Navegacao": {
+    "inicio": "Home",
+    "documentos": "Documents",
+    "modelos": "Templates",
+    "assinaturas": "Signatures",
+    "clientes": "Clients",
+    "equipe": "Team",
+    "relatorios": "Reports",
+    "integracoes": "Integrations",
+    "configuracoes": "Settings"
+  },
+  "Trilha": {
+    "rotulo": "Breadcrumb"
+  },
+  "Faixa": {
+    "alternarMenu": "Show or hide the side menu",
+    "buscar": "Search documents, clients or templates...",
+    "atalhoBusca": "Ctrl K",
+    "notificacoes": "Notifications ({pendentes} unread)",
+    "tenant": "Workspace:",
+    "tenantAtivo": "Active workspace: {tenant}",
+    "trocarTenant": "Switch workspace"
+  },
+  "MenuDoUsuario": {
+    "abrir": "User menu for {nome}",
+    "rotulo": "User menu",
+    "tema": "Theme",
+    "idioma": "Language",
+    "notasDeVersao": "Release notes",
+    "versao": "v{versao}",
+    "sair": "Sign out"
+  },
+  "NotasDeVersao": {
+    "titulo": "Release notes",
+    "subtitulo": "What is new in Meuproduto",
+    "versao": "Version {versao}",
+    "entendido": "Got it",
+    "destaques": {
+      "painel": {
+        "titulo": "New dashboard:",
+        "texto": "home with indicators, recent documents, quick actions and most used templates."
+      },
+      "acesso": {
+        "titulo": "Sign in with e-mail:",
+        "texto": "access with e-mail and password, two-step verification and a required password change when needed."
+      },
+      "preferencias": {
+        "titulo": "Your way:",
+        "texto": "light, dark or automatic theme, language and collapsed menu are kept for your next visit."
+      }
+    }
+  },
+  "Notificacoes": {
+    "titulo": "Notifications",
+    "marcarTodas": "Mark all as read",
+    "naoLida": "Unread",
+    "vazio": "No notifications here.",
+    "abas": {
+      "todas": "All",
+      "naoLidas": "Unread",
+      "assinaturas": "Signatures"
+    },
+    "grupos": {
+      "hoje": "Today",
+      "anteriores": "Earlier"
+    },
+    "modulos": {
+      "documentos": "Documents",
+      "assinaturas": "Signatures",
+      "modelos": "Templates",
+      "sistema": "System"
+    },
+    "itens": {
+      "assinaturaConcluida": {
+        "titulo": "Service agreement signed",
+        "texto": "All parties have signed. The final document is available.",
+        "quando": "15 min ago"
+      },
+      "assinaturaPendente": {
+        "titulo": "Power of attorney awaiting signature",
+        "texto": "A signer has not signed yet. It was sent 2 days ago.",
+        "quando": "1 h ago"
+      },
+      "documentoGerado": {
+        "titulo": "Commercial proposal generated",
+        "texto": "The PDF was generated from the template and is ready for review.",
+        "quando": "09:14"
+      },
+      "assinaturaRecusada": {
+        "titulo": "Signature declined",
+        "texto": "A signer declined the non-disclosure agreement. Review and send it again.",
+        "quando": "yesterday"
+      },
+      "modeloAtualizado": {
+        "titulo": "Lease agreement template updated",
+        "texto": "The team published a new version of the template.",
+        "quando": "10/14"
+      },
+      "versao": {
+        "titulo": "Meuproduto updated to version 0.1.0",
+        "texto": "New home dashboard. See what changed in the release notes.",
+        "quando": "10/12"
+      }
+    }
+  },
+  "Tema": {
+    "light": "Light",
+    "dark": "Dark",
+    "auto": "Auto"
+  },
+  "Idiomas": {
+    "pt-BR": "Português",
+    "en": "English"
+  },
+  "EmConstrucao": {
+    "titulo": "Under construction",
+    "voltar": "Back to home",
+    "itens": {
+      "documentos": "Here you will create documents from templates, review the preview, generate the PDF and follow the version history of each one.",
+      "modelos": "Here you will find the office templates, with typed variables, published versions and approval before use.",
+      "assinaturas": "Here you will follow documents sent for signature, who has signed and what is pending.",
+      "clientes": "Here you will keep the office clients, with only the data you need and quick search.",
+      "equipe": "Here you will invite people to the office and decide what each one can see and do.",
+      "relatorios": "Here you will see the office numbers: documents produced, time to signature and pending items.",
+      "integracoes": "Here you will connect Meuproduto to other services, such as e-signature providers.",
+      "configuracoes": "Here you will find the office settings: organization details, security policies and preferences."
+    }
+  },
+  "Painel": {
+    "falha": "The dashboard could not be loaded right now. Please try again shortly.",
+    "destaque": {
+      "saudacao": "Hello, {nome} 👋",
+      "saudacaoSemNome": "Hello 👋",
+      "titulo": "Your documents<quebra></quebra><destaque>come to life.</destaque>",
+      "descricao": "Create, manage and send for signature in a simple, fast and secure way.",
+      "gerarDocumento": "Create document",
+      "enviarParaAssinatura": "Send for signature"
+    },
+    "indicadores": {
+      "rotulo": "Indicators for the month",
+      "documentos": "Documents",
+      "assinaturas": "Signatures",
+      "clientes": "Clients",
+      "pendentes": "Pending",
+      "esteMes": "this month",
+      "tendencias": {
+        "alta": "Up",
+        "baixa": "Down",
+        "estavel": "Steady:"
+      }
+    },
+    "documentosRecentes": {
+      "titulo": "Recent documents",
+      "verTodos": "See all",
+      "verTodosDescricao": "See all documents",
+      "vazio": "No documents yet.",
+      "colunas": {
+        "nome": "Name",
+        "status": "Status",
+        "atualizacao": "Updated"
+      },
+      "status": {
+        "assinado": "Signed",
+        "emAndamento": "In progress",
+        "aguardando": "Waiting",
+        "rascunho": "Draft"
+      }
+    },
+    "acoesRapidas": {
+      "titulo": "Quick actions",
+      "criarDocumento": {
+        "titulo": "Create document",
+        "descricao": "From a template"
+      },
+      "enviarParaAssinatura": {
+        "titulo": "Send for signature",
+        "descricao": "In a few clicks"
+      },
+      "usarModelo": {
+        "titulo": "Use template",
+        "descricao": "Ready-made templates"
+      },
+      "adicionarCliente": {
+        "titulo": "Add client",
+        "descricao": "Register a new client"
+      }
+    },
+    "modelosMaisUsados": {
+      "titulo": "Most used templates",
+      "verTodos": "See all",
+      "verTodosDescricao": "See all templates",
+      "vazio": "No templates used yet.",
+      "usos": "{quantidade, plural, one {# use} other {# uses}}"
+    }
+  },
+  "Acesso": {
+    "painel": {
+      "titulo": "Your documents <destaque>come to life.</destaque>",
+      "texto": "Create, customize, send for signature and follow everything in one place.",
+      "itens": {
+        "gerar": "Documents generated from the office templates",
+        "organizar": "Everything organized by client, with history and versions",
+        "assinar": "Sending for signature and following each step"
+      }
+    },
+    "conexao": {
+      "servicoIndisponivel": "{sistema} cannot reach its data right now. Try signing in again in a moment."
+    },
+    "entrar": {
+      "titulo": "Sign in",
+      "subtitulo": "Enter your e-mail and password to access {sistema}.",
+      "email": "E-mail",
+      "senha": "Password",
+      "mostrarSenha": "Show {campo}",
+      "ocultarSenha": "Hide {campo}",
+      "capsLock": "Caps Lock is on",
+      "lembrarEmail": "Remember my e-mail",
+      "esqueciASenha": "Forgot your password?",
+      "botao": "Sign in",
+      "enviando": "Signing in…"
+    },
+    "doisFatores": {
+      "titulo": "Two-step verification",
+      "subtitulo": "Enter the 6-digit code from your authenticator app.",
+      "subtituloRecuperacao": "Enter one of the recovery codes you saved when setting up the authenticator. Each code works once.",
+      "codigo": "Verification code",
+      "codigoDeRecuperacao": "Recovery code",
+      "usarRecuperacao": "No device? Use a recovery code",
+      "usarAutenticador": "Use the authenticator app code",
+      "botao": "Confirm",
+      "enviando": "Confirming…"
+    },
+    "trocaDeSenha": {
+      "titulo": "Set a new password",
+      "subtitulo": "You are using a temporary password. Set your own before continuing.",
+      "senhaAtual": "Current password",
+      "novaSenha": "New password",
+      "confirmacao": "Confirm new password",
+      "botao": "Save and sign in",
+      "enviando": "Saving…"
+    },
+    "recuperar": {
+      "voltar": "Back to sign in",
+      "titulo": "Recover password",
+      "subtitulo": "Enter your email. If there is an account, the link to create a new password will arrive there.",
+      "email": "E-mail",
+      "botao": "Send instructions",
+      "enviando": "Sending…",
+      "concluidoTitulo": "Request received",
+      "concluidoTexto": "If {email} has an account, the link will arrive shortly. It is valid for 1 hour."
+    },
+    "erros": {
+      "obrigatorio": "Required field",
+      "emailInvalido": "Enter a valid email",
+      "codigoInvalido": "Enter the 6 digits of the code",
+      "codigoDeRecuperacaoInvalido": "Enter the full recovery code (10 letters and numbers)",
+      "senhasDiferentes": "The passwords do not match",
+      "senhaCurta": "The password must have at least 10 characters.",
+      "senhaIncorreta": "Incorrect password.",
+      "credenciaisInvalidas": "Invalid email or password.",
+      "muitasTentativas": "Too many attempts in a row. Wait a few minutes and try again.",
+      "codigoIncorreto": "Incorrect code. Check the app and try again.",
+      "etapaExpirada": "The time to finish signing in ran out. Enter your email and password again.",
+      "servicoIndisponivel": "{sistema} cannot reach its data right now. Try again in a moment.",
+      "linkInvalido": "This reset link is invalid or has expired. Request a new one.",
+      "falha": "Could not complete. Try again in a moment."
+    },
+    "rodape": {
+      "versao": "Meuproduto {versao}"
+    },
+    "autenticador": {
+      "titulo": "Set up the authenticator",
+      "subtitulo": "Office administrators sign in with two-step verification. Confirm your password to begin.",
+      "senha": "Password",
+      "gerar": "Continue",
+      "gerando": "Preparing…",
+      "lerQr": "Scan the QR code with your authenticator app (or type the key) and enter the 6-digit code it shows.",
+      "qrAlt": "QR code to set up the authenticator",
+      "chave": "Key to type in the app",
+      "codigosTitulo": "Recovery codes",
+      "codigosTexto": "Keep these codes somewhere safe. They are shown only now and let you sign in without the device, once each.",
+      "confirmar": "Activate and sign in"
+    },
+    "redefinir": {
+      "titulo": "New password",
+      "subtitulo": "Create your new password. Saving signs out the sessions open on other devices.",
+      "botao": "Save new password",
+      "concluidoTitulo": "Password reset",
+      "concluidoTexto": "Your password was changed and open sessions were signed out. Sign in with the new password.",
+      "entrar": "Go to sign in",
+      "pedirOutro": "Request a new link"
+    }
+  },
+  "SemAcesso": {
+    "titulo": "Your account does not have access to an office yet",
+    "descricao": "Ask the office administrator to grant you access. Then sign in again.",
+    "sair": "Sign out"
+  },
+  "Erro": {
+    "titulo": "This screen could not be opened",
+    "descricao": "Something failed on our side. Try again in a moment.",
+    "tentarDeNovo": "Try again"
+  }
+}

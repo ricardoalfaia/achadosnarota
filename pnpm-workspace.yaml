@@ -1,0 +1,44 @@
+packages:
+  - apps/*
+  - packages/*
+
+catalog:
+  "@tailwindcss/vite": ^4
+  "@tanstack/react-query": 5.104.1
+  "@types/node": ^24
+  "@types/react": ^19
+  "@types/react-dom": ^19
+  eslint: ^9
+  react: 19.2.8
+  react-dom: 19.2.8
+  tailwindcss: ^4
+  typescript: ^5
+  vite: 8.3.2
+  vitest: 5.0.3
+  zod: 4.6.5
+
+strictPeerDependencies: true
+autoInstallPeers: false
+verifyDepsBeforeRun: error
+
+allowBuilds:
+  "@parcel/watcher": false
+  "@swc/core": false
+  esbuild: true
+  sharp: false
+  unrs-resolver: false
+
+minimumReleaseAgeExclude:
+  - "@typescript-eslint/eslint-plugin@8.71.1"
+  - "@typescript-eslint/parser@8.71.1"
+  - "@typescript-eslint/project-service@8.71.1"
+  - "@typescript-eslint/scope-manager@8.71.1"
+  - "@typescript-eslint/tsconfig-utils@8.71.1"
+  - "@typescript-eslint/type-utils@8.71.1"
+  - "@typescript-eslint/types@8.71.1"
+  - "@typescript-eslint/typescript-estree@8.71.1"
+  - "@typescript-eslint/utils@8.71.1"
+  - "@typescript-eslint/visitor-keys@8.71.1"
+  - typescript-eslint@8.71.1
+  - "@fumadocs/base-ui@16.16.2"
+  - fumadocs-core@16.16.2

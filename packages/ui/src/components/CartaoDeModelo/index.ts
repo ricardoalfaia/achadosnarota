@@ -1,0 +1,1 @@
+export { CartaoDeModelo } from "./CartaoDeModelo";

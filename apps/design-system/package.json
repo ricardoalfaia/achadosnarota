@@ -1,0 +1,41 @@
+{
+  "name": "design-system",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "storybook dev --port 4460 --no-open",
+    "build": "storybook build",
+    "lint": "eslint . --max-warnings 0",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@meuproduto/ui": "workspace:*",
+    "lucide-react": "1.52.0",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@meuproduto/eslint-config": "workspace:*",
+    "@meuproduto/typescript-config": "workspace:*",
+    "@storybook/addon-a11y": "10.6.1",
+    "@storybook/addon-docs": "10.6.1",
+    "@storybook/addon-vitest": "10.6.1",
+    "@storybook/react-vite": "10.6.1",
+    "@tailwindcss/vite": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitest/browser": "5.0.3",
+    "@vitest/browser-playwright": "5.0.3",
+    "eslint": "catalog:",
+    "playwright": "1.63.0",
+    "storybook": "10.6.1",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  }
+}

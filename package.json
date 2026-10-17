@@ -1,0 +1,42 @@
+{
+  "name": "meuproduto-monorepo",
+  "private": true,
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:web": "turbo run dev --filter=meuproduto-web",
+    "build": "turbo run build",
+    "storybook": "pnpm --filter design-system dev",
+    "dev:docs": "pnpm --filter docs dev",
+    "infra:up": "docker compose up -d",
+    "infra:down": "docker compose down",
+    "infra:reset": "docker compose down --volumes && docker compose up -d --wait && pnpm db:migrate && pnpm db:seed",
+    "db:generate": "pnpm --filter @meuproduto/db db:generate",
+    "db:migrate": "pnpm --filter @meuproduto/db db:migrate",
+    "db:seed": "pnpm --filter @meuproduto/db db:seed",
+    "db:studio": "pnpm --filter @meuproduto/db db:studio",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:e2e": "turbo run test:e2e",
+    "format": "prettier --write --cache .",
+    "format:check": "prettier --check --cache .",
+    "check:architecture": "node scripts/check-architecture.mjs",
+    "check:env": "node scripts/check-env.mjs",
+    "check": "pnpm format:check && pnpm check:architecture && pnpm check:env && turbo run lint typecheck test build",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "21.2.3",
+    "@commitlint/config-conventional": "21.2.3",
+    "@ianvs/prettier-plugin-sort-imports": "4.7.1",
+    "husky": "9.1.7",
+    "lint-staged": "17.6.0",
+    "prettier": "3.9.9",
+    "prettier-plugin-tailwindcss": "0.8.1",
+    "turbo": "2.11.7"
+  }
+}
