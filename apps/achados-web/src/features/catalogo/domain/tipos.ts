@@ -74,3 +74,10 @@ export type FiltroDoCatalogo = {
   cidade?: string;
   busca?: string;
 };
+
+/** O topo da versão desktop: o primeiro destaque e os totais do catálogo. */
+export type VitrineDoCatalogo = {
+  destaque?: CartaoDeLugar;
+  lugares: number;
+  cidades: number;
+};

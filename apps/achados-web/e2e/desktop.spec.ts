@@ -29,7 +29,41 @@ test("no desktop, cabeçalho com navegação e rodapé; sem a barra do celular",
     page.getByRole("heading", { name: "Por que usar o Achados na Rota?" })
   ).toBeVisible();
   // Os seis lugares do seed em grade.
-  await expect(page.getByRole("article")).toHaveCount(6);
+  await expect(page.locator("#destaques").getByRole("article")).toHaveCount(6);
+});
+
+test("no desktop, o topo mostra um achado real, os números e o plano", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const topo = page.locator("section", { has: page.locator("#titulo-hero") });
+  await expect(topo.getByText("Achado em destaque")).toBeVisible();
+  await expect(topo.getByText(/6\s*lugares avaliados/)).toBeVisible();
+  await expect(
+    topo.getByRole("link", { name: /Passaporte anual/ })
+  ).toBeVisible();
+  await topo
+    .getByRole("navigation", { name: "Cidades avaliadas" })
+    .getByRole("link", { name: "Campos do Jordão" })
+    .click();
+  await expect(page).toHaveURL(/cidade=campos-do-jordao/);
+  await expect(page.locator("#destaques").getByRole("article")).toHaveCount(1);
+});
+
+test("no desktop, a busca fica no cabeçalho fora do topo da exploração", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const buscaDoCabecalho = page.getByRole("searchbox", {
+    name: "Buscar lugares no cabeçalho",
+  });
+  await expect(buscaDoCabecalho).toBeHidden();
+
+  await page.goto("/passaporte");
+  await buscaDoCabecalho.fill("Campos do Jordão");
+  await buscaDoCabecalho.press("Enter");
+  await expect(page).toHaveURL(/\/\?q=Campos/);
+  await expect(page.locator("#destaques").getByRole("article")).toHaveCount(1);
 });
 
 test("no desktop, a busca do topo filtra e as categorias de vidro também", async ({
@@ -37,11 +71,11 @@ test("no desktop, a busca do topo filtra e as categorias de vidro também", asyn
 }) => {
   await page.goto("/");
   await page
-    .getByRole("searchbox", { name: /Buscar lugares/ })
+    .getByRole("searchbox", { name: "Buscar lugares por cidade, nome ou tipo" })
     .fill("Campos do Jordão");
   await page.getByRole("button", { name: "Buscar" }).click();
   await expect(page).toHaveURL(/q=Campos/);
-  await expect(page.getByRole("article")).toHaveCount(1);
+  await expect(page.locator("#destaques").getByRole("article")).toHaveCount(1);
 
   await page
     .getByRole("navigation", { name: "Categorias" })

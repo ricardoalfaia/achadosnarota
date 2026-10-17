@@ -13,8 +13,10 @@ import {
   useFiltroDoCatalogo,
   type Categoria,
   type Cidade,
+  type VitrineDoCatalogo,
 } from "@/features/catalogo";
 import { BotaoDeFavorito } from "@/features/favoritos";
+import type { Plano } from "@/features/passaporte";
 import { HeroDesktop } from "./hero-desktop";
 
 /**
@@ -26,9 +28,13 @@ import { HeroDesktop } from "./hero-desktop";
 export function Exploracao({
   categorias,
   cidades,
+  vitrine,
+  plano,
 }: {
   categorias: readonly Categoria[];
   cidades: readonly Cidade[];
+  vitrine: VitrineDoCatalogo;
+  plano: Plano | null;
 }) {
   const { filtro, propsDoLink } = useFiltroDoCatalogo();
   const filtrando = !semFiltro(filtro);
@@ -36,7 +42,12 @@ export function Exploracao({
   return (
     <>
       <div className="hidden lg:block">
-        <HeroDesktop categorias={categorias} cidades={cidades} />
+        <HeroDesktop
+          categorias={categorias}
+          cidades={cidades}
+          vitrine={vitrine}
+          plano={plano}
+        />
       </div>
 
       <div className="flex flex-col gap-4 p-4 lg:hidden">

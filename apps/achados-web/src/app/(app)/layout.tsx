@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { BuscaRapida } from "@/features/catalogo";
 import { AvisoSemConexao } from "@/shared/casca/aviso-sem-conexao";
 import { CabecalhoDesktop } from "@/shared/casca/cabecalho-desktop";
 import { NavegacaoInferior } from "@/shared/casca/navegacao-inferior";
@@ -22,7 +23,10 @@ export default async function LayoutDoApp({
   const usuario = await pessoaDoPedido();
   return (
     <div className="relative mx-auto flex min-h-dvh w-full max-w-[480px] flex-col bg-background shadow-[0_0_40px_rgb(15_23_42/0.06)] lg:max-w-none lg:shadow-none">
-      <CabecalhoDesktop pessoa={usuario ? pessoaDaSessao(usuario) : null} />
+      <CabecalhoDesktop
+        pessoa={usuario ? pessoaDaSessao(usuario) : null}
+        busca={<BuscaRapida />}
+      />
       <AvisoSemConexao />
       <main className="flex-1 pb-28 lg:pb-0">{children}</main>
       <RodapeDesktop />

@@ -3,6 +3,7 @@
 // Hooks sem domínio para uso em componentes cliente. A integração precisa
 // definir e validar os entrypoints; este comentário não impõe uma fronteira de build.
 export * from "./use-debounce";
+export * from "./use-elemento-visivel";
 export * from "./use-fullscreen";
 export * from "./use-instalacao-pwa";
 export * from "./use-keyboard-shortcut";

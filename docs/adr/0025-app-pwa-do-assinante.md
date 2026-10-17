@@ -50,6 +50,8 @@ O `achados-web` veio da base como painel SaaS multi-tenant (`/t/[slug]`, menu la
 ### Desktop
 
 - **O mesmo app, por CSS**, a partir de 1024px (`lg`): cabeçalho com navegação (`CabecalhoDesktop`), rodapé (`RodapeDesktop`), hero com a foto da estrada, busca em pílula e categorias em vidro, destaques em grade de 3 a 4 colunas, "Por que usar o Achados na Rota?" e a chamada do passaporte (protótipo `index.html` e `page.jpeg`). A ficha vira duas colunas (foto fixa à esquerda); as demais telas ficam centralizadas. A barra inferior e o cabeçalho do celular somem.
+- **Topo que converte, sem número inventado**: o hero mostra o primeiro destaque da curadoria (`lerVitrine`), quantos lugares e cidades já foram avaliados (contados no banco), atalhos para as cidades e o preço do plano vindo de `plans`. Nada fixo no código (ADR-004 de produto).
+- **Busca sempre à mão**: o cabeçalho desktop ganha um campo compacto (`BuscaRapida`) fora da exploração e, nela, quando a busca grande do topo sai da tela (`useElementoVisivel`, IntersectionObserver), para nunca haver duas buscas visíveis. Entre 1024 e 1279px vira um botão que leva à busca do topo.
 - **Sem detectar aparelho pelo user-agent:** um só HTML serve celular e computador, sem "piscar" de um modelo para o outro, compatível com cache e com janelas redimensionadas; tablets em pé recebem a coluna do celular centralizada.
 - A seção "Roteiros prontos" do protótipo ficou de fora: roteiros não estão no escopo do MVP ([01 — Produto](../produto/01-produto.md)).
 

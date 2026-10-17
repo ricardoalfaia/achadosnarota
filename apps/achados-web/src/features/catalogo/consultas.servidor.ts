@@ -30,6 +30,7 @@ import type {
   Cidade,
   FichaDoLugar,
   FiltroDoCatalogo,
+  VitrineDoCatalogo,
 } from "./domain/tipos";
 
 // Leituras do catálogo público (ADR-0006: leitura no servidor, sem Server
@@ -279,3 +280,34 @@ export async function slugsPublicados(): Promise<Result<string[]>> {
   );
   return r.ok ? Ok(r.value.map((l) => l.slug)) : r;
 }
+
+/**
+ * O que o topo da versão desktop mostra para convencer: o primeiro destaque da
+ * curadoria e quantos lugares e cidades já foram avaliados. Tudo contado no
+ * banco; nenhum número fixo no código.
+ */
+export const lerVitrine = cache(async (): Promise<Result<VitrineDoCatalogo>> =>
+  lerPublico(banco(), async (db) => {
+    const [primeiros, [totais]] = await Promise.all([
+      lugaresComJuncoes(db)
+        .orderBy(
+          sql`${editorialReviews.seal} is null`,
+          sql`${editorialReviews.score} desc nulls last`,
+          asc(places.name)
+        )
+        .limit(1),
+      db
+        .select({
+          lugares: sql<number>`count(*)::int`,
+          cidades: sql<number>`count(distinct ${places.cityId})::int`,
+        })
+        .from(places),
+    ]);
+    const [destaque] = await cartoesDe(db, primeiros);
+    return {
+      ...(destaque ? { destaque } : {}),
+      lugares: totais?.lugares ?? 0,
+      cidades: totais?.cidades ?? 0,
+    };
+  })
+);

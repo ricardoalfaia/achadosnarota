@@ -1,31 +1,44 @@
 import Image from "next/image";
-import { Nota } from "@achados/ui";
 
 import {
+  AtalhosDeCidade,
   BarraDeBusca,
+  CartaoEmDestaque,
   FiltroDeCategorias,
+  NumerosDoCatalogo,
   type Categoria,
   type Cidade,
+  type VitrineDoCatalogo,
 } from "@/features/catalogo";
-import { CartaoPromocionalDoPassaporte } from "@/features/passaporte";
+import {
+  CartaoPromocionalDoPassaporte,
+  ChamadaDoPlano,
+  type Plano,
+} from "@/features/passaporte";
 
 /**
  * O topo da versão desktop (protótipo `index.html`, `page.jpeg`): a estrada ao
- * pôr do sol, o lema em destaque, a busca e as categorias sobre a foto, e o
- * cartão do passaporte flutuando com um prato ao lado. Escuro nos dois temas.
+ * pôr do sol e o lema; a busca com atalhos de cidade e as categorias; os
+ * números da curadoria como prova. À direita, um achado real da curadoria na
+ * frente do cartão do passaporte, com o preço do plano. Tudo vem do banco:
+ * nada de nota, lugar ou número de vitrine inventado. Escuro nos dois temas.
  */
 export function HeroDesktop({
   categorias,
   cidades,
+  vitrine,
+  plano,
 }: {
   categorias: readonly Categoria[];
   cidades: readonly Cidade[];
+  vitrine: VitrineDoCatalogo;
+  plano: Plano | null;
 }) {
   return (
     <section
       data-theme="dark"
       aria-labelledby="titulo-hero"
-      className="relative flex min-h-[640px] items-center overflow-hidden bg-background text-white"
+      className="relative flex min-h-[680px] items-center overflow-hidden bg-background text-white"
     >
       <Image
         src="/imagens/hero-estrada.webp"
@@ -37,18 +50,18 @@ export function HeroDesktop({
       />
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-linear-to-r from-background/85 via-background/60 to-transparent"
+        className="absolute inset-0 bg-linear-to-r from-background/90 via-background/60 to-transparent"
       />
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-linear-to-t from-background/70 via-transparent to-background/30"
+        className="absolute inset-0 bg-linear-to-t from-background/80 via-transparent to-background/30"
       />
 
-      <div className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-12 items-center gap-12 px-8 py-24">
+      <div className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-12 items-center gap-10 px-8 py-20">
         <div className="col-span-7 flex flex-col">
           <h1
             id="titulo-hero"
-            className="text-6xl leading-[1.08] font-extrabold tracking-tight"
+            className="text-6xl leading-[1.05] font-extrabold tracking-tight"
           >
             Descubra lugares
             <br />
@@ -65,30 +78,32 @@ export function HeroDesktop({
           >
             <BarraDeBusca cidades={cidades} variante="hero" />
           </div>
-          <div id="categorias" className="mt-8 scroll-mt-32">
+          <div className="mt-4">
+            <AtalhosDeCidade cidades={cidades} />
+          </div>
+          <div id="categorias" className="mt-6 scroll-mt-32">
             <FiltroDeCategorias categorias={categorias} variante="hero" />
+          </div>
+          <div className="mt-8 border-t border-white/15 pt-6">
+            <NumerosDoCatalogo
+              lugares={vitrine.lugares}
+              cidades={vitrine.cidades}
+            />
           </div>
         </div>
 
-        <div className="relative col-span-5 flex items-center justify-center">
-          <CartaoPromocionalDoPassaporte className="-translate-x-10 -translate-y-8 animate-flutuar" />
-          <div
-            aria-hidden="true"
-            className="absolute right-0 -bottom-24 w-56 -rotate-3 overflow-hidden rounded-2xl border-2 border-white shadow-2xl transition-transform duration-300 hover:rotate-0"
-          >
-            <Image
-              src="/imagens/prato.webp"
-              alt=""
-              width={448}
-              height={288}
-              className="h-36 w-full object-cover"
-            />
-            <div className="bg-surface/95 p-3">
-              <Nota valor={4.9} complemento="Alta gastronomia" />
-              <p className="mt-0.5 truncate text-xs font-bold text-foreground">
-                Experiências que valem a pena
-              </p>
+        <div className="relative col-span-5 flex min-h-[460px] flex-col items-end justify-center">
+          <CartaoPromocionalDoPassaporte
+            inclinacao="forte"
+            className="absolute top-0 left-0 opacity-90"
+          />
+          {vitrine.destaque && (
+            <div className="relative z-10 mt-16 animate-flutuar">
+              <CartaoEmDestaque lugar={vitrine.destaque} />
             </div>
+          )}
+          <div className="relative z-10 mt-5 self-end">
+            <ChamadaDoPlano plano={plano} />
           </div>
         </div>
       </div>

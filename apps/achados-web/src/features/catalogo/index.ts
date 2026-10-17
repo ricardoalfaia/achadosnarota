@@ -3,10 +3,13 @@
 // componentes, hooks, tipos e regras puras.
 export { AcoesRapidas } from "./components/acoes-rapidas";
 export { AbasDaFicha } from "./components/abas-da-ficha";
+export { AtalhosDeCidade } from "./components/atalhos-de-cidade";
 export { BarraDeBusca } from "./components/barra-de-busca";
+export { BuscaRapida } from "./components/busca-rapida";
 export { BotaoDeCompartilhar } from "./components/botao-de-compartilhar";
 export { CartaoDeLugar } from "./components/cartao-de-lugar";
 export { CartaoDescubra } from "./components/cartao-descubra";
+export { CartaoEmDestaque } from "./components/cartao-em-destaque";
 export { DestaquesDaRota } from "./components/destaques-da-rota";
 export {
   AvaliacaoEditorial,
@@ -24,6 +27,7 @@ export {
   EsqueletoDaLista,
   ListaDeLugares,
 } from "./components/lista-de-lugares";
+export { NumerosDoCatalogo } from "./components/numeros-do-catalogo";
 export { SeloDoLugar } from "./components/selo-do-lugar";
 export { TopoDaFicha } from "./components/topo-da-ficha";
 export { abaDaFicha, type AbaDaFicha } from "./domain/abas";
@@ -37,4 +41,5 @@ export type {
   Cidade,
   FichaDoLugar,
   FiltroDoCatalogo,
+  VitrineDoCatalogo,
 } from "./domain/tipos";

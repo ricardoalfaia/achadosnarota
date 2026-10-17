@@ -7,6 +7,7 @@ export {
   listarCategorias,
   listarCidades,
   listarLugares,
+  lerVitrine,
   slugsPublicados,
 } from "./consultas.servidor";
 export { prefetchDosLugares } from "./consultas/lugares.servidor";
