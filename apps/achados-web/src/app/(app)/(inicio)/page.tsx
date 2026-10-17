@@ -8,6 +8,8 @@ import {
   prefetchDosLugares,
 } from "@/features/catalogo/servidor";
 import { prefetchDosFavoritos } from "@/features/favoritos/servidor";
+import { CartaoPromocionalDoPassaporte } from "@/features/passaporte";
+import { ChamadaDoPassaporte, PorQueUsar } from "@/features/vitrine";
 import { CabecalhoDoApp } from "@/shared/casca/cabecalho-do-app";
 import { estadoDesidratado } from "@/shared/consultas/cliente.servidor";
 import { pessoaDaSessao } from "@/shared/sessao/sessao";
@@ -38,6 +40,12 @@ export default async function Explorar({ searchParams }: PageProps<"/">) {
           cidades={unwrapOrThrow(cidades)}
         />
       </HydrationBoundary>
+      <div className="hidden lg:block">
+        <PorQueUsar />
+        <ChamadaDoPassaporte
+          cartao={<CartaoPromocionalDoPassaporte inclinacao="forte" />}
+        />
+      </div>
     </>
   );
 }

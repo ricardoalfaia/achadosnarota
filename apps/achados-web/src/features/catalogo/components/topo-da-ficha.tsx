@@ -24,14 +24,14 @@ export function TopoDaFicha({
   acoes: ReactNode;
 }) {
   return (
-    <div className="relative h-64 bg-surface-hover">
+    <div className="relative h-64 bg-surface-hover lg:sticky lg:top-28 lg:h-[560px] lg:overflow-hidden lg:rounded-3xl lg:shadow-xl">
       {foto && (
         <Image
           src={foto.url}
           alt={foto.alt}
           fill
           priority
-          sizes="(max-width: 480px) 100vw, 480px"
+          sizes="(max-width: 1023px) 480px, 720px"
           className="object-cover"
         />
       )}

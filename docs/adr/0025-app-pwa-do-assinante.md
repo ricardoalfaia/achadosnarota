@@ -47,6 +47,17 @@ O `achados-web` veio da base como painel SaaS multi-tenant (`/t/[slug]`, menu la
 - Hooks genéricos ficam em `packages/ui/src/hooks` e são reaproveitados: `useToggle` (diálogos), `useDebouncedCallback` (busca), `useNetworkStatus` (aviso sem conexão), `useInstalacaoPwa` (novo).
 - React 19.2: `useSuspenseQuery` com `useDeferredValue` (a lista atual fica enquanto a nova chega) dentro do `DataBoundary`; `<Activity>` nas abas da ficha e do passaporte (`manterEstado`).
 
+### Desktop
+
+- **O mesmo app, por CSS**, a partir de 1024px (`lg`): cabeçalho com navegação (`CabecalhoDesktop`), rodapé (`RodapeDesktop`), hero com a foto da estrada, busca em pílula e categorias em vidro, destaques em grade de 3 a 4 colunas, "Por que usar o Achados na Rota?" e a chamada do passaporte (protótipo `index.html` e `page.jpeg`). A ficha vira duas colunas (foto fixa à esquerda); as demais telas ficam centralizadas. A barra inferior e o cabeçalho do celular somem.
+- **Sem detectar aparelho pelo user-agent:** um só HTML serve celular e computador, sem "piscar" de um modelo para o outro, compatível com cache e com janelas redimensionadas; tablets em pé recebem a coluna do celular centralizada.
+- A seção "Roteiros prontos" do protótipo ficou de fora: roteiros não estão no escopo do MVP ([01 — Produto](../produto/01-produto.md)).
+
+### Carregamento
+
+- `loading.tsx` com esqueleto na forma final em Explorar (celular e desktop), Favoritos, Passaporte e Perfil ([ADR-0016](0016-recursos-do-react-19.md)).
+- **A ficha do lugar não tem `loading.tsx` de rota:** com ele o streaming começa antes do `notFound()` e um lugar inexistente responde 200 em vez de 404 (ruim para SEO, [ADR-008 de produto](../produto/adr/ADR-008.md)). O teste "lugar inexistente responde 404" protege isso.
+
 ### PWA
 
 - `app/manifest.ts` com ícones 192, 512 e maskable gerados do símbolo; `theme_color` laranja.
@@ -64,20 +75,20 @@ Explorar e favoritar respondem na hora e funcionam com rede ruim; as fichas cont
 
 ## Verificação de aderência
 
-| Regra                                                 | Evidência                                                           | Estado                         |
-| ----------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------ |
-| Trocar categoria não recarrega a página e usa o cache | `explorar.spec.ts`, "trocar de categoria não recarrega a página"    | Executado                      |
-| Favoritos isolados entre pessoas                      | `favoritos.spec.ts` (A/B na interface) e `isolamento.test.ts` (RLS) | Executado                      |
-| Rascunho e oferta inativa não chegam ao app           | `isolamento.test.ts`, "catálogo público"                            | Executado                      |
-| Manifesto e service worker conservador                | `pwa.spec.ts`                                                       | Executado                      |
-| Telas fiéis ao protótipo                              | Capturas em 390×844 conferidas com `pwa.html`                       | Executado (conferência visual) |
+| Regra                                                     | Evidência                                                           | Estado                         |
+| --------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------ |
+| Trocar categoria não recarrega a página e usa o cache     | `explorar.spec.ts`, "trocar de categoria não recarrega a página"    | Executado                      |
+| Favoritos isolados entre pessoas                          | `favoritos.spec.ts` (A/B na interface) e `isolamento.test.ts` (RLS) | Executado                      |
+| Rascunho e oferta inativa não chegam ao app               | `isolamento.test.ts`, "catálogo público"                            | Executado                      |
+| Manifesto e service worker conservador                    | `pwa.spec.ts`                                                       | Executado                      |
+| Desktop por CSS, sem a barra do celular, ficha em colunas | `desktop.spec.ts`                                                   | Executado                      |
+| Telas fiéis ao protótipo                                  | Capturas em 390×844 conferidas com `pwa.html`                       | Executado (conferência visual) |
 
 ## Pendências e exceções
 
 - Leitor de QR Code e emissão do código de resgate: F4.
 - Assinatura e checkout: F3, depende do provedor ([ADR-006 de produto](../produto/adr/ADR-006.md)).
 - Notificações: sem push nesta etapa; o sino abre um estado vazio.
-- Versão para desktop (`index.html` do protótipo): a coluna do app aparece centralizada.
 
 ## Referências
 

@@ -27,7 +27,7 @@ test("a página inicial mostra a marca, a busca, as categorias e os destaques, s
     "page"
   );
   await expect(
-    page.getByRole("heading", { name: "Destaques da Rota", level: 1 })
+    page.getByRole("heading", { name: "Destaques da Rota", level: 2 })
   ).toBeVisible();
   // Os seis lugares publicados do seed.
   await expect(page.getByRole("article")).toHaveCount(6);
@@ -116,7 +116,9 @@ test("a ficha mostra curadoria, ações, benefícios com regras e as outras abas
   await page.getByRole("tab", { name: "Avaliações" }).click();
   await expect(page.getByText(/Visita da curadoria em/)).toBeVisible();
   await expect(
-    page.getByText(/não pagam por notas, selos ou posição/)
+    page
+      .getByRole("tabpanel")
+      .getByText(/não pagam por notas, selos ou posição/)
   ).toBeVisible();
 
   await page.getByRole("tab", { name: "Fotos" }).click();

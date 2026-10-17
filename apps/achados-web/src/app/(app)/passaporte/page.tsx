@@ -36,7 +36,7 @@ export default async function PaginaDoPassaporte() {
   const ativo = meuPassaporte.situacao === "ativo";
 
   return (
-    <div className="flex flex-col gap-4 p-4 pt-[max(1rem,env(safe-area-inset-top))]">
+    <div className="flex flex-col gap-4 p-4 pt-[max(1rem,env(safe-area-inset-top))] lg:mx-auto lg:w-full lg:max-w-2xl lg:py-12">
       <BarraDaTela titulo="Meu Passaporte" />
 
       <CartaoDoPassaporte

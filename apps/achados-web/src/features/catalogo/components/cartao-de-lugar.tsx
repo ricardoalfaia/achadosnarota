@@ -28,14 +28,14 @@ export function CartaoDeLugar({
   prioridade?: boolean;
 }) {
   return (
-    <article className="group relative overflow-hidden rounded-card border border-border bg-surface shadow-sm transition-shadow duration-300 hover:shadow-md">
-      <div className="relative h-40 bg-surface-hover">
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-card border border-border bg-surface shadow-sm transition-[box-shadow,translate] duration-300 hover:shadow-md lg:rounded-3xl lg:hover:-translate-y-1 lg:hover:shadow-xl">
+      <div className="relative h-40 bg-surface-hover lg:h-52">
         {lugar.foto && (
           <Image
             src={lugar.foto.url}
             alt={lugar.foto.alt}
             fill
-            sizes="(max-width: 480px) 100vw, 480px"
+            sizes="(max-width: 1023px) 480px, (max-width: 1279px) 33vw, 25vw"
             priority={prioridade}
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
@@ -50,9 +50,9 @@ export function CartaoDeLugar({
         </Etiqueta>
       </div>
 
-      <div className="p-3">
+      <div className="flex flex-1 flex-col p-3 lg:p-5">
         <div className="flex items-center justify-between gap-2">
-          <h3 className="truncate text-sm font-bold text-foreground">
+          <h3 className="truncate text-sm font-bold text-foreground lg:text-lg lg:font-extrabold lg:group-hover:text-primary">
             <Link
               href={rotaDoLugar(lugar.slug)}
               className="outline-none after:absolute after:inset-0 after:rounded-card focus-visible:after:outline-2 focus-visible:after:outline-offset-2 focus-visible:after:outline-ring"
@@ -66,8 +66,11 @@ export function CartaoDeLugar({
           <MapPin aria-hidden="true" className="size-3 shrink-0" />
           {lugar.local}
         </p>
+        <p className="mt-2.5 mb-4 hidden text-xs leading-relaxed text-foreground-muted lg:line-clamp-2">
+          {lugar.resumo}
+        </p>
         {lugar.beneficio && (
-          <p className="mt-2.5 flex items-center justify-between gap-2 rounded-xl border border-primary-border bg-primary-subtle p-2 text-xs font-bold text-primary">
+          <p className="mt-2.5 flex items-center justify-between gap-2 rounded-xl border border-primary-border bg-primary-subtle p-2 text-xs font-bold text-primary lg:mt-auto">
             <span className="flex min-w-0 items-center gap-1.5">
               <IconeDoBeneficio
                 chave={lugar.beneficio.icone}

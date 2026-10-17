@@ -10,11 +10,12 @@ import { Marca } from "./marca";
 /**
  * O topo fixo das telas de exploração: a marca (que leva ao início), o sino e
  * o avatar de quem entrou, que leva ao perfil. Sem sessão, o avatar dá lugar
- * a "Entrar".
+ * a "Entrar". Só no celular: a partir de 1024px o layout usa o cabeçalho
+ * desktop.
  */
 export function CabecalhoDoApp({ pessoa }: { pessoa: PessoaDaSessao | null }) {
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-header px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 backdrop-blur-md">
+    <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-header px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 backdrop-blur-md lg:hidden">
       <Link
         href={ROTAS.explorar}
         aria-label="Achados na Rota, início"

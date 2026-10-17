@@ -74,7 +74,7 @@ export default async function PaginaDoLugar({
 
   return (
     <HydrationBoundary state={estadoDesidratado()}>
-      <article className="pb-6">
+      <article className="pb-6 lg:mx-auto lg:grid lg:max-w-7xl lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-start lg:gap-12 lg:px-8 lg:py-10">
         <TopoDaFicha
           totalDeFotos={ficha.fotos.length}
           hrefDasFotos={`${caminho}?aba=fotos`}
@@ -91,10 +91,10 @@ export default async function PaginaDoLugar({
           }
         />
 
-        <div className="flex flex-col gap-4 p-4">
+        <div className="flex flex-col gap-4 p-4 lg:p-0">
           <header>
             {ficha.avaliacao && <SeloDaCuradoria />}
-            <h1 className="mt-2 text-2xl leading-tight font-extrabold text-foreground">
+            <h1 className="mt-2 text-2xl leading-tight font-extrabold text-foreground lg:text-4xl lg:tracking-tight">
               {ficha.nome}
             </h1>
             <div className="mt-1 flex flex-wrap items-center gap-2 text-xs">

@@ -14,6 +14,10 @@ export {
   SeloDaCuradoria,
   SobreOLugar,
 } from "./components/conteudo-da-ficha";
+export {
+  EsqueletoDaExploracao,
+  EsqueletoDeLinhas,
+} from "./components/esqueletos";
 export { FiltroDeCategorias } from "./components/filtro-de-categorias";
 export { IconeDaCategoria, IconeDoBeneficio } from "./components/icones";
 export {

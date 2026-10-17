@@ -82,9 +82,9 @@ export default async function Favoritos() {
   return (
     <>
       <CabecalhoDoApp pessoa={usuario ? pessoaDaSessao(usuario) : null} />
-      <div className="flex flex-col gap-4 p-4">
+      <div className="flex flex-col gap-4 p-4 lg:mx-auto lg:w-full lg:max-w-5xl lg:px-8 lg:py-12">
         <div className="flex items-center justify-between">
-          <h1 className="text-base font-extrabold text-foreground">
+          <h1 className="text-base font-extrabold text-foreground lg:text-3xl lg:tracking-tight">
             Meus Favoritos
           </h1>
           {usuario && favoritos.length > 0 && (
@@ -122,7 +122,7 @@ export default async function Favoritos() {
           />
         ) : (
           <HydrationBoundary state={estadoDesidratado()}>
-            <ul className="flex flex-col gap-3">
+            <ul className="flex flex-col gap-3 lg:grid lg:grid-cols-2 lg:gap-4">
               {favoritos.map((lugar) => (
                 <ItemFavorito key={lugar.slug} lugar={lugar} />
               ))}

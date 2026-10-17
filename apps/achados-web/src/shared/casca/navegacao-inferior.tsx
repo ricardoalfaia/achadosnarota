@@ -68,7 +68,7 @@ export function NavegacaoInferior() {
     <>
       <nav
         aria-label="Navegação principal"
-        className="fixed inset-x-0 bottom-0 z-40 mx-auto flex max-w-[480px] items-center justify-around rounded-t-[32px] border-t border-border bg-surface px-3 pt-2.5 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-bottom-bar"
+        className="fixed inset-x-0 bottom-0 z-40 mx-auto flex max-w-[480px] items-center justify-around rounded-t-[32px] border-t border-border bg-surface px-3 pt-2.5 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-bottom-bar lg:hidden"
       >
         {antesDoLeitor.map((item) => (
           <ItemDaBarra

@@ -550,6 +550,8 @@
   --animate-scan: scan 2.5s ease-in-out infinite;
   /* Coração que pulsa ao favoritar. */
   --animate-pop: pop 320ms var(--ease-spring) both;
+  /* Cartão que flutua devagar (floatGentle do protótipo). */
+  --animate-flutuar: flutuar 6s ease-in-out infinite;
 
   @keyframes fade-in-up {
     from {
@@ -617,6 +619,12 @@
     50% {
       top: 90%;
       opacity: 1;
+    }
+  }
+
+  @keyframes flutuar {
+    50% {
+      translate: 0 -8px;
     }
   }
 

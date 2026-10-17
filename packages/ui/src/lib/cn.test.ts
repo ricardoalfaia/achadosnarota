@@ -26,3 +26,10 @@ describe("cn", () => {
     expect(cn("a", false, undefined, null, "b")).toBe("a b");
   });
 });
+
+describe("cn com os tamanhos próprios", () => {
+  it("text-2xs é tamanho: conflita com text-xs e convive com a cor", () => {
+    expect(cn("text-xs", "text-2xs")).toBe("text-2xs");
+    expect(cn("text-2xs", "text-primary")).toBe("text-2xs text-primary");
+  });
+});

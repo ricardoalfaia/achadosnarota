@@ -28,7 +28,7 @@ export default async function Perfil() {
   return (
     <>
       <CabecalhoDoApp pessoa={pessoa} />
-      <div className="flex flex-col gap-4 p-4">
+      <div className="flex flex-col gap-4 p-4 lg:mx-auto lg:w-full lg:max-w-xl lg:py-12">
         <section className="py-4 text-center">
           <div className="relative mx-auto mb-3 w-fit">
             <Avatar

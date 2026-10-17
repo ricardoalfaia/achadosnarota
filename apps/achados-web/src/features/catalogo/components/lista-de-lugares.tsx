@@ -37,7 +37,7 @@ export function ListaDeLugares({
     );
   }
   return (
-    <ul className="flex flex-col gap-4">
+    <ul className="flex flex-col gap-4 lg:grid lg:grid-cols-3 lg:gap-6 xl:grid-cols-4">
       {lugares.map((lugar, indice) => (
         <li key={lugar.slug}>
           <CartaoDeLugar
@@ -57,14 +57,14 @@ export function EsqueletoDaLista() {
     <ul
       aria-busy="true"
       aria-label="Carregando lugares"
-      className="flex flex-col gap-4"
+      className="flex flex-col gap-4 lg:grid lg:grid-cols-3 lg:gap-6 xl:grid-cols-4"
     >
-      {[0, 1, 2].map((i) => (
+      {[0, 1, 2, 3].map((i) => (
         <li
           key={i}
-          className="overflow-hidden rounded-card border border-border bg-surface"
+          className="overflow-hidden rounded-card border border-border bg-surface lg:rounded-3xl"
         >
-          <div className="h-40 animate-pulse bg-surface-hover" />
+          <div className="h-40 animate-pulse bg-surface-hover lg:h-52" />
           <div className="flex flex-col gap-2 p-3">
             <div className="h-3.5 w-1/2 animate-pulse rounded bg-surface-hover" />
             <div className="h-3 w-1/3 animate-pulse rounded bg-surface-hover" />
