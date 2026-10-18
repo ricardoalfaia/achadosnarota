@@ -13,11 +13,17 @@ export { CarrosselDeAchados } from "./components/carrossel-de-achados";
 export { CartaoEmDestaque } from "./components/cartao-em-destaque";
 export { DestaquesDaRota } from "./components/destaques-da-rota";
 export {
-  AvaliacaoEditorial,
+  FaixaDeFotos,
   GaleriaDeFotos,
   SeloDaCuradoria,
   SobreOLugar,
 } from "./components/conteudo-da-ficha";
+export {
+  AvaliacaoEditorial,
+  CertificadoDoSelo,
+  EmblemaDoSelo,
+  ResumoDaCuradoria,
+} from "./components/curadoria-da-ficha";
 export {
   EsqueletoDaExploracao,
   EsqueletoDeLinhas,

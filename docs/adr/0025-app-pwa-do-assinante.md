@@ -105,3 +105,13 @@ As regras do projeto (AGENTS.md) não deixam dado real de parceiro entrar no rep
 - **Escopo:** só as fotos em `apps/achados-web/public/exemplos/rancho-portugues/` e `apps/achados-web/public/exemplos/choperia-pinguim/`, tiradas dos sites desses estabelecimentos, feitos pelo responsável. Ficaram de fora as que mostram letreiro, logotipo ou marca. Os nomes são os reais (Rancho Português e Choperia Pinguim), por decisão do responsável; notas, pareceres e benefícios do seed são fictícios. Desde 17/10/2026 o ambiente Neon + Vercel é tratado como homologação (`APP_ENV=homolog`) até a produção inaugural, e o seed pode rodar lá para a validação com os parceiros.
 - **Responsável:** Ricardo Alfaia Barbosa (decisão de 17/10/2026).
 - **Condição de retirada:** antes da produção inaugural, ou quando o admin cadastrar esses lugares com fotos enviadas ao bucket (R2). As fotos saem da pasta e do seed nesse momento. O histórico do git continua com elas; se for preciso apagá-las de vez, é preciso reescrever o histórico.
+
+## Curadoria na ficha: critérios, selo e parecer estruturado (proposto)
+
+Decisão do responsável em 17/10/2026, pendente de revisão como as demais:
+
+- **Sete critérios públicos**, de 0 a 5: higiene, apresentação do prato, sabor, sofisticação, atendimento, ambiente e custo-benefício (colunas em `editorial_review`, migração `0001_criterios_da_curadoria`, só aditiva). O que não se aplica à casa fica nulo e sai da média (pousada sem "apresentação do prato"), na linha dos critérios por categoria de docs/produto/08.
+- **Selo Achados na Rota**: média 4,5 ou mais, nenhum critério abaixo de 4 e pelo menos quatro critérios avaliados (`ganhaOSelo` em `features/catalogo/domain/curadoria.ts`, com testes). A regra é a mesma para todas as casas e não lê nada comercial (ADR-004 de produto). Os selos editoriais de destaque (`featured`, `beloved`, `verified`, `new`) continuam separados.
+- **Parecer em blocos fixos**: "O achado imperdível" (`highlight`), "O que provamos" (`summary`), "Dicas da curadoria" (`tips`) e "Bom saber" (`caveats`), com a data da visita.
+- **Na ficha**, o resumo da curadoria (certificado do selo, nota geral e achado imperdível) fica no corpo da página, antes das abas; a avaliação completa fica na aba.
+- Pendências: versão da metodologia, visitas e evidências (F2); a nota geral gravada (`score`) ainda é a média calculada por quem publica, não pelo banco.

@@ -75,7 +75,6 @@ type Lugar = {
   phone: string;
   fotos: { arquivo: string; alt: string; origem?: string }[];
   avaliacao: {
-    score: string;
     summary: string;
     caveats?: string;
     visitedOn: string;
@@ -83,6 +82,141 @@ type Lugar = {
   };
   ofertas: Oferta[];
 };
+
+type NotasPorCriterio = Partial<Record<s.Criterio, number>>;
+
+/**
+ * O que a curadoria registrou em cada visita fictícia: nota por critério (o
+ * que não se aplica fica de fora), o achado imperdível e as dicas. A nota
+ * geral do seed é a média dos critérios.
+ */
+const CURADORIA: Record<
+  string,
+  { criterios: NotasPorCriterio; destaque: string; dicas: string[] }
+> = {
+  "rancho-portugues": {
+    criterios: {
+      hygiene: 4.9,
+      presentation: 4.8,
+      flavor: 5,
+      sophistication: 4.6,
+      service: 4.8,
+      ambience: 4.7,
+      value: 4.5,
+    },
+    destaque: "Bacalhau à lagareiro, com batatas ao murro e muito azeite.",
+    dicas: [
+      "A sobremesa da casa é generosa: peça uma para dividir.",
+      "Aos domingos, chegue antes do meio-dia para não esperar.",
+      "A adega tem rótulos portugueses pouco comuns; peça indicação.",
+    ],
+  },
+  "choperia-pinguim": {
+    criterios: {
+      hygiene: 4.6,
+      presentation: 4.3,
+      flavor: 4.8,
+      sophistication: 3.9,
+      service: 4.7,
+      ambience: 4.8,
+      value: 4.7,
+    },
+    destaque: "Chopp com colarinho cremoso, tirado na hora.",
+    dicas: [
+      "Peça a porção na panela de barro para a mesa.",
+      "Às sextas tem música ao vivo: reserve antes.",
+      "O chopp escuro sai pouco, mas vale provar.",
+    ],
+  },
+  "cafe-da-serra": {
+    criterios: {
+      hygiene: 4.8,
+      presentation: 4.6,
+      flavor: 4.7,
+      sophistication: 4.2,
+      service: 4.5,
+      ambience: 4.8,
+      value: 4.4,
+    },
+    destaque: "Torta de maçã quente com café coado na hora.",
+    dicas: [
+      "As mesas da janela têm vista para a serra.",
+      "Os grãos da casa são vendidos no balcão.",
+    ],
+  },
+  "mirante-do-vale": {
+    criterios: {
+      hygiene: 5,
+      presentation: 4.9,
+      flavor: 4.9,
+      sophistication: 4.8,
+      service: 4.8,
+      ambience: 5,
+      value: 4.6,
+    },
+    destaque: "O menu degustação ao pôr do sol, no deck do mirante.",
+    dicas: [
+      "Reserve a mesa do deck para o fim da tarde.",
+      "Leve um agasalho: venta bastante à noite.",
+      "A harmonização com vinhos da região vale o acréscimo.",
+    ],
+  },
+  "pousada-morada-dos-ventos": {
+    criterios: {
+      hygiene: 5,
+      flavor: 4.8,
+      sophistication: 4.8,
+      service: 4.9,
+      ambience: 5,
+      value: 4.7,
+    },
+    destaque: "O café da manhã servido na varanda, com pães da casa.",
+    dicas: [
+      "Os chalés do alto têm a melhor vista do vale.",
+      "Peça o café da manhã na varanda, sem custo extra.",
+    ],
+  },
+  "emporio-rota-real": {
+    criterios: {
+      hygiene: 4.9,
+      presentation: 4.7,
+      flavor: 4.8,
+      sophistication: 4.6,
+      service: 4.8,
+      ambience: 4.6,
+      value: 4.9,
+    },
+    destaque: "A degustação guiada de queijos e azeites da Mantiqueira.",
+    dicas: [
+      "Pergunte pelos queijos de produção pequena: nem sempre estão expostos.",
+      "Embalam para viagem com gelo, se você pedir.",
+    ],
+  },
+};
+
+function curadoriaDo(slug: string) {
+  const curadoria = CURADORIA[slug];
+  if (!curadoria) throw new Error(`Seed sem curadoria para ${slug}.`);
+  const notas = Object.fromEntries(
+    Object.entries(curadoria.criterios).map(([criterio, n]) => [
+      criterio,
+      n.toFixed(1),
+    ])
+  );
+  return {
+    ...notas,
+    score: mediaDos(curadoria.criterios),
+    highlight: curadoria.destaque,
+    tips: curadoria.dicas,
+  };
+}
+
+/** A média dos critérios avaliados, com uma casa, como texto para o numeric. */
+function mediaDos(criterios: NotasPorCriterio): string {
+  const notas = Object.values(criterios);
+  const media = notas.reduce((soma, n) => soma + n, 0) / notas.length;
+  return (Math.round(media * 10) / 10).toFixed(1);
+}
 
 const ORIGEM_DAS_FOTOS =
   "Imagem ilustrativa do protótipo; só para desenvolvimento.";
@@ -119,7 +253,6 @@ const LUGARES: Lugar[] = [
       origem: ORIGEM_DO_SITE,
     })),
     avaliacao: {
-      score: "4.8",
       summary:
         "Bacalhau bem executado, porções generosas e serviço atento mesmo com a casa cheia. O deck vale a parada no fim da tarde.",
       caveats: "Movimento alto aos domingos; chegue antes do meio-dia.",
@@ -166,7 +299,6 @@ const LUGARES: Lugar[] = [
       origem: ORIGEM_DO_SITE,
     })),
     avaliacao: {
-      score: "4.7",
       summary:
         "Chopp sempre na temperatura certa e colarinho bem tirado. Os pastéis são o ponto alto do cardápio.",
       visitedOn: "2026-09-21",
@@ -200,7 +332,6 @@ const LUGARES: Lugar[] = [
       { arquivo: "rancho-int2", alt: "Varanda com vista para as montanhas" },
     ],
     avaliacao: {
-      score: "4.6",
       summary:
         "Grãos de produtores da região bem apresentados pela equipe. A torta de frutas vermelhas é o destaque.",
       visitedOn: "2026-10-02",
@@ -235,7 +366,6 @@ const LUGARES: Lugar[] = [
       { arquivo: "hero-road", alt: "Estrada da serra ao pôr do sol" },
     ],
     avaliacao: {
-      score: "4.9",
       summary:
         "Técnica precisa, ingredientes locais e serviço sem pressa. O pôr do sol do deck completa a experiência.",
       caveats: "Só com reserva aos sábados.",
@@ -269,7 +399,6 @@ const LUGARES: Lugar[] = [
       { arquivo: "hero-road", alt: "Estrada de acesso à pousada" },
     ],
     avaliacao: {
-      score: "4.9",
       summary:
         "Chalés silenciosos e bem cuidados, café da manhã farto e equipe que conhece a região.",
       visitedOn: "2026-08-30",
@@ -302,7 +431,6 @@ const LUGARES: Lugar[] = [
       { arquivo: "cafe-serra", alt: "Balcão do empório" },
     ],
     avaliacao: {
-      score: "4.8",
       summary:
         "Seleção cuidadosa de pequenos produtores e explicação paciente na degustação.",
       visitedOn: "2026-09-07",
@@ -415,6 +543,7 @@ async function semearCatalogo(db: Db): Promise<Map<string, string>> {
       placeId,
       ...lugar.avaliacao,
       caveats: lugar.avaliacao.caveats ?? null,
+      ...curadoriaDo(lugar.slug),
       status: "published",
       publishedAt: agora,
     });

@@ -1,23 +1,14 @@
 import Image from "next/image";
-import { EstadoVazio, Etiqueta, Nota } from "@achados/ui";
-import {
-  CalendarDays,
-  Crown,
-  Globe,
-  Images,
-  MapPin,
-  MessageSquareQuote,
-  Phone,
-  TriangleAlert,
-} from "lucide-react";
+import Link from "next/link";
+import { EstadoVazio, Etiqueta } from "@achados/ui";
+import { Crown, Globe, Images, MapPin, Phone } from "lucide-react";
 
 import {
   hrefDoTelefone,
-  mesDaVisita,
   siteParaExibir,
   telefoneParaExibir,
 } from "../domain/apresentacao";
-import type { Avaliacao, FichaDoLugar, Foto } from "../domain/tipos";
+import type { FichaDoLugar, Foto } from "../domain/tipos";
 
 /** Selo âmbar com a coroa: o lugar tem avaliação editorial publicada. */
 export function SeloDaCuradoria() {
@@ -29,54 +20,50 @@ export function SeloDaCuradoria() {
 }
 
 /**
- * A aba Avaliações: o parecer da curadoria, a data da visita e as ressalvas
- * (docs/produto/05). Não há avaliações abertas de usuários no MVP; a nota é a
- * da visita editorial, e a tela diz isso.
+ * A faixa de fotos logo abaixo do nome: as primeiras miniaturas à vista e a
+ * última com "+N", que leva à aba de fotos. As fotos não ficam escondidas.
  */
-export function AvaliacaoEditorial({
-  avaliacao,
+export function FaixaDeFotos({
+  fotos,
+  hrefDasFotos,
 }: {
-  avaliacao: Avaliacao | undefined;
+  fotos: readonly Foto[];
+  hrefDasFotos: string;
 }) {
-  if (!avaliacao) {
-    return (
-      <EstadoVazio
-        icone={<MessageSquareQuote />}
-        titulo="Ainda sem avaliação publicada"
-        descricao="A curadoria publica o parecer depois da visita e da revisão independente."
-        className="py-8"
-      />
-    );
-  }
+  if (fotos.length < 2) return null;
+  const visiveis = fotos.slice(1, 5);
+  const restantes = fotos.length - 1 - visiveis.length;
   return (
-    <section aria-labelledby="titulo-avaliacao" className="flex flex-col gap-3">
-      <div className="flex items-center justify-between gap-3">
-        <h2 id="titulo-avaliacao" className="text-sm font-extrabold">
-          Avaliação da curadoria
-        </h2>
-        <Nota valor={avaliacao.nota} tamanho="md" />
-      </div>
-      <blockquote className="rounded-2xl border border-border bg-surface-raised p-4 text-sm leading-relaxed text-foreground">
-        {avaliacao.parecer}
-      </blockquote>
-      {avaliacao.ressalvas && (
-        <p className="flex items-start gap-2 rounded-2xl border border-warning-border bg-warning-subtle p-3 text-xs text-warning">
-          <TriangleAlert aria-hidden="true" className="mt-px size-4 shrink-0" />
-          <span>
-            <strong className="font-bold">Bom saber:</strong>{" "}
-            {avaliacao.ressalvas}
-          </span>
-        </p>
-      )}
-      <p className="flex items-center gap-1.5 text-xs text-foreground-muted">
-        <CalendarDays aria-hidden="true" className="size-3.5" />
-        Visita da curadoria em {mesDaVisita(avaliacao.visitadoEm)}
-      </p>
-      <p className="text-[11px] leading-relaxed text-foreground-muted">
-        A nota resume critérios públicos avaliados na visita. Estabelecimentos
-        não pagam por notas, selos ou posição.
-      </p>
-    </section>
+    <ul
+      aria-label="Fotos do lugar"
+      className="-mx-4 scrollbar-none flex gap-2 overflow-x-auto px-4"
+    >
+      {visiveis.map((foto, indice) => {
+        const ultima = indice === visiveis.length - 1 && restantes > 0;
+        return (
+          <li key={foto.url} className="shrink-0">
+            <Link
+              href={hrefDasFotos}
+              scroll={false}
+              className="relative block size-24 overflow-hidden rounded-2xl bg-surface-hover outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            >
+              <Image
+                src={foto.url}
+                alt={foto.alt}
+                fill
+                sizes="96px"
+                className="object-cover"
+              />
+              {ultima && (
+                <span className="absolute inset-0 flex items-center justify-center bg-black/55 text-lg font-extrabold text-white">
+                  +{restantes}
+                </span>
+              )}
+            </Link>
+          </li>
+        );
+      })}
+    </ul>
   );
 }
 

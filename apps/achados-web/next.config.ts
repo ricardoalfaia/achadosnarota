@@ -7,6 +7,13 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: fileURLToPath(new URL("../..", import.meta.url)),
   },
+  experimental: {
+    // Voltar a uma tela já vista em até 30s reaproveita o que o navegador
+    // guardou, sem nova ida ao servidor (no Next 16 o padrão é 0s). Os dados
+    // de quem entrou seguem no cache do React Query, e as Actions invalidam
+    // a rota ao gravar (revalidatePath).
+    staleTimes: { dynamic: 30 },
+  },
   images: {
     // Fotos do catálogo em formatos modernos, nos tamanhos da coluna do app.
     formats: ["image/avif", "image/webp"],

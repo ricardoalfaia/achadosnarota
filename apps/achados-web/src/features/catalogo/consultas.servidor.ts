@@ -15,6 +15,7 @@ import {
 import { and, asc, eq, ilike, inArray, or, sql, type SQL } from "drizzle-orm";
 
 import { banco } from "@/shared/db/banco.servidor";
+import { criteriosAvaliados, ganhaOSelo } from "./domain/curadoria";
 import { padraoDeBusca } from "./domain/filtro";
 import {
   beneficioDaInterface,
@@ -199,6 +200,15 @@ export const lerFichaDoLugar = cache(
           parecer: editorialReviews.summary,
           ressalvas: editorialReviews.caveats,
           visitadoEm: editorialReviews.visitedOn,
+          destaque: editorialReviews.highlight,
+          dicas: editorialReviews.tips,
+          hygiene: editorialReviews.hygiene,
+          presentation: editorialReviews.presentation,
+          flavor: editorialReviews.flavor,
+          sophistication: editorialReviews.sophistication,
+          service: editorialReviews.service,
+          ambience: editorialReviews.ambience,
+          value: editorialReviews.value,
         })
         .from(places)
         .innerJoin(cities, eq(cities.id, places.cityId))
@@ -219,6 +229,7 @@ export const lerFichaDoLugar = cache(
         beneficiosDe(db, [lugar.id]),
       ]);
       const cartao = montarCartao(lugar, fotos, beneficios);
+      const criterios = criteriosAvaliados(lugar);
       const ficha: FichaDoLugar = {
         ...cartao,
         tags: lugar.tags,
@@ -234,6 +245,10 @@ export const lerFichaDoLugar = cache(
                 nota: cartao.nota,
                 parecer: lugar.parecer,
                 visitadoEm: lugar.visitadoEm,
+                criterios,
+                seloDaCuradoria: ganhaOSelo(criterios),
+                dicas: lugar.dicas ?? [],
+                ...(lugar.destaque ? { destaque: lugar.destaque } : {}),
                 ...(lugar.ressalvas ? { ressalvas: lugar.ressalvas } : {}),
                 ...(cartao.selo ? { selo: cartao.selo } : {}),
               },

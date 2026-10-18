@@ -18,7 +18,9 @@ import {
   AvaliacaoEditorial,
   BotaoDeCompartilhar,
   CabecalhoDaFicha,
+  FaixaDeFotos,
   GaleriaDeFotos,
+  ResumoDaCuradoria,
   SobreOLugar,
   TopoDaFicha,
 } from "@/features/catalogo";
@@ -106,6 +108,11 @@ export default async function PaginaDoLugar({
             className="hidden lg:block"
           />
 
+          <FaixaDeFotos
+            fotos={ficha.fotos}
+            hrefDasFotos={`${caminho}?aba=fotos#abas`}
+          />
+
           {ficha.tags.length > 0 && (
             <ul aria-label="Características" className="flex flex-wrap gap-1.5">
               {ficha.tags.map((tag) => (
@@ -130,6 +137,13 @@ export default async function PaginaDoLugar({
               />
             }
           />
+
+          {ficha.avaliacao && (
+            <ResumoDaCuradoria
+              avaliacao={ficha.avaliacao}
+              hrefDaAvaliacao={`${caminho}?aba=avaliacoes#avaliacao`}
+            />
+          )}
 
           <AbasDaFicha
             inicial={abaDaFicha(busca.aba)}

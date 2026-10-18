@@ -228,3 +228,22 @@ test("na ficha, a barra inferior dá lugar ao botão do benefício", async ({
     page.getByRole("link", { name: "Entrar e usar" })
   ).toHaveAttribute("href", "/login?voltar=%2Flugar%2Francho-portugues");
 });
+
+test("o selo segue a regra pública: o Rancho ganha, a Choperia (sofisticação 3,9) não", async ({
+  page,
+}) => {
+  await page.goto("/lugar/rancho-portugues?aba=avaliacoes");
+  await expect(
+    page.getByText("Selo Achados na Rota").filter({ visible: true })
+  ).toBeVisible();
+  await expect(
+    page.getByRole("list", { name: "Notas por critério" }).getByRole("listitem")
+  ).toHaveCount(7);
+  await expect(page.getByText("O achado imperdível").first()).toBeVisible();
+
+  await page.goto("/lugar/choperia-pinguim");
+  await expect(
+    page.getByRole("heading", { name: "Choperia Pinguim", level: 1 })
+  ).toBeVisible();
+  await expect(page.getByText("Selo Achados na Rota")).toHaveCount(0);
+});

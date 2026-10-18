@@ -17,8 +17,27 @@ import { places } from "./catalogo";
 
 // Curadoria (docs/produto/02, contexto Editorial). Isolada das ofertas
 // (ADR-004 de produto): nenhuma tabela comercial referencia esta, e o parceiro
-// não tem caminho de escrita aqui. Por ora só o parecer publicado que a ficha
-// mostra; visitas, evidências, critérios versionados e revisor entram na F2.
+// não tem caminho de escrita aqui. O parecer publicado traz as notas por
+// critério (docs/produto/03), as dicas e o achado imperdível; visitas,
+// evidências, versão da metodologia e revisor entram na F2.
+
+/**
+ * Os critérios públicos da visita, de 0 a 5. Nem todo critério vale para toda
+ * casa (pousada não tem "apresentação do prato"): o que não se aplica fica
+ * nulo e sai da média.
+ */
+export const CRITERIOS = [
+  "hygiene",
+  "presentation",
+  "flavor",
+  "sophistication",
+  "service",
+  "ambience",
+  "value",
+] as const;
+export type Criterio = (typeof CRITERIOS)[number];
+
+const nota = (nome: string) => numeric(nome, { precision: 2, scale: 1 });
 
 export const REVIEW_STATUS = [
   "draft",
@@ -53,6 +72,20 @@ export const editorialReviews = pgTable(
     summary: text("summary").notNull(),
     /** Ressalvas: o que o leitor deve saber antes de ir. */
     caveats: text("caveats"),
+    hygiene: nota("hygiene"),
+    presentation: nota("presentation"),
+    flavor: nota("flavor"),
+    sophistication: nota("sophistication"),
+    service: nota("service"),
+    ambience: nota("ambience"),
+    value: nota("value"),
+    /** O achado imperdível: o prato ou a experiência que não pode faltar. */
+    highlight: text("highlight"),
+    /** Dicas da curadoria, curtas, na ordem em que aparecem. */
+    tips: text("tips")
+      .array()
+      .notNull()
+      .default(sql`'{}'::text[]`),
     visitedOn: date("visited_on").notNull(),
     seal: sealEnum("seal"),
     status: reviewStatusEnum("status").notNull().default("draft"),
@@ -63,6 +96,12 @@ export const editorialReviews = pgTable(
   (t) => [
     checkUlid("editorial_review", t.id),
     check("editorial_review_score", sql`${t.score} between 0 and 5`),
+    ...CRITERIOS.map((criterio) =>
+      check(
+        `editorial_review_${criterio}`,
+        sql`${t[criterio]} is null or ${t[criterio]} between 0 and 5`
+      )
+    ),
     check(
       "editorial_review_published_at",
       sql`${t.status} <> 'published' or ${t.publishedAt} is not null`

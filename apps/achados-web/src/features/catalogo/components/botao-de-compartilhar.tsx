@@ -1,9 +1,15 @@
 "use client";
 
 import { BotaoDeIcone } from "@achados/ui";
+import { cn } from "@achados/ui/estilos";
 import { Check, Share } from "lucide-react";
 
 import { useCompartilhar } from "../hooks/use-compartilhar";
+import {
+  ACAO_DA_FICHA,
+  CIRCULO_DA_ACAO,
+  ROTULO_DA_ACAO,
+} from "./estilo-da-acao";
 
 /**
  * Compartilhar a ficha. `flutuante` é o botão redondo sobre a foto; `acao`, a
@@ -31,12 +37,10 @@ export function BotaoDeCompartilhar({
       <button
         type="button"
         onClick={compartilhar}
-        className="flex flex-col items-center rounded-2xl bg-surface-raised p-2.5 transition-colors outline-none hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-ring [&_svg]:mb-1 [&_svg]:size-4.5 [&_svg]:text-chip-foreground"
+        className={cn(ACAO_DA_FICHA, "cursor-pointer")}
       >
-        {icone}
-        <span className="text-[10px] font-semibold text-foreground-muted">
-          Compartilhar
-        </span>
+        <span className={CIRCULO_DA_ACAO}>{icone}</span>
+        <span className={ROTULO_DA_ACAO}>Compartilhar</span>
         {aviso}
       </button>
     );

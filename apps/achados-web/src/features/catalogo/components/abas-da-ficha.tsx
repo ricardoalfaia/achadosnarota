@@ -26,22 +26,24 @@ export function AbasDaFicha({
   sobre: ReactNode;
 }) {
   return (
-    <Abas<AbaDaFicha>
-      key={inicial}
-      valorInicial={inicial}
-      variante="linha"
-      manterEstado
-    >
-      <ListaDeAbas rotulo="Informações do lugar">
-        <Aba valor="cupons">Cupons</Aba>
-        <Aba valor="avaliacoes">Avaliações</Aba>
-        <Aba valor="fotos">Fotos</Aba>
-        <Aba valor="sobre">Sobre</Aba>
-      </ListaDeAbas>
-      <PainelDaAba valor="cupons">{cupons}</PainelDaAba>
-      <PainelDaAba valor="avaliacoes">{avaliacoes}</PainelDaAba>
-      <PainelDaAba valor="fotos">{fotos}</PainelDaAba>
-      <PainelDaAba valor="sobre">{sobre}</PainelDaAba>
-    </Abas>
+    <div id="abas" className="scroll-mt-4">
+      <Abas<AbaDaFicha>
+        key={inicial}
+        valorInicial={inicial}
+        variante="linha"
+        manterEstado
+      >
+        <ListaDeAbas rotulo="Informações do lugar">
+          <Aba valor="cupons">Cupons</Aba>
+          <Aba valor="avaliacoes">Avaliações</Aba>
+          <Aba valor="fotos">Fotos</Aba>
+          <Aba valor="sobre">Sobre</Aba>
+        </ListaDeAbas>
+        <PainelDaAba valor="cupons">{cupons}</PainelDaAba>
+        <PainelDaAba valor="avaliacoes">{avaliacoes}</PainelDaAba>
+        <PainelDaAba valor="fotos">{fotos}</PainelDaAba>
+        <PainelDaAba valor="sobre">{sobre}</PainelDaAba>
+      </Abas>
+    </div>
   );
 }

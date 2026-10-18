@@ -1,3 +1,5 @@
+import type { NotaDoCriterio } from "./curadoria";
+
 // O que a descoberta mostra, já no formato da interface. Sem ids internos:
 // lugar e categoria são identificados pelo slug, que é público.
 
@@ -34,8 +36,18 @@ export type Beneficio = {
 /** Parecer editorial publicado. Nota de 0 a 5. */
 export type Avaliacao = {
   nota: number;
+  /** "O que provamos": o parecer da visita. */
   parecer: string;
+  /** "Bom saber": o que o leitor deve saber antes de ir. */
   ressalvas?: string;
+  /** As notas por critério que se aplicam à casa, na ordem pública. */
+  criterios: NotaDoCriterio[];
+  /** Ganhou o Selo Achados na Rota (regra em `domain/curadoria`). */
+  seloDaCuradoria: boolean;
+  /** O achado imperdível: o prato ou a experiência que não pode faltar. */
+  destaque?: string;
+  /** Dicas da curadoria. */
+  dicas: string[];
   /** Data da visita, ISO (AAAA-MM-DD). */
   visitadoEm: string;
   selo?: Selo;

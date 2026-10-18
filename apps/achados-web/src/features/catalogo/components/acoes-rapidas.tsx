@@ -7,10 +7,11 @@ import {
   telefoneParaExibir,
 } from "../domain/apresentacao";
 import type { FichaDoLugar } from "../domain/tipos";
-
-const ACAO =
-  "flex flex-col items-center rounded-2xl bg-surface-raised p-2.5 transition-colors outline-none hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-ring [&_svg]:mb-1 [&_svg]:size-4.5 [&_svg]:text-chip-foreground";
-const ROTULO = "text-[10px] font-semibold text-foreground-muted";
+import {
+  ACAO_DA_FICHA,
+  CIRCULO_DA_ACAO,
+  ROTULO_DA_ACAO,
+} from "./estilo-da-acao";
 
 /**
  * As quatro ações do protótipo: Ligar, Como chegar, Site e Compartilhar. Só
@@ -25,15 +26,17 @@ export function AcoesRapidas({
   compartilhar: ReactNode;
 }) {
   return (
-    <div className="grid grid-cols-4 gap-2 border-t border-border pt-3 text-center">
+    <div className="grid grid-cols-4 gap-2 text-center">
       {lugar.telefone && (
         <a
           href={hrefDoTelefone(lugar.telefone)}
-          className={ACAO}
+          className={ACAO_DA_FICHA}
           aria-label={`Ligar para ${telefoneParaExibir(lugar.telefone)}`}
         >
-          <Phone aria-hidden="true" />
-          <span className={ROTULO}>Ligar</span>
+          <span className={CIRCULO_DA_ACAO}>
+            <Phone aria-hidden="true" />
+          </span>
+          <span className={ROTULO_DA_ACAO}>Ligar</span>
         </a>
       )}
       {lugar.endereco && (
@@ -41,10 +44,12 @@ export function AcoesRapidas({
           href={hrefComoChegar(lugar.nome, lugar.endereco)}
           target="_blank"
           rel="noopener noreferrer"
-          className={ACAO}
+          className={ACAO_DA_FICHA}
         >
-          <Navigation aria-hidden="true" />
-          <span className={ROTULO}>Como chegar</span>
+          <span className={CIRCULO_DA_ACAO}>
+            <Navigation aria-hidden="true" />
+          </span>
+          <span className={ROTULO_DA_ACAO}>Como chegar</span>
         </a>
       )}
       {lugar.site && (
@@ -52,10 +57,12 @@ export function AcoesRapidas({
           href={lugar.site}
           target="_blank"
           rel="noopener noreferrer"
-          className={ACAO}
+          className={ACAO_DA_FICHA}
         >
-          <Globe aria-hidden="true" />
-          <span className={ROTULO}>Site</span>
+          <span className={CIRCULO_DA_ACAO}>
+            <Globe aria-hidden="true" />
+          </span>
+          <span className={ROTULO_DA_ACAO}>Site</span>
         </a>
       )}
       {compartilhar}

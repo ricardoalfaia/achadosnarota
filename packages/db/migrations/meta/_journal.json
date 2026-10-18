@@ -8,6 +8,13 @@
       "when": 1792250228326,
       "tag": "0000_fundacao",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792286578974,
+      "tag": "0001_criterios_da_curadoria",
+      "breakpoints": true
     }
   ]
 }
