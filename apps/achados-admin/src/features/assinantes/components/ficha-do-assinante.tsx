@@ -23,7 +23,7 @@ export function FichaDoAssinante({ id }: { id: string }) {
 
   if (tela.carregando)
     return (
-      <div aria-busy="true" className="flex flex-col gap-4">
+      <div aria-busy="true" className="flex flex-col gap-4 pt-3">
         <Esqueleto className="h-16 w-full rounded-card" />
         <Esqueleto className="h-28 w-full rounded-card" />
         <Esqueleto className="h-20 w-full rounded-card" />
@@ -44,7 +44,7 @@ export function FichaDoAssinante({ id }: { id: string }) {
   const ficha = tela.ficha;
   return (
     <div className="flex flex-col gap-5">
-      <header className="flex items-center gap-3">
+      <header className="flex items-center gap-3 pt-3">
         <Avatar nome={ficha.nome} tamanho="lg" />
         <div className="min-w-0">
           <p className="truncate text-base font-extrabold text-foreground">
