@@ -560,6 +560,8 @@ async function semearCatalogo(db: Db): Promise<Map<string, string>> {
       publishedAt: agora,
     });
 
+    // Os resgates de teste apontam para as ofertas: saem antes delas.
+    await db.delete(s.redemptions).where(eq(s.redemptions.placeId, placeId));
     await db.delete(s.offers).where(eq(s.offers.placeId, placeId));
     await db.insert(s.offers).values(
       lugar.ofertas.map((oferta, posicao) => ({

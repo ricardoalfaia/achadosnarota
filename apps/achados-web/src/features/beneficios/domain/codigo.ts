@@ -3,9 +3,16 @@
 
 export const SESSAO_NECESSARIA_PARA_USAR = "RESGATE_SESSAO_NECESSARIA";
 
-/** Segundos até o código expirar (nunca negativo). */
+/** A validade do código, igual à do servidor (`@achados/db`, 10 minutos). */
+export const VALIDADE_EM_SEGUNDOS = 10 * 60;
+
+/**
+ * Segundos até o código expirar, entre zero e a validade: o relógio do
+ * aparelho pode estar um pouco adiantado ou atrasado em relação ao servidor.
+ */
 export function segundosRestantes(expiraEm: string, agora: number): number {
-  return Math.max(0, Math.ceil((Date.parse(expiraEm) - agora) / 1000));
+  const segundos = Math.ceil((Date.parse(expiraEm) - agora) / 1000);
+  return Math.min(VALIDADE_EM_SEGUNDOS, Math.max(0, segundos));
 }
 
 /** 541 → "09:01". */

@@ -2,12 +2,26 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { unwrapOrThrow } from "@achados/core";
 import { Avatar } from "@achados/ui";
-import { ChevronRight, Crown, LogOut } from "lucide-react";
+import { cn } from "@achados/ui/estilos";
+import {
+  ChevronRight,
+  Crown,
+  FileText,
+  Heart,
+  LogOut,
+  ShieldCheck,
+} from "lucide-react";
 
+import { dataCurta } from "@/features/passaporte";
 import { lerPassaporte } from "@/features/passaporte/servidor";
 import { CabecalhoDoApp } from "@/shared/casca/cabecalho-do-app";
 import { EscolhaDeTema } from "@/shared/casca/escolha-de-tema";
 import { InstalarApp } from "@/shared/casca/instalar-app";
+import {
+  GrupoDeAjustes,
+  LINHA_DE_AJUSTE,
+  RotuloDaLinha,
+} from "@/shared/casca/linha-de-ajuste";
 import { ROTAS } from "@/shared/rotas";
 import { sair } from "@/shared/sessao/sair";
 import { pessoaDaSessao } from "@/shared/sessao/sessao";
@@ -18,68 +32,118 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
-/** Perfil (protótipo, tela 5): quem entrou, o plano e as preferências do app. */
+const LINK_DA_LINHA = cn(
+  LINHA_DE_AJUSTE,
+  "outline-none focus-visible:outline-2 focus-visible:outline-ring"
+);
+
+/**
+ * Perfil (protótipo, tela 5): o cartão de quem entrou, com o avatar em anel e
+ * a situação do passaporte, e os ajustes em grupos (conta, app, sobre).
+ */
 export default async function Perfil() {
   const usuario = await exigirSessao(ROTAS.perfil);
   const passaporte = unwrapOrThrow(await lerPassaporte(usuario.id));
-  const ativo = passaporte.situacao === "ativo";
   const pessoa = pessoaDaSessao(usuario);
 
   return (
     <>
       <CabecalhoDoApp pessoa={pessoa} />
-      <div className="flex flex-col gap-4 p-4 lg:mx-auto lg:w-full lg:max-w-xl lg:py-12">
-        <section className="py-4 text-center">
-          <div className="relative mx-auto mb-3 w-fit">
+      <div className="flex flex-col gap-6 p-4 lg:mx-auto lg:w-full lg:max-w-xl lg:py-12">
+        <section
+          data-theme="dark"
+          aria-label="Quem está na rota"
+          className="relative flex flex-col items-center overflow-hidden rounded-[2rem] bg-passport px-5 pt-8 pb-6 text-center text-white shadow-xl"
+        >
+          <div className="relative">
             <Avatar
               nome={pessoa.nome}
-              tamanho="xl"
-              className="border-4 shadow-md"
+              tamanho="2xl"
+              anel
               {...(pessoa.fotoUrl ? { fotoUrl: pessoa.fotoUrl } : {})}
             />
-            {ativo && (
+            {passaporte.situacao === "ativo" && (
               <span
                 title="Passaporte ativo"
-                className="absolute right-0 bottom-0 flex size-6 items-center justify-center rounded-full bg-accent-on-dark text-foreground shadow"
+                className="absolute right-1 bottom-1 flex size-8 items-center justify-center rounded-full border-[3px] border-[#0a1e2e] bg-accent-on-dark text-[#0a1e2e]"
               >
-                <Crown aria-hidden="true" className="size-3" />
+                <Crown aria-hidden="true" className="size-4" />
               </span>
             )}
           </div>
-          <h1 className="text-lg font-extrabold text-foreground">
+          <h1 className="mt-4 text-2xl font-extrabold tracking-tight">
             {pessoa.nome}
           </h1>
-          <p className="text-xs text-foreground-muted">
+          <p className="mt-0.5 text-sm text-white/70">
             Na rota desde {usuario.criadoEm.getFullYear()}
           </p>
-        </section>
-
-        <div className="divide-y divide-border rounded-2xl border border-border bg-surface px-4 shadow-sm">
           <Link
             href={ROTAS.passaporte}
-            className="flex items-center justify-between gap-3 py-3 text-xs font-semibold outline-none focus-visible:outline-2 focus-visible:outline-ring"
+            className={cn(
+              "mt-4 inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold outline-none focus-visible:outline-2 focus-visible:outline-white",
+              passaporte.situacao === "ativo"
+                ? "bg-accent-on-dark/15 text-accent-on-dark"
+                : "bg-white text-[#0a1e2e]"
+            )}
           >
-            <span className="flex items-center gap-2 text-foreground">
-              <Crown aria-hidden="true" className="size-4 text-star" />
-              Plano atual
-            </span>
-            <span className="flex items-center gap-0.5 font-bold text-primary">
-              {ativo ? "Passaporte anual" : "Sem passaporte"}
-              <ChevronRight aria-hidden="true" className="size-3.5" />
+            <Crown aria-hidden="true" className="size-4" />
+            {passaporte.situacao === "ativo"
+              ? `Passaporte ativo até ${dataCurta(passaporte.validoAte)}`
+              : "Conhecer o Passaporte"}
+            <ChevronRight aria-hidden="true" className="size-4" />
+          </Link>
+        </section>
+
+        <GrupoDeAjustes titulo="Sua conta">
+          <Link href={ROTAS.passaporte} className={LINK_DA_LINHA}>
+            <RotuloDaLinha icone={<Crown />}>Plano atual</RotuloDaLinha>
+            <span className="flex items-center gap-0.5 text-sm font-bold text-primary">
+              {passaporte.situacao === "ativo"
+                ? "Passaporte anual"
+                : "Sem passaporte"}
+              <ChevronRight aria-hidden="true" className="size-4" />
             </span>
           </Link>
+          <Link href={ROTAS.favoritos} className={LINK_DA_LINHA}>
+            <RotuloDaLinha icone={<Heart />}>Meus favoritos</RotuloDaLinha>
+            <ChevronRight
+              aria-hidden="true"
+              className="size-4 text-foreground-subtle"
+            />
+          </Link>
+        </GrupoDeAjustes>
+
+        <GrupoDeAjustes titulo="App">
           <EscolhaDeTema />
           <InstalarApp />
+        </GrupoDeAjustes>
+
+        <GrupoDeAjustes titulo="Sobre">
+          <Link href="/termos" className={LINK_DA_LINHA}>
+            <RotuloDaLinha icone={<FileText />}>Termos de uso</RotuloDaLinha>
+            <ChevronRight
+              aria-hidden="true"
+              className="size-4 text-foreground-subtle"
+            />
+          </Link>
+          <Link href="/privacidade" className={LINK_DA_LINHA}>
+            <RotuloDaLinha icone={<ShieldCheck />}>Privacidade</RotuloDaLinha>
+            <ChevronRight
+              aria-hidden="true"
+              className="size-4 text-foreground-subtle"
+            />
+          </Link>
           <form action={sair}>
             <button
               type="submit"
-              className="flex w-full cursor-pointer items-center gap-2 py-3 text-left text-xs font-semibold text-danger outline-none focus-visible:outline-2 focus-visible:outline-ring"
+              className={cn(LINK_DA_LINHA, "cursor-pointer text-danger")}
             >
-              <LogOut aria-hidden="true" className="size-4" />
-              Sair da conta
+              <RotuloDaLinha icone={<LogOut />} tom="perigo">
+                Sair da conta
+              </RotuloDaLinha>
             </button>
           </form>
-        </div>
+        </GrupoDeAjustes>
       </div>
     </>
   );

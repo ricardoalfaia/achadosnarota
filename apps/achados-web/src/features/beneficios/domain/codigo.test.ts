@@ -16,6 +16,10 @@ describe("código na tela", () => {
     expect(segundosRestantes(expira, Date.parse("2026-10-18T12:11:00Z"))).toBe(
       0
     );
+    // Relógio do aparelho atrasado: nunca mostra mais que a validade.
+    expect(segundosRestantes(expira, Date.parse("2026-10-18T11:59:58Z"))).toBe(
+      600
+    );
   });
 
   it("mostra o relógio em mm:ss e o código em duas metades", () => {

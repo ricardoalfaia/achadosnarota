@@ -4,6 +4,7 @@ import { SeletorDeTema } from "@achados/ui";
 import { Palette } from "lucide-react";
 
 import { usePreferencias } from "@/shared/preferencias/preferencias-provider";
+import { LINHA_DE_AJUSTE, RotuloDaLinha } from "./linha-de-ajuste";
 
 /**
  * A linha "Aparência" do perfil: claro, escuro ou o tema do aparelho. A
@@ -12,11 +13,8 @@ import { usePreferencias } from "@/shared/preferencias/preferencias-provider";
 export function EscolhaDeTema() {
   const { preferencias, mudar } = usePreferencias();
   return (
-    <div className="flex items-center justify-between gap-3 py-3 text-xs font-semibold">
-      <span className="flex items-center gap-2 text-foreground">
-        <Palette aria-hidden="true" className="size-4 text-foreground-subtle" />
-        Aparência
-      </span>
+    <div className={LINHA_DE_AJUSTE}>
+      <RotuloDaLinha icone={<Palette />}>Aparência</RotuloDaLinha>
       <SeletorDeTema
         valor={preferencias.tema}
         aoMudar={(tema) => mudar("tema", tema)}

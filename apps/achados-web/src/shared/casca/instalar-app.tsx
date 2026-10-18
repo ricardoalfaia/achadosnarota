@@ -3,8 +3,7 @@
 import { useInstalacaoPwa } from "@achados/ui/hooks";
 import { Download, Share, Smartphone } from "lucide-react";
 
-const LINHA =
-  "flex w-full items-center justify-between gap-3 py-3 text-left text-xs font-semibold";
+import { LINHA_DE_AJUSTE, RotuloDaLinha } from "./linha-de-ajuste";
 
 /**
  * A linha "App na tela inicial" do perfil. Quando o navegador oferece o
@@ -19,30 +18,20 @@ export function InstalarApp() {
       <button
         type="button"
         onClick={instalar}
-        className={`${LINHA} cursor-pointer outline-none focus-visible:outline-2 focus-visible:outline-ring`}
+        className={`${LINHA_DE_AJUSTE} cursor-pointer outline-none focus-visible:outline-2 focus-visible:outline-ring`}
       >
-        <span className="flex items-center gap-2 text-foreground">
-          <Download
-            aria-hidden="true"
-            className="size-4 text-foreground-subtle"
-          />
+        <RotuloDaLinha icone={<Download />}>
           Instalar o app na tela inicial
-        </span>
+        </RotuloDaLinha>
         <span className="font-bold text-primary">Instalar</span>
       </button>
     );
   }
 
   return (
-    <div className={LINHA}>
-      <span className="flex items-center gap-2 text-foreground">
-        <Smartphone
-          aria-hidden="true"
-          className="size-4 text-foreground-subtle"
-        />
-        App na tela inicial
-      </span>
-      <span className="flex items-center gap-1 text-right font-bold text-foreground-muted">
+    <div className={LINHA_DE_AJUSTE}>
+      <RotuloDaLinha icone={<Smartphone />}>App na tela inicial</RotuloDaLinha>
+      <span className="flex items-center gap-1 text-right text-xs font-bold text-foreground-muted">
         {situacao === "instalado" && "Instalado"}
         {situacao === "ios" && (
           <>
