@@ -64,9 +64,11 @@ export function BalcaoDaCasa({ casa }: { casa: CasaComOperadores }) {
           id="titulo-vincular"
           className="text-xs font-bold tracking-wide text-foreground-muted uppercase"
         >
-          Vincular mais alguém
+          {casa.operadores.length === 0
+            ? "Vincular operador"
+            : "Adicionar outro operador"}
         </h3>
-        <VincularOperador casas={[casa]} casa={casa} />
+        <VincularOperador casaId={casa.id} />
       </section>
     </div>
   );

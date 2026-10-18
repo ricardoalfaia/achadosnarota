@@ -6,6 +6,7 @@ import { EstadoVazio } from "@achados/ui";
 import { cn, estiloDoBotao } from "@achados/ui/estilos";
 import { Download, ShieldAlert } from "lucide-react";
 
+import { FiltroDeCasa } from "@/features/relatorios/components/filtro-de-casa";
 import {
   CartoesDeIndicadores,
   GraficoPorDia,
@@ -130,34 +131,11 @@ export default async function PaginaDeResgates({
             ))}
           </nav>
           <div className="flex flex-wrap items-center gap-2">
-            <form action={ROTAS.resgates} className="flex items-center gap-2">
-              <input type="hidden" name="periodo" value={periodo} />
-              <label className="sr-only" htmlFor="filtro-casa">
-                Casa
-              </label>
-              <select
-                id="filtro-casa"
-                name="casa"
-                defaultValue={casa ?? ""}
-                className="h-9 rounded-full border border-border bg-surface px-3 text-sm text-foreground"
-              >
-                <option value="">Todas as casas</option>
-                {relatorio.opcoesDeCasa.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.nome}
-                  </option>
-                ))}
-              </select>
-              <button
-                type="submit"
-                className={estiloDoBotao({
-                  variante: "contorno",
-                  tamanho: "xs",
-                })}
-              >
-                Filtrar
-              </button>
-            </form>
+            <FiltroDeCasa
+              periodo={periodo}
+              casa={casa}
+              casas={relatorio.opcoesDeCasa}
+            />
             <a
               href={`/api/relatorios/resgates?${parametros({})}`}
               className={estiloDoBotao({ tamanho: "xs" })}

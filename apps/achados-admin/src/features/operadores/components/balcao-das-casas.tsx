@@ -1,10 +1,8 @@
 "use client";
 
 import {
-  AcoesDaGrade,
   Avatar,
   BarraDaGrade,
-  Botao,
   BuscaDaGrade,
   ChipDeFiltro,
   ChipsDeFiltro,
@@ -16,7 +14,7 @@ import {
   TextoDaLinha,
   type ColunaDaTabela,
 } from "@achados/ui";
-import { ChevronRight, Store, UserPlus } from "lucide-react";
+import { ChevronRight, Store } from "lucide-react";
 
 import { TODAS } from "@/shared/cadastro/filtro";
 import {
@@ -29,7 +27,6 @@ import {
 } from "../domain/balcao";
 import { useBalcaoDasCasas } from "../hooks/use-balcao-das-casas";
 import { BalcaoDaCasa } from "./balcao-da-casa";
-import { VincularOperador } from "./vincular-operador";
 
 /** Até quantos rostos aparecem na linha antes do "+N". */
 const ROSTOS = 3;
@@ -107,7 +104,8 @@ const idDaCasa = (casa: CasaDaLista) => casa.id;
 /**
  * Os operadores do balcão de todas as casas, para muitas casas: busca por
  * casa, cidade ou pessoa, filtro pela situação (as sem operador primeiro na
- * atenção), a Tabela do design system e o balcão de cada casa numa janela.
+ * atenção), a Tabela do design system e o balcão de cada casa numa janela,
+ * onde se vincula e desvincula quem opera.
  */
 export function BalcaoDasCasas({
   casas,
@@ -148,16 +146,6 @@ export function BalcaoDasCasas({
                 </ChipDeFiltro>
               ))}
             </ChipsDeFiltro>
-            <AcoesDaGrade>
-              <Botao
-                tamanho="xs"
-                icone={<UserPlus />}
-                onClick={tela.abrirVinculo}
-                desabilitado={tela.total === 0}
-              >
-                Vincular operador
-              </Botao>
-            </AcoesDaGrade>
           </BarraDaGrade>
         }
         rodape={
@@ -202,18 +190,6 @@ export function BalcaoDasCasas({
         icone={<Store />}
       >
         {tela.casaAberta && <BalcaoDaCasa casa={tela.casaAberta} />}
-      </Dialogo>
-
-      <Dialogo
-        aberto={tela.vinculando}
-        aoFechar={tela.fecharVinculo}
-        titulo="Vincular operador"
-        descricao="A pessoa cria a conta no app e você vincula pelo e-mail. Ela passa a ver o modo balcão no perfil e só valida códigos da casa escolhida."
-        icone={<UserPlus />}
-        variante="destaque"
-        semRolagem
-      >
-        <VincularOperador casas={casas} aoVincular={tela.fecharVinculo} />
       </Dialogo>
     </>
   );

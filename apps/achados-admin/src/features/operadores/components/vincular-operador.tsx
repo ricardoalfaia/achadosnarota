@@ -1,66 +1,45 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
-import { Alerta, Botao, CampoDeTexto, Select } from "@achados/ui";
+import { useActionState } from "react";
+import { Alerta, Botao, CampoDeTexto } from "@achados/ui";
 import { UserPlus } from "lucide-react";
 
 import { vincularOperador, type EstadoDoVinculo } from "../actions";
 
 /**
- * O formulário de vínculo: o e-mail da conta e a casa que ela vai operar.
- * Com `casa`, a casa já vem escolhida (aberto de dentro do balcão dela).
+ * O vínculo de mais uma pessoa ao balcão da casa aberta: só o e-mail da
+ * conta. Uma casa pode ter vários operadores. O formulário se limpa depois de
+ * enviar, pronto para o próximo.
  */
-export function VincularOperador({
-  casas,
-  casa,
-  aoVincular,
-}: {
-  casas: readonly { id: string; nome: string }[];
-  casa?: { id: string; nome: string };
-  /** Depois de um vínculo que deu certo. */
-  aoVincular?: () => void;
-}) {
+export function VincularOperador({ casaId }: { casaId: string }) {
   const [estado, enviar, enviando] = useActionState<EstadoDoVinculo, FormData>(
     vincularOperador,
     {}
   );
-  useEffect(() => {
-    if (estado.mensagem) aoVincular?.();
-  }, [estado, aoVincular]);
 
   return (
-    <form action={enviar} className="flex flex-col gap-4">
-      <CampoDeTexto
-        label="E-mail da conta"
-        name="email"
-        tipo="email"
-        ajuda="A pessoa precisa ter criado a conta no app."
-        required
-      />
-      {casa ? (
-        <input type="hidden" name="casaId" value={casa.id} />
-      ) : (
-        <Select
-          label="Casa"
-          name="casaId"
+    <form action={enviar} className="flex flex-col gap-3">
+      <input type="hidden" name="casaId" value={casaId} />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+        <CampoDeTexto
+          label="E-mail da conta"
+          name="email"
+          tipo="email"
+          ajuda="A pessoa precisa ter criado a conta no app."
           required
-          opcoes={casas.map((c) => ({ valor: c.id, label: c.nome }))}
-          valorInicial={casas[0]?.id ?? null}
-          pesquisavel={casas.length > 8}
+          className="flex-1"
         />
-      )}
+        <Botao
+          type="submit"
+          icone={<UserPlus />}
+          tamanho="lg"
+          carregando={enviando}
+        >
+          Vincular
+        </Botao>
+      </div>
       {estado.erro && <Alerta intencao="erro">{estado.erro}</Alerta>}
-      {estado.mensagem && !aoVincular && (
-        <Alerta intencao="sucesso">{estado.mensagem}</Alerta>
-      )}
-      <Botao
-        type="submit"
-        icone={<UserPlus />}
-        carregando={enviando}
-        larguraTotal
-      >
-        {casa ? `Vincular a ${casa.nome}` : "Vincular"}
-      </Botao>
+      {estado.mensagem && <Alerta intencao="sucesso">{estado.mensagem}</Alerta>}
     </form>
   );
 }

@@ -17,7 +17,7 @@ import {
 
 /**
  * A tela de Parceiros: busca (adiada, para digitar não esperar o filtro),
- * situação, a casa aberta no balcão e a janela de vínculo. As casas vêm do
+ * situação e a casa aberta no balcão. As casas vêm do
  * servidor; depois de vincular ou desvincular, a Action revalida a página e
  * elas chegam de novo por aqui.
  */
@@ -30,7 +30,6 @@ export function useBalcaoDasCasas(
   const buscaAdiada = useDeferredValue(busca);
   const [situacao, setSituacao] = useState(situacaoInicial);
   const [idAberto, setIdAberto] = useState<string>();
-  const [vinculando, setVinculando] = useState(false);
 
   const linhas = useMemo(
     () =>
@@ -55,8 +54,5 @@ export function useBalcaoDasCasas(
     casaAberta: lista.find((casa) => casa.id === idAberto),
     abrirCasa: (casa: CasaComOperadores) => setIdAberto(casa.id),
     fecharCasa: () => setIdAberto(undefined),
-    vinculando,
-    abrirVinculo: () => setVinculando(true),
-    fecharVinculo: () => setVinculando(false),
   };
 }
