@@ -19,6 +19,7 @@ import {
 import { ImageOff } from "lucide-react";
 
 import { TODAS } from "@/shared/cadastro/filtro";
+import { usePodeEscrever } from "@/shared/sessao/equipe-provider";
 import { STATUS_DA_CASA, tempoDesde } from "../domain/apresentacao";
 import type { CasaDaLista, StatusDaCasa } from "../domain/tipos";
 import {
@@ -125,6 +126,7 @@ export function ListagemDeCasas({
   aoAbrir: (casa: CasaDaLista) => void;
   aoIncluir: () => void;
 }) {
+  const podeIncluir = usePodeEscrever("casas");
   const lista = useListaDeCasas(situacao);
 
   return (
@@ -156,9 +158,11 @@ export function ListagemDeCasas({
             ))}
           </ChipsDeFiltro>
           <AcoesDaGrade>
-            <Botao tamanho="xs" icone={<IconeMais />} onClick={aoIncluir}>
-              Nova casa
-            </Botao>
+            {podeIncluir && (
+              <Botao tamanho="xs" icone={<IconeMais />} onClick={aoIncluir}>
+                Nova casa
+              </Botao>
+            )}
           </AcoesDaGrade>
         </BarraDaGrade>
       }

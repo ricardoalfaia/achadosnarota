@@ -19,6 +19,7 @@ import {
 } from "@achados/ui";
 
 import { TODAS } from "@/shared/cadastro/filtro";
+import { usePodeEscrever } from "@/shared/sessao/equipe-provider";
 import { SELO_EDITORIAL, STATUS_DA_AVALIACAO } from "../domain/apresentacao";
 import type { AvaliacaoDaLista, StatusDaAvaliacao } from "../domain/tipos";
 import {
@@ -100,6 +101,7 @@ export function ListagemDeAvaliacoes({
   aoAbrir: (avaliacao: AvaliacaoDaLista) => void;
   aoIncluir: () => void;
 }) {
+  const podeIncluir = usePodeEscrever("curadoria");
   const lista = useListaDeAvaliacoes(situacao);
 
   return (
@@ -131,9 +133,11 @@ export function ListagemDeAvaliacoes({
             ))}
           </ChipsDeFiltro>
           <AcoesDaGrade>
-            <Botao tamanho="xs" icone={<IconeMais />} onClick={aoIncluir}>
-              Nova avaliação
-            </Botao>
+            {podeIncluir && (
+              <Botao tamanho="xs" icone={<IconeMais />} onClick={aoIncluir}>
+                Nova avaliação
+              </Botao>
+            )}
           </AcoesDaGrade>
         </BarraDaGrade>
       }

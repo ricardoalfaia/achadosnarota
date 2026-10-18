@@ -1,48 +1,42 @@
 import "server-only";
 
-import { andThen, AppErrors, Err, Ok, type Result } from "@achados/core";
+import { AppErrors, Err, Ok, type Result } from "@achados/core";
 import type { EditorialReview } from "@achados/db";
 
 import { idDoRegistro } from "@/shared/cadastro/id.servidor";
-import {
-  bancoEmMemoria,
-  latenciaSimulada,
-} from "@/shared/provisorio/banco-em-memoria.servidor";
-import { guardaDosDadosProvisorios } from "@/shared/provisorio/guarda";
+import { naEquipe, tabelasDaEquipe } from "@/shared/db/equipe.servidor";
 import { CRITERIOS_DA_CURADORIA } from "./domain/criterios";
 import type { Avaliacao, AvaliacaoDaLista } from "./domain/tipos";
 
-// Leituras da curadoria, só servidor, em Result. PROVISÓRIO: fonte em
-// memória; com o banco, só o papel de curador lê e grava aqui (ADR-003 e
-// ADR-004 de produto), nunca o parceiro.
+// Leituras da curadoria, só servidor, em Result, no escopo da equipe. Só
+// administração e curadoria gravam aqui (RLS), nunca o parceiro (ADR-003 e
+// ADR-004 de produto).
 
 const notaDoBanco = (valor: string | null) =>
   valor === null ? "" : valor.replace(".", ",");
 
 export async function listarAvaliacoes(): Promise<Result<AvaliacaoDaLista[]>> {
-  const guarda = guardaDosDadosProvisorios();
-  if (!guarda.ok) return guarda;
-  await latenciaSimulada();
-
-  const banco = bancoEmMemoria();
-  const casas = new Map(banco.place.map((p) => [p.id, p.name]));
-  return Ok(
-    banco.editorial_review
-      .map((r): AvaliacaoDaLista => ({
-        id: r.id,
-        casaId: r.placeId,
-        casa: casas.get(r.placeId) ?? "",
-        nota: Number(r.score),
-        criterios: CRITERIOS_DA_CURADORIA.filter(
-          ({ chave }) => r[chave] !== null
-        ).length,
-        status: r.status,
-        selo: r.seal,
-        visitadaEm: r.visitedOn,
-        atualizadaEm: r.updatedAt.toISOString(),
-      }))
-      .sort((a, b) => b.atualizadaEm.localeCompare(a.atualizadaEm))
-  );
+  return naEquipe(async (tx) => {
+    const banco = await tabelasDaEquipe(tx);
+    const casas = new Map(banco.place.map((p) => [p.id, p.name]));
+    return Ok(
+      banco.editorial_review
+        .map((r): AvaliacaoDaLista => ({
+          id: r.id,
+          casaId: r.placeId,
+          casa: casas.get(r.placeId) ?? "",
+          nota: Number(r.score),
+          criterios: CRITERIOS_DA_CURADORIA.filter(
+            ({ chave }) => r[chave] !== null
+          ).length,
+          status: r.status,
+          selo: r.seal,
+          visitadaEm: r.visitedOn,
+          atualizadaEm: r.updatedAt.toISOString(),
+        }))
+        .sort((a, b) => b.atualizadaEm.localeCompare(a.atualizadaEm))
+    );
+  });
 }
 
 function avaliacaoDaLinha(r: EditorialReview): Avaliacao {
@@ -72,14 +66,15 @@ function avaliacaoDaLinha(r: EditorialReview): Avaliacao {
 export async function lerAvaliacao(
   entrada: unknown
 ): Promise<Result<Avaliacao>> {
-  const guarda = guardaDosDadosProvisorios();
-  if (!guarda.ok) return guarda;
-  await latenciaSimulada();
-  return andThen(idDoRegistro("Avaliacao", entrada), (id) => {
-    const linha = bancoEmMemoria().editorial_review.find((r) => r.id === id);
+  const id = idDoRegistro("Avaliacao", entrada);
+  if (!id.ok) return id;
+  return naEquipe(async (tx) => {
+    const linha = (await tabelasDaEquipe(tx)).editorial_review.find(
+      (r) => r.id === id.value
+    );
     return linha
       ? Ok(avaliacaoDaLinha(linha))
-      : Err(AppErrors.notFound("Avaliacao", id));
+      : Err(AppErrors.notFound("Avaliacao", id.value));
   });
 }
 
@@ -87,12 +82,12 @@ export async function lerAvaliacao(
 export async function casasParaAvaliacao(): Promise<
   Result<{ id: string; nome: string }[]>
 > {
-  const guarda = guardaDosDadosProvisorios();
-  if (!guarda.ok) return guarda;
-  return Ok(
-    bancoEmMemoria()
-      .place.filter((p) => p.status !== "archived")
-      .map((p) => ({ id: p.id, nome: p.name }))
-      .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"))
+  return naEquipe(async (tx) =>
+    Ok(
+      (await tabelasDaEquipe(tx)).place
+        .filter((p) => p.status !== "archived")
+        .map((p) => ({ id: p.id, nome: p.name }))
+        .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"))
+    )
   );
 }

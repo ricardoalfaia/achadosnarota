@@ -17,6 +17,7 @@ import {
 } from "@achados/ui";
 
 import { TODAS } from "@/shared/cadastro/filtro";
+import { usePodeEscrever } from "@/shared/sessao/equipe-provider";
 import {
   regraDeUso,
   STATUS_DA_PROMOCAO,
@@ -92,6 +93,7 @@ export function ListagemDePromocoes({
   aoAbrir: (promocao: PromocaoDaLista) => void;
   aoIncluir: () => void;
 }) {
+  const podeIncluir = usePodeEscrever("promocoes");
   const lista = useListaDePromocoes(situacao);
 
   return (
@@ -123,9 +125,11 @@ export function ListagemDePromocoes({
             ))}
           </ChipsDeFiltro>
           <AcoesDaGrade>
-            <Botao tamanho="xs" icone={<IconeMais />} onClick={aoIncluir}>
-              Nova promoção
-            </Botao>
+            {podeIncluir && (
+              <Botao tamanho="xs" icone={<IconeMais />} onClick={aoIncluir}>
+                Nova promoção
+              </Botao>
+            )}
           </AcoesDaGrade>
         </BarraDaGrade>
       }

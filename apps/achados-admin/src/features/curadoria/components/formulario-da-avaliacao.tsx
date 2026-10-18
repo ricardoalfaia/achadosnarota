@@ -23,6 +23,7 @@ import {
 import { cn } from "@achados/ui/estilos";
 import { Award, ClipboardList, NotebookPen, Star } from "lucide-react";
 
+import { usePodeEscrever } from "@/shared/sessao/equipe-provider";
 import { SELO_EDITORIAL, STATUS_DA_AVALIACAO } from "../domain/apresentacao";
 import { CRITERIOS_DA_CURADORIA, lerNota } from "../domain/criterios";
 import type { Avaliacao, SeloEditorial } from "../domain/tipos";
@@ -56,6 +57,7 @@ export function FormularioDaAvaliacao({
   ativo: boolean;
   aoConcluir: () => void;
 }) {
+  const podeSalvar = usePodeEscrever("curadoria");
   const f = useFormularioDaAvaliacao({ avaliacao, ativo, aoConcluir });
   const status = STATUS_DA_AVALIACAO[f.dados.status];
 
@@ -304,9 +306,15 @@ export function FormularioDaAvaliacao({
         >
           Cancelar
         </Botao>
-        <Botao tamanho="xs" onClick={f.salvar} carregando={f.salvando}>
-          {f.novo ? "Incluir avaliação" : "Salvar alterações"}
-        </Botao>
+        {podeSalvar ? (
+          <Botao tamanho="xs" onClick={f.salvar} carregando={f.salvando}>
+            {f.novo ? "Incluir avaliação" : "Salvar alterações"}
+          </Botao>
+        ) : (
+          <span className="text-xs font-semibold text-foreground-muted">
+            Só leitura: o seu papel não altera a curadoria.
+          </span>
+        )}
       </RodapeDoFormulario>
 
       <DialogoDeConfirmacao

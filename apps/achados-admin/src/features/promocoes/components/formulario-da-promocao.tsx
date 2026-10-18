@@ -22,6 +22,7 @@ import {
 } from "@achados/ui";
 import { BadgePercent, Gift, ListChecks, Send, Tag } from "lucide-react";
 
+import { usePodeEscrever } from "@/shared/sessao/equipe-provider";
 import {
   PERIODO_DE_USO,
   regraDeUso,
@@ -68,6 +69,7 @@ export function FormularioDaPromocao({
   ativo: boolean;
   aoConcluir: () => void;
 }) {
+  const podeSalvar = usePodeEscrever("promocoes");
   const f = useFormularioDaPromocao({ promocao, ativo, aoConcluir });
   const status = STATUS_DA_PROMOCAO[f.dados.status];
   const casa = f.casas.find((c) => c.id === f.dados.casaId);
@@ -297,9 +299,15 @@ export function FormularioDaPromocao({
         >
           Cancelar
         </Botao>
-        <Botao tamanho="xs" onClick={f.salvar} carregando={f.salvando}>
-          {f.novo ? "Incluir promoção" : "Salvar alterações"}
-        </Botao>
+        {podeSalvar ? (
+          <Botao tamanho="xs" onClick={f.salvar} carregando={f.salvando}>
+            {f.novo ? "Incluir promoção" : "Salvar alterações"}
+          </Botao>
+        ) : (
+          <span className="text-xs font-semibold text-foreground-muted">
+            Só leitura: o seu papel não altera promoções.
+          </span>
+        )}
       </RodapeDoFormulario>
 
       <DialogoDeConfirmacao

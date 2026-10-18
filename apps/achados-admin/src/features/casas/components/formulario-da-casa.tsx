@@ -21,6 +21,7 @@ import {
 } from "@achados/ui";
 import { Camera, ImageIcon, Info, MapPin, Send, Store } from "lucide-react";
 
+import { usePodeEscrever } from "@/shared/sessao/equipe-provider";
 import { STATUS_DA_CASA } from "../domain/apresentacao";
 import type { Casa, StatusDaCasa } from "../domain/tipos";
 import type { SecaoDaCasa } from "../domain/validacao";
@@ -59,6 +60,7 @@ export function FormularioDaCasa({
   ativo: boolean;
   aoConcluir: () => void;
 }) {
+  const podeSalvar = usePodeEscrever("casas");
   const f = useFormularioDaCasa({ casa, ativo, aoConcluir });
   const status = STATUS_DA_CASA[f.dados.status];
 
@@ -348,9 +350,15 @@ export function FormularioDaCasa({
         >
           Cancelar
         </Botao>
-        <Botao tamanho="xs" onClick={f.salvar} carregando={f.salvando}>
-          {f.novo ? "Incluir casa" : "Salvar alterações"}
-        </Botao>
+        {podeSalvar ? (
+          <Botao tamanho="xs" onClick={f.salvar} carregando={f.salvando}>
+            {f.novo ? "Incluir casa" : "Salvar alterações"}
+          </Botao>
+        ) : (
+          <span className="text-xs font-semibold text-foreground-muted">
+            Só leitura: o seu papel não altera casas.
+          </span>
+        )}
       </RodapeDoFormulario>
 
       <DialogoDeConfirmacao
