@@ -4,7 +4,7 @@
 **Data:** 2026-10-18  
 **Princípios relacionados:** P01, P02, P03, P04, P05, P06, P07, P08, P10  
 **Responsável pela proposta:** Ricardo Alfaia Barbosa  
-**Aceitação:** pendente; fase visual implementada em `apps/achados-admin`, sem banco e sem login.
+**Aceitação:** pendente; fase visual e integração com o banco e o login da equipe implementadas em `apps/achados-admin`.
 
 ## Contexto
 
@@ -47,9 +47,20 @@ O [ADR-0021](0021-paginas-de-cadastro.md) implementado uma vez e usado por casas
 - **Recursos do React 19.2** ([ADR-0016](0016-recursos-do-react-19.md)): `Activity` nas abas dos formulários e da fila de trabalho (`manterEstado`); `Suspense` com `DataBoundary`; `useDeferredValue` na busca; `useTransition` na navegação; estado ajustado durante o desenho (gaveta que fecha ao trocar de rota, formulário que recomeça ao abrir outro registro); `useEffectEvent` pelos hooks do design system.
 - A **`Tabela`** do design system nas três listagens, com colunas declaradas fora do componente ([ADR-0015](0015-tabela-de-dados.md)).
 
-### Dados provisórios
+### Login da equipe e papéis (18/10/2026)
 
-Até o banco ser ligado, as consultas e Actions leem e gravam uma fonte em memória (`shared/provisorio`) com linhas no formato das tabelas do `@achados/db`, para a troca não mudar hooks nem componentes. Os dados são sintéticos e marcados como provisórios. A guarda (`guarda.ts`) recusa em `homolog` e `production`, e em build de produção sem `APP_ENV`: nada de casa, nota ou promoção fictícia fora do desenvolvimento ([README de produto](../produto/README.md), princípio 6). As regras que o banco já tem (uma avaliação publicada por casa, promoção ativa só em casa publicada, nota calculada no servidor) foram reproduzidas para a tela se comportar como vai se comportar.
+- **Better Auth no painel** sobre as mesmas tabelas de conta do app do assinante, com cookies próprios (`achados-admin`), sem cadastro (as contas da equipe são criadas fora do app), sessão de 12 horas e limites de tentativa. A tela `/entrar` decide o passo no servidor: e-mail e senha; com o 2FA ligado, o código do autenticador ou um de recuperação; sem 2FA, a configuração **obrigatória** do autenticador (QR gerado no servidor, chave e códigos de recuperação); conta fora da equipe, o aviso e "Sair".
+- **Papéis no banco** (`staff_member`: `admin`, `curator`, `commercial`; migração `0004_equipe_e_auditoria`). O layout do painel exige equipe com 2FA e lê o papel sob RLS a cada pedido. As políticas fazem a separação do ADR-004 de produto: a equipe lê tudo (inclusive rascunho); curadoria e administração escrevem casas, fotos e curadoria; comercial e administração escrevem promoções; só a administração vincula operadores do balcão e lê a auditoria. Testes A/B em `packages/db/src/equipe.test.ts`.
+- **A tela orienta pelo papel** (`usePodeEscrever`): sem "Nova…" nem "Salvar" onde o papel não escreve. Não é autorização: o banco recusa de qualquer forma.
+
+### Dados do banco (substitui a fonte provisória)
+
+- As leituras e Actions usam `naEquipe` (`shared/db/equipe.servidor.ts`): a pessoa da sessão e `withUser(banco(), pessoa.id, ...)`. As listagens carregam as tabelas do catálogo no formato da antiga fonte (`tabelasDaEquipe`), para as telas não mudarem; com centenas de casas, passam a consultas filtradas e paginadas.
+- Um UPDATE barrado pela RLS altera zero linhas sem erro: toda alteração confere o que voltou e responde com a recusa de papel, sem auditar. Inclusão barrada já volta como `USER_SCOPE_VIOLATION`.
+- Cada mudança aceita grava `audit_event` na mesma transação, com ação, entidade e situação, sem dado pessoal (nunca e-mail). A auditoria só acrescenta: o app não altera nem apaga.
+- Publicar uma curadoria substitui a publicada anterior da casa na mesma transação (índice único do banco).
+- **Parceiros**: a página lista os operadores do balcão por casa e vincula pelo e-mail de uma conta existente (só administração).
+- A fonte em memória (`shared/provisorio`) saiu.
 
 ### Design system
 
@@ -68,25 +79,26 @@ As três áreas seguem o mesmo padrão e a parte comum mora em `shared/cadastro`
 
 ## Verificação de aderência
 
-| Regra                                                         | Evidência                                                              | Estado                          |
-| ------------------------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------- |
-| Regras de cadastro testadas sem a tela                        | `vitest` do `achados-admin` (validação, filtro, pendências, critérios) | Executado                       |
-| Dados provisórios recusados fora do desenvolvimento           | `guarda.test.ts`                                                       | Executado                       |
-| Navegação cobre as rotas e separa editorial e comercial       | `navegacao.test.ts`                                                    | Executado                       |
-| Id desconhecido mostra "não encontrado" sem derrubar a lista  | Captura com `?id=` inexistente (DataBoundary da região)                | Executado (conferência visual)  |
-| Telas nos dois temas e no celular                             | Capturas 1440×900 e 390×844 conferidas                                 | Executado (conferência visual)  |
-| Jornadas de cadastro (incluir, editar, descartar, pendências) | E2E com Playwright                                                     | Planejado                       |
-| Isolamento por papel e por parceiro                           | Testes A/B com o banco e a sessão da equipe                            | Planejado (sem banco nem login) |
+| Regra                                                         | Evidência                                                              | Estado                         |
+| ------------------------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------ |
+| Regras de cadastro testadas sem a tela                        | `vitest` do `achados-admin` (validação, filtro, pendências, critérios) | Executado                      |
+| Dados provisórios recusados fora do desenvolvimento           | `guarda.test.ts`                                                       | Executado                      |
+| Navegação cobre as rotas e separa editorial e comercial       | `navegacao.test.ts`                                                    | Executado                      |
+| Id desconhecido mostra "não encontrado" sem derrubar a lista  | Captura com `?id=` inexistente (DataBoundary da região)                | Executado (conferência visual) |
+| Telas nos dois temas e no celular                             | Capturas 1440×900 e 390×844 conferidas                                 | Executado (conferência visual) |
+| Jornadas de cadastro (incluir, editar, descartar, pendências) | E2E com Playwright                                                     | Planejado                      |
+| Isolamento por papel (curador × comercial × administração)    | `packages/db/src/equipe.test.ts` (RLS, papel do app)                   | Executado                      |
+| Recusa de papel na tela e sem auditoria falsa                 | Conferência manual com as contas do seed (comercial salvando casa)     | Executado (conferência manual) |
 
 ## Pendências e exceções
 
-- Login da equipe com papéis (curador, administrador) e MFA ([ADR-0020](0020-autenticacao-e-sessao.md), [ADR-003 de produto](../produto/adr/ADR-003.md)). **O app não vai para homologação nem produção sem isso.**
-- Trocar a fonte provisória pelo `@achados/db`, com escopo de papel, `audit_events` e testes A/B. Combinar com a outra frente antes de mexer em `packages/db`.
+- E2E com Playwright das jornadas do painel (entrar com 2FA, cadastrar, recusa por papel).
+- Gestão da equipe na tela (hoje as contas e papéis vêm do seed/script); troca de senha e recuperação da conta da equipe.
 - Envio de fotos ao R2, com origem e licença.
 - Revisor distinto do autor na publicação editorial (docs/produto/03).
 - Levar a regra do selo e dos critérios para um pacote de domínio comum com o app do assinante.
 - Avaliar extrair os adaptadores do Query para um pacote, se um terceiro app precisar deles.
-- Painel do parceiro (validação do código de resgate no balcão).
+- A validação do código no balcão ficou no modo balcão do app do assinante ([ADR-0025](0025-app-pwa-do-assinante.md)); falta a página Resgates do painel (acompanhamento por casa e por promoção).
 
 Nenhuma exceção registrada.
 

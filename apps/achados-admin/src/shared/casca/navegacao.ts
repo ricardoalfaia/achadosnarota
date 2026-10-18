@@ -44,7 +44,6 @@ export const NAVEGACAO: readonly SecaoDeNavegacao[] = [
         id: "parceiros",
         rotulo: "Parceiros",
         href: ROTAS.parceiros,
-        emConstrucao: true,
       },
       {
         id: "resgates",
