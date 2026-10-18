@@ -11,6 +11,8 @@ export type PessoaDaEquipe = {
   id: string;
   nome: string;
   papel: PapelDaEquipe;
+  /** A foto da conta (R2), se houver. */
+  fotoUrl?: string | undefined;
 };
 
 export const ROTULO_DO_PAPEL: Record<PapelDaEquipe, string> = {

@@ -62,6 +62,7 @@ export const situacaoDaEquipe = cache(
         id: user.id,
         nome: user.name,
         papel: papelDoBanco(linha.papel),
+        ...(user.image ? { fotoUrl: user.image } : {}),
       },
     });
   }

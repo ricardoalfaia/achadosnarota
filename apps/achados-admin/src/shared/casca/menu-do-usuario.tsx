@@ -5,6 +5,7 @@ import { cn } from "@achados/ui/estilos";
 import { ChevronDown, LogOut } from "lucide-react";
 
 import { sair } from "@/features/acesso/actions";
+import { FotoDoPerfil } from "@/features/perfil";
 import { usePreferencias } from "@/shared/preferencias/preferencias-provider";
 import { ROTULO_DO_PAPEL, type PessoaDaEquipe } from "@/shared/sessao/sessao";
 import { useMenuDoUsuario } from "./use-menu-do-usuario";
@@ -28,7 +29,11 @@ export function MenuDoUsuario({ pessoa }: { pessoa: PessoaDaEquipe }) {
         onClick={alternar}
         className="flex cursor-pointer items-center gap-2.5 rounded-full p-1 pr-2 transition-colors hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-ring"
       >
-        <Avatar nome={pessoa.nome} tamanho="sm" />
+        <Avatar
+          nome={pessoa.nome}
+          tamanho="sm"
+          {...(pessoa.fotoUrl ? { fotoUrl: pessoa.fotoUrl } : {})}
+        />
         <span className="flex flex-col text-left leading-tight max-md:hidden">
           <span className="text-sm font-bold text-foreground">
             {pessoa.nome}
@@ -54,13 +59,20 @@ export function MenuDoUsuario({ pessoa }: { pessoa: PessoaDaEquipe }) {
           )}
         >
           <div className="flex items-center gap-3">
-            <Avatar nome={pessoa.nome} tamanho="md" />
+            <Avatar
+              nome={pessoa.nome}
+              tamanho="md"
+              {...(pessoa.fotoUrl ? { fotoUrl: pessoa.fotoUrl } : {})}
+            />
             <div className="min-w-0">
               <p className="truncate font-bold text-foreground">
                 {pessoa.nome}
               </p>
               <p className="text-sm text-foreground-muted">{papel}</p>
             </div>
+          </div>
+          <div className="mt-3">
+            <FotoDoPerfil nome={pessoa.nome} fotoUrl={pessoa.fotoUrl} />
           </div>
           <div className="mt-4 border-t border-border pt-4">
             <p className="mb-2 text-xs font-bold tracking-wide text-foreground-subtle uppercase">

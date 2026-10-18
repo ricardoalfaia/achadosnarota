@@ -16,6 +16,7 @@
     "@achados/db": "workspace:*",
     "@achados/ui": "workspace:*",
     "@tanstack/react-query": "catalog:",
+    "aws4fetch": "1.0.20",
     "better-auth": "1.7.5",
     "drizzle-orm": "0.45.3",
     "lucide-react": "1.52.0",
@@ -24,6 +25,7 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "server-only": "0.0.1",
+    "sharp": "0.35.5",
     "zod": "catalog:"
   },
   "devDependencies": {
