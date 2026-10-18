@@ -16,6 +16,7 @@ export {
 } from "./components/Abas";
 export { Acordeao, ItemDoAcordeao } from "./components/Acordeao";
 export { Alerta, type IntencaoDoAlerta } from "./components/Alerta";
+export { AreaDeTexto, type AreaDeTextoProps } from "./components/AreaDeTexto";
 export {
   Avatar,
   iniciaisDoNome,
