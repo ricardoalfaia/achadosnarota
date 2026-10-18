@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import {
   ehEnderecoLocal,
+  emailDeAssinaturaConfirmada,
+  emailDeBoasVindas,
   emailDeRedefinicao,
   resolverTransporte,
 } from "./transporte";
@@ -75,5 +77,31 @@ describe("emailDeRedefinicao", () => {
     expect(email.texto).not.toContain("Souza");
     expect(email.html).toContain("token=abc&amp;x=1");
     expect(email.html).not.toContain("<b>");
+  });
+});
+
+describe("e-mails da marca", () => {
+  it("boas-vindas pelo primeiro nome, com o link e sem o e-mail no corpo", () => {
+    const email = emailDeBoasVindas({
+      para: "ana@exemplo.com.br",
+      nome: "Ana Viajante",
+      url: "https://achados.exemplo/",
+    });
+    expect(email.assunto).toBe("Boas-vindas ao Achados na Rota");
+    expect(email.texto).toContain("Olá, Ana!");
+    expect(email.texto).toContain("https://achados.exemplo/");
+    expect(email.html).not.toContain("ana@exemplo.com.br");
+  });
+
+  it("assinatura confirmada traz a validade e escapa o HTML", () => {
+    const email = emailDeAssinaturaConfirmada({
+      para: "a@b.c",
+      nome: "<b>Bruno</b>",
+      validoAte: "17/10/2027",
+      url: "https://achados.exemplo/passaporte",
+    });
+    expect(email.texto).toContain("ativo até 17/10/2027");
+    expect(email.html).toContain("&lt;b&gt;Bruno&lt;/b&gt;");
+    expect(email.html).not.toContain("<b>Bruno</b>");
   });
 });

@@ -89,3 +89,103 @@ ${p(validade)}${p(rodape)}
 </div>`,
   };
 }
+
+const primeiroNome = (nome: string) => nome.trim().split(/\s+/)[0] ?? "";
+
+/**
+ * A moldura dos e-mails do Achados na Rota: saudação pelo primeiro nome,
+ * parágrafos, um botão laranja da marca e a nota final. HTML simples, com
+ * estilos em linha, para os clientes de e-mail; a versão em texto vai junto.
+ */
+function emailDaMarca({
+  para,
+  nome,
+  assunto,
+  paragrafos,
+  botao,
+  nota,
+}: {
+  para: string;
+  nome: string;
+  assunto: string;
+  paragrafos: readonly string[];
+  botao: { rotulo: string; url: string };
+  nota: string;
+}): MensagemDeEmail {
+  const primeiro = primeiroNome(nome);
+  const saudacao = primeiro ? `Olá, ${primeiro}!` : "Olá!";
+  const p = (texto: string) =>
+    `<p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#1f2937">${escapar(texto)}</p>`;
+  return {
+    para,
+    assunto,
+    texto: [
+      saudacao,
+      "",
+      ...paragrafos.flatMap((texto) => [texto, ""]),
+      `${botao.rotulo}: ${botao.url}`,
+      "",
+      nota,
+      "",
+      "Achados na Rota · Descubra lugares que valem a pena",
+    ].join("\n"),
+    html: `<div style="font-family:Arial,Helvetica,sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#ffffff">
+<p style="margin:0 0 24px;font-size:20px;font-weight:800;color:#0a1e2e">Achados <span style="color:#c2410c">na Rota</span></p>
+${p(saudacao)}${paragrafos.map(p).join("")}
+<p style="margin:8px 0 24px"><a href="${escapar(botao.url)}" style="display:inline-block;background:#c2410c;color:#ffffff;text-decoration:none;font-weight:700;padding:12px 24px;border-radius:999px">${escapar(botao.rotulo)}</a></p>
+<p style="margin:0 0 16px;font-size:13px;line-height:1.6;color:#5f6e84">${escapar(nota)}</p>
+<p style="margin:24px 0 0;font-size:12px;color:#5f6e84">Achados na Rota · Descubra lugares que valem a pena</p>
+</div>`,
+  };
+}
+
+/** Boas-vindas logo depois do cadastro. */
+export function emailDeBoasVindas({
+  para,
+  nome,
+  url,
+}: {
+  para: string;
+  nome: string;
+  /** A exploração do app. */
+  url: string;
+}): MensagemDeEmail {
+  return emailDaMarca({
+    para,
+    nome,
+    assunto: "Boas-vindas ao Achados na Rota",
+    paragrafos: [
+      "Sua conta está pronta. Agora você encontra restaurantes, cafés, bares e pousadas avaliados pela nossa curadoria, que visita cada casa e não vende nota nem selo.",
+      "Salve os seus favoritos e, quando quiser, conheça o Passaporte: benefícios nas casas parceiras, como o 2 por 1, durante o ano todo.",
+    ],
+    botao: { rotulo: "Explorar os achados", url },
+    nota: "Se você não criou esta conta, responda este e-mail que a gente resolve.",
+  });
+}
+
+/** Pagamento confirmado: o passaporte está valendo. */
+export function emailDeAssinaturaConfirmada({
+  para,
+  nome,
+  validoAte,
+  url,
+}: {
+  para: string;
+  nome: string;
+  /** "17/10/2027" */
+  validoAte: string;
+  /** A tela do passaporte. */
+  url: string;
+}): MensagemDeEmail {
+  return emailDaMarca({
+    para,
+    nome,
+    assunto: "Seu Passaporte Achados na Rota está ativo",
+    paragrafos: [
+      `Recebemos o seu pagamento e o seu passaporte está ativo até ${validoAte}.`,
+      "Na casa parceira, abra o benefício no app, toque em Usar e mostre o código ao garçom. Cada benefício tem as regras à vista antes de usar.",
+    ],
+    botao: { rotulo: "Ver meu passaporte", url },
+    nota: "O recibo do pagamento é enviado pela Stripe, que processa o pagamento com segurança.",
+  });
+}

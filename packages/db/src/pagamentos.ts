@@ -224,3 +224,31 @@ export async function processarEventoDePagamento(
     );
   }
 }
+
+/**
+ * Para o e-mail de "assinatura confirmada": nome, e-mail e validade da compra
+ * da sessão. Lido com o papel de pagamentos, logo depois de ativar.
+ */
+export async function dadosDoAvisoDeAssinatura(
+  db: Db,
+  sessaoId: string
+): Promise<{ email: string; nome: string; validoAte: Date } | null> {
+  const [linha] = await db
+    .select({
+      email: users.email,
+      nome: users.name,
+      validoAte: subscriptions.endsAt,
+    })
+    .from(subscriptions)
+    .innerJoin(users, eq(users.id, subscriptions.userId))
+    .where(
+      and(
+        eq(subscriptions.providerSubscriptionId, sessaoId),
+        eq(subscriptions.status, "active")
+      )
+    )
+    .limit(1);
+  return linha?.validoAte
+    ? { email: linha.email, nome: linha.nome, validoAte: linha.validoAte }
+    : null;
+}

@@ -26,6 +26,24 @@ const SEGREDO = "whsec_teste_local_do_webhook";
 const stripeDeTeste = new Stripe("sk_test_nao_usada_na_rede");
 
 vi.mock("server-only", () => ({}));
+// O e-mail de confirmação: capturado aqui, sem rede.
+const enviados = vi.hoisted(() => [] as { para: string; assunto: string }[]);
+vi.mock("@/shared/email/enviar.servidor", () => ({
+  enviarEmail: async (mensagem: { para: string; assunto: string }) => {
+    enviados.push(mensagem);
+    return { ok: true, value: undefined };
+  },
+}));
+vi.mock("@/shared/config/ambiente.servidor", () => ({
+  ambienteServidor: () => ({ appUrl: "http://localhost:4500" }),
+}));
+// Fora de um pedido do Next, o `after` roda na hora.
+vi.mock("next/server", async (original) => ({
+  ...(await original<typeof import("next/server")>()),
+  after: async (tarefa: () => Promise<void>) => {
+    await tarefa();
+  },
+}));
 vi.mock("@/shared/pagamentos/stripe.servidor", () => ({
   configuracaoDosPagamentos: () => ({
     chaveSecreta: "sk_test_nao_usada_na_rede",
@@ -127,6 +145,16 @@ describe.skipIf(!noAr)("webhook da Stripe (rota)", () => {
     const primeira = await POST(pedidoAssinado(eventoPago));
     expect(primeira.status).toBe(200);
     expect(await primeira.json()).toMatchObject({ desfecho: "ativado" });
+
+    // O e-mail de "passaporte ativo" foi para a pessoa certa.
+    await vi.waitFor(() =>
+      expect(enviados).toContainEqual(
+        expect.objectContaining({
+          para: `rota-${sufixo}@teste.achados.local`,
+          assunto: "Seu Passaporte Achados na Rota está ativo",
+        })
+      )
+    );
 
     const segunda = await POST(pedidoAssinado(eventoPago));
     expect(await segunda.json()).toMatchObject({ desfecho: "duplicado" });

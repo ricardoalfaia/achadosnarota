@@ -1,11 +1,20 @@
-import { processarEventoDePagamento } from "@achados/db";
+import { after } from "next/server";
+import {
+  dadosDoAvisoDeAssinatura,
+  processarEventoDePagamento,
+} from "@achados/db";
 
 import { acaoDoEventoDaStripe } from "@/features/passaporte/domain/pagamento";
+import { dataCurta } from "@/features/passaporte/domain/passaporte";
+import { ambienteServidor } from "@/shared/config/ambiente.servidor";
+import { enviarEmail } from "@/shared/email/enviar.servidor";
+import { emailDeAssinaturaConfirmada } from "@/shared/email/transporte";
 import {
   bancoDosPagamentos,
   configuracaoDosPagamentos,
   stripe,
 } from "@/shared/pagamentos/stripe.servidor";
+import { ROTAS } from "@/shared/rotas";
 
 /**
  * O webhook da Stripe (ADR-006 de produto): o único caminho que ativa,
@@ -37,10 +46,11 @@ export async function POST(pedido: Request) {
     return new Response("Assinatura inválida.", { status: 400 });
   }
 
+  const acao = acaoDoEventoDaStripe(evento);
   const resultado = await processarEventoDePagamento(
     db,
     { id: evento.id, tipo: evento.type },
-    acaoDoEventoDaStripe(evento)
+    acao
   );
   if (!resultado.ok) {
     console.error(
@@ -50,6 +60,27 @@ export async function POST(pedido: Request) {
     // falha de banco: a Stripe tenta de novo (500).
     return new Response(null, {
       status: resultado.error.category === "infrastructure" ? 500 : 200,
+    });
+  }
+  // Passaporte ativado: o e-mail sai depois da resposta (a Stripe não espera).
+  if (resultado.value === "ativado" && acao.tipo === "pago") {
+    const sessaoId = acao.compra.sessaoId;
+    after(async () => {
+      const dados = await dadosDoAvisoDeAssinatura(db, sessaoId);
+      if (!dados) return;
+      const { appUrl } = ambienteServidor();
+      const envio = await enviarEmail(
+        emailDeAssinaturaConfirmada({
+          para: dados.email,
+          nome: dados.nome,
+          validoAte: dataCurta(dados.validoAte),
+          url: `${appUrl}${ROTAS.passaporte}`,
+        })
+      );
+      if (!envio.ok)
+        console.error(
+          `[stripe] e-mail de assinatura não enviado: ${envio.error.code}`
+        );
     });
   }
   return Response.json({ recebido: true, desfecho: resultado.value });

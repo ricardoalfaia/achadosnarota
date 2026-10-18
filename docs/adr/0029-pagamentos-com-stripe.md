@@ -21,6 +21,8 @@ A Stripe aceita Pix em contas brasileiras como pagamento único. A cobrança rec
 - **Deduplicação e conciliação** (`processarEventoDePagamento`, `@achados/db`): cada evento entra uma vez em `payment_event` (só id e tipo, sem o corpo); a ativação confere conta, plano, valor e moeda contra o banco; divergência não ativa e fica registrada no log, sem dado do pagador.
 - **Configuração tudo-ou-nada**: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` e `DATABASE_URL_PAGAMENTOS` juntas; sem elas, "Assinar" aparece como indisponível e o resto do app funciona.
 
+- **E-mails transacionais** (Resend, mesmo transporte da redefinição de senha): "Boas-vindas" logo depois do cadastro e "Seu passaporte está ativo" quando o webhook ativa a compra, ambos depois da resposta (`after`), com o primeiro nome e a validade, sem detalhe do pagamento (o recibo é da Stripe). Falha no envio vai ao log só com o código.
+
 ## Alternativas consideradas
 
 - **Stripe Billing (assinatura recorrente)**: renova sozinho no cartão, mas o Pix recorrente ainda não é certo para contas brasileiras; misturar dois modelos agora complicaria a primeira versão.

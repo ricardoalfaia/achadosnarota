@@ -35,6 +35,7 @@ export {
 } from "./resgate";
 export { PAPEIS_DA_EQUIPE, type PapelDaEquipe } from "./schema/_rls";
 export {
+  dadosDoAvisoDeAssinatura,
   processarEventoDePagamento,
   type AcaoDoPagamento,
   type CompraDoPassaporte,

@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { after } from "next/server";
 import { Err, toActionResult, type AppError } from "@achados/core";
 
 import { recusaDe } from "@/shared/auth/chamar.servidor";
@@ -17,6 +18,9 @@ import {
   resumo,
 } from "@/shared/auth/limite.servidor";
 import { motivoDaRecusa } from "@/shared/auth/regras";
+import { ambienteServidor } from "@/shared/config/ambiente.servidor";
+import { enviarEmail } from "@/shared/email/enviar.servidor";
+import { emailDeBoasVindas } from "@/shared/email/transporte";
 import { destinoSeguro } from "@/shared/rotas";
 import { lerSessao } from "@/shared/sessao/sessao.servidor";
 import {
@@ -424,5 +428,14 @@ export async function criarConta(
       valores,
     };
   }
+  // Boas-vindas depois da resposta: falha do provedor não atrapalha a entrada.
+  const { email, nome } = cadastro.value;
+  after(async () => {
+    const envio = await enviarEmail(
+      emailDeBoasVindas({ para: email, nome, url: ambienteServidor().appUrl })
+    );
+    if (!envio.ok)
+      console.error(`[acesso] boas-vindas não enviado: ${envio.error.code}`);
+  });
   redirect(voltarDe(brutos));
 }
