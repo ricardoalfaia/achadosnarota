@@ -21,6 +21,8 @@ export {
   ALFABETO_DO_CODIGO,
   consumirResgate,
   emitirResgate,
+  historicoDeResgates,
+  usosDosBeneficios,
   fimDoPeriodo,
   inicioDoPeriodo,
   normalizarCodigo,
@@ -28,4 +30,6 @@ export {
   VALIDADE_DO_CODIGO_EM_MINUTOS,
   type CodigoEmitido,
   type ResgateConsumido,
+  type ResgateDoHistorico,
+  type UsoDoBeneficio,
 } from "./resgate";

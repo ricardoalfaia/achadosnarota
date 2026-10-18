@@ -480,6 +480,14 @@ const PESSOAS = [
     assinante: false,
     favoritos: [],
   },
+  {
+    // Operador do balcão: valida os códigos no Rancho e na Choperia.
+    email: "garcom@achados.local",
+    name: "Gabi do Balcão",
+    assinante: false,
+    favoritos: [],
+    opera: ["rancho-portugues", "choperia-pinguim"],
+  },
 ] as const;
 
 async function semearCatalogo(db: Db): Promise<Map<string, string>> {
@@ -650,6 +658,16 @@ async function semearPessoas(
           endsAt: fim,
         });
       }
+    }
+
+    const casas = ("opera" in pessoa ? pessoa.opera : [])
+      .map((slug) => idsDosLugares.get(slug))
+      .filter((id): id is string => Boolean(id));
+    if (casas.length > 0) {
+      await db
+        .insert(s.partnerOperators)
+        .values(casas.map((placeId) => ({ userId: usuario.id, placeId })))
+        .onConflictDoNothing();
     }
 
     const favoritos = pessoa.favoritos

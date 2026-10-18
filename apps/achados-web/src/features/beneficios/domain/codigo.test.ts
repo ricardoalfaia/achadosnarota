@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   codigoEmDuasPartes,
   dataDaRenovacao,
+  dataEHora,
   relogio,
   segundosRestantes,
 } from "./codigo";
@@ -30,5 +31,9 @@ describe("código na tela", () => {
 
   it("mostra a renovação no dia de Brasília", () => {
     expect(dataDaRenovacao("2027-01-01T03:00:00.000Z")).toBe("01/01/2027");
+  });
+
+  it("mostra data e hora do histórico em Brasília", () => {
+    expect(dataEHora("2026-10-18T17:32:00.000Z")).toBe("18/10/2026 às 14:32");
   });
 });

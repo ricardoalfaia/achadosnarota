@@ -11,6 +11,7 @@ import {
   CartaoDeBeneficio,
   situacaoDoResgate,
 } from "@/features/beneficios";
+import { usosNaFicha } from "@/features/beneficios/servidor";
 import {
   abaDaFicha,
   AbasDaFicha,
@@ -78,6 +79,10 @@ export default async function PaginaDoLugar({
       ? unwrapOrThrow(passaporte).situacao === "ativo"
       : false,
   });
+  const usos =
+    usuario && situacao === "usar"
+      ? await usosNaFicha(usuario.id, ficha.beneficios)
+      : {};
   const caminho = rotaDoLugar(ficha.slug);
   const [principal] = ficha.beneficios;
 
@@ -178,6 +183,9 @@ export default async function PaginaDoLugar({
                       <CartaoDeBeneficio
                         key={beneficio.id}
                         beneficio={beneficio}
+                        {...(usos[beneficio.id]
+                          ? { uso: usos[beneficio.id] }
+                          : {})}
                         acao={
                           <BotaoDeResgate
                             beneficioId={beneficio.id}

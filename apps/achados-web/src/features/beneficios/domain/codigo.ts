@@ -32,3 +32,17 @@ export function dataDaRenovacao(iso: string): string {
     timeZone: "America/Sao_Paulo",
   }).format(new Date(iso));
 }
+
+/** "18/10/2026 às 14:32", no horário de Brasília, para o histórico. */
+export function dataEHora(iso: string): string {
+  const data = new Date(iso);
+  const dia = new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+  }).format(data);
+  const hora = new Intl.DateTimeFormat("pt-BR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "America/Sao_Paulo",
+  }).format(data);
+  return `${dia} às ${hora}`;
+}

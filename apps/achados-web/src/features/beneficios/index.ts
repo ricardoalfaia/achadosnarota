@@ -4,5 +4,6 @@ export { BarraDoBeneficio } from "./components/barra-do-beneficio";
 export { BotaoDeResgate } from "./components/botao-de-resgate";
 export { CartaoDeBeneficio } from "./components/cartao-de-beneficio";
 export { CuponsDoPassaporte } from "./components/cupons-do-passaporte";
+export { estatisticasDoHistorico } from "./domain/historico";
 export { situacaoDoResgate, type SituacaoDoResgate } from "./domain/situacao";
-export type { BeneficioDisponivel } from "./domain/tipos";
+export type { BeneficioDisponivel, ItemDoHistorico } from "./domain/tipos";

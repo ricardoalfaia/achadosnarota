@@ -20,8 +20,9 @@ import { places } from "./catalogo";
 // Resgates (docs/produto/03, ADR-005 de produto). O assinante emite um código
 // curto e temporário; só o hash dele fica aqui. O operador do estabelecimento
 // digita ou lê o código e o consome numa transação com atualização
-// condicional: dois operadores não usam o mesmo código, e o limite da oferta
-// é conferido de novo nesse momento (src/resgate.ts).
+// condicional, com o papel do app e sob RLS (só operador da casa da linha):
+// dois operadores não usam o mesmo código, e o limite da oferta é conferido de
+// novo nesse momento (src/resgate.ts).
 
 /** issued → redeemed | expired | voided. */
 export const REDEMPTION_STATUS = [
@@ -89,14 +90,34 @@ export const redemptions = pgTable(
       to: appRole,
       withCheck: sql`user_id = ${USUARIO_ATUAL} and status = 'issued' and redeemed_at is null and operator_id is null`,
     }),
-    // ...e só pode cancelar o próprio código ainda não usado. Consumir é do
-    // operador, por outro papel.
+    // ...e só pode cancelar o próprio código ainda não usado.
     pgPolicy("redemption_cancelamento_da_propria_pessoa", {
       as: "permissive",
       for: "update",
       to: appRole,
       using: sql`user_id = ${USUARIO_ATUAL} and status = 'issued'`,
       withCheck: sql`user_id = ${USUARIO_ATUAL} and status = 'voided' and redeemed_at is null and operator_id is null`,
+    }),
+    // O operador do balcão vê os códigos emitidos para as casas que opera...
+    pgPolicy("redemption_leitura_do_operador", {
+      as: "permissive",
+      for: "select",
+      to: appRole,
+      using: sql`exists (select 1 from partner_operator po where po.user_id = ${USUARIO_ATUAL} and po.place_id = ${t.placeId})`,
+    }),
+    // ...e só os tira de "emitido": usado em nome dele, ou expirado.
+    pgPolicy("redemption_consumo_do_operador", {
+      as: "permissive",
+      for: "update",
+      to: appRole,
+      using: sql`status = 'issued' and exists (select 1 from partner_operator po where po.user_id = ${USUARIO_ATUAL} and po.place_id = ${t.placeId})`,
+      // As políticas permissivas de UPDATE se somam (OU): sem repetir o
+      // vínculo aqui, a pessoa entraria pela política de cancelar o próprio
+      // código e sairia por esta, marcando-o como usado. Ninguém valida o
+      // próprio código, mesmo operando a casa.
+      withCheck: sql`exists (select 1 from partner_operator po where po.user_id = ${USUARIO_ATUAL} and po.place_id = ${t.placeId})
+        and ((status = 'redeemed' and operator_id = ${USUARIO_ATUAL} and operator_id <> user_id and redeemed_at is not null)
+          or (status = 'expired' and operator_id is null))`,
     }),
   ]
 ).enableRLS();

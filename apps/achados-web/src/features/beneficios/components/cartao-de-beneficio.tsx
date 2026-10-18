@@ -1,11 +1,12 @@
 import type { ReactNode } from "react";
-import { Crown } from "lucide-react";
+import { CalendarCheck, Crown } from "lucide-react";
 
 import {
   IconeDoBeneficio,
   textoDaRegraDeUso,
   type Beneficio,
 } from "@/features/catalogo";
+import { dataDaRenovacao } from "../domain/codigo";
 
 const TIPO: Record<Beneficio["tipo"], string> = {
   discount: "Desconto",
@@ -21,10 +22,14 @@ const TIPO: Record<Beneficio["tipo"], string> = {
 export function CartaoDeBeneficio({
   beneficio,
   acao,
+  uso,
 }: {
   beneficio: Beneficio;
   acao: ReactNode;
+  /** O que a pessoa já usou deste benefício na janela atual, se usou. */
+  uso?: { disponivel: boolean; renovaEm?: string };
 }) {
+  const esgotado = uso !== undefined && !uso.disponivel;
   return (
     <li className="relative flex overflow-hidden rounded-3xl bg-surface shadow-[0_12px_28px_-18px_rgb(212_68_15/0.55)] ring-1 ring-primary-border">
       <div className="flex w-24 shrink-0 flex-col items-center justify-center gap-1.5 bg-brand-gradient px-2 py-4 text-white">
@@ -47,11 +52,22 @@ export function CartaoDeBeneficio({
           {beneficio.regras}
         </p>
         <div className="mt-2 flex items-center justify-between gap-2">
-          <span className="flex items-center gap-1 text-xs font-bold text-primary">
-            <Crown aria-hidden="true" className="size-3.5 text-star" />
-            {textoDaRegraDeUso(beneficio)}
-          </span>
-          {acao}
+          {esgotado ? (
+            <span className="flex items-center gap-1.5 rounded-full bg-success-subtle px-3 py-1.5 text-xs font-bold text-success">
+              <CalendarCheck aria-hidden="true" className="size-3.5" />
+              {uso.renovaEm
+                ? `Usado · volta em ${dataDaRenovacao(uso.renovaEm)}`
+                : "Usado neste período"}
+            </span>
+          ) : (
+            <>
+              <span className="flex items-center gap-1 text-xs font-bold text-primary">
+                <Crown aria-hidden="true" className="size-3.5 text-star" />
+                {textoDaRegraDeUso(beneficio)}
+              </span>
+              {acao}
+            </>
+          )}
         </div>
       </div>
     </li>

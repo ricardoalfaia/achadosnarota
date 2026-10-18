@@ -1,12 +1,16 @@
 import { createHash, randomInt } from "node:crypto";
-import { AppErrors, Err, Ok, type Result } from "@achados/core";
-import { and, count, eq, gt, gte, lte, sql } from "drizzle-orm";
+import { AppErrors, Err, Ok, type AppError, type Result } from "@achados/core";
+import { and, count, eq, gt, gte, inArray, lte, or, sql } from "drizzle-orm";
 
 import type { Db, DbExecutor } from "./client";
 import { withUser } from "./escopo";
 import { novoId } from "./id";
 import {
+  cities,
   offers,
+  partnerOperators,
+  places,
+  redemptionAttempts,
   redemptions,
   subscriptions,
   type OfferUsagePeriod,
@@ -234,17 +238,56 @@ export async function emitirResgate(
   });
 }
 
-export type ResgateConsumido = { resgateId: string; usadoEm: Date };
+export type ResgateConsumido = {
+  resgateId: string;
+  usadoEm: Date;
+  /** O benefício que o garçom deve aplicar ("Compre um prato…"). */
+  beneficio: string;
+};
+
+/** Erros seguidos que bloqueiam o operador, e por quanto tempo se contam. */
+export const TENTATIVAS_ERRADAS_PERMITIDAS = 5;
+export const JANELA_DAS_TENTATIVAS_EM_MINUTOS = 15;
+
+const naoEncontrado = () =>
+  AppErrors.domain(
+    "RESGATE_NAO_ENCONTRADO",
+    "Código não encontrado para esta casa, ou já usado."
+  );
+
+/** O desfecho dentro da transação: falhas que gravam (expirar) não desfazem. */
+type Desfecho =
+  { ok: true; valor: ResgateConsumido } | { ok: false; erro: AppError };
+
+async function tentativasErradasRecentes(
+  tx: DbExecutor,
+  operadorId: string,
+  agora: Date
+): Promise<number> {
+  const desde = new Date(
+    agora.getTime() - JANELA_DAS_TENTATIVAS_EM_MINUTOS * 60_000
+  );
+  const [linha] = await tx
+    .select({ total: count() })
+    .from(redemptionAttempts)
+    .where(
+      and(
+        eq(redemptionAttempts.userId, operadorId),
+        eq(redemptionAttempts.succeeded, false),
+        gte(redemptionAttempts.createdAt, desde)
+      )
+    );
+  return linha?.total ?? 0;
+}
 
 /**
- * O operador do estabelecimento consome o código. Só acha código emitido para
- * a casa dele (`placeId`); expirado não vale; o limite da oferta é conferido de
- * novo sob a trava. A troca `issued → redeemed` é condicional: se dois
- * operadores tentarem ao mesmo tempo, um só consegue.
- *
- * Recebe um executor com permissão de escrita em `redemption`: o papel do
- * painel do parceiro, que decide no servidor qual casa é do operador. O papel
- * do app (`achados_app`) não consome códigos.
+ * O operador do balcão consome o código, com o papel do app e sob RLS: só
+ * enxerga e altera códigos das casas que opera (`partner_operator`). Recusa
+ * quem não opera a casa, quem errou demais nos últimos minutos, código de
+ * outra casa, expirado ou já usado, e confere o limite da oferta de novo sob a
+ * trava. A troca `issued → redeemed` é condicional: se dois operadores
+ * tentarem ao mesmo tempo, um só consegue. Toda tentativa fica registrada, sem
+ * o código digitado.
  */
 export async function consumirResgate(
   db: Db,
@@ -256,104 +299,275 @@ export async function consumirResgate(
   }: { codigo: string; placeId: string; operadorId: string; agora?: Date }
 ): Promise<Result<ResgateConsumido>> {
   const normalizado = normalizarCodigo(codigo);
-  if (
-    normalizado.length !== TAMANHO_DO_CODIGO ||
-    [...normalizado].some((c) => !ALFABETO_DO_CODIGO.includes(c))
-  ) {
-    return Err(
-      AppErrors.validation("RESGATE_CODIGO_INVALIDO", "Código inválido.")
-    );
-  }
-  try {
-    return await db.transaction(async (tx) => {
-      const [resgate] = await tx
-        .select({
-          id: redemptions.id,
-          userId: redemptions.userId,
-          offerId: redemptions.offerId,
-          expiresAt: redemptions.expiresAt,
-          limitPerUser: offers.limitPerUser,
-          usagePeriod: offers.usagePeriod,
-        })
-        .from(redemptions)
-        .innerJoin(offers, eq(offers.id, redemptions.offerId))
-        .where(
-          and(
-            eq(redemptions.tokenHash, hashDoCodigo(normalizado)),
-            eq(redemptions.placeId, placeId),
-            eq(redemptions.status, "issued")
-          )
-        )
-        .limit(1);
-      if (!resgate) {
-        return Err(
-          AppErrors.domain(
-            "RESGATE_NAO_ENCONTRADO",
-            "Código não encontrado para esta casa, ou já usado."
-          )
-        );
-      }
-      if (resgate.expiresAt <= agora) {
-        await tx
-          .update(redemptions)
-          .set({ status: "expired", updatedAt: agora })
-          .where(
-            and(
-              eq(redemptions.id, resgate.id),
-              eq(redemptions.status, "issued")
-            )
-          );
-        return Err(
-          AppErrors.domain(
-            "RESGATE_EXPIRADO",
-            "O código expirou. Peça para gerar outro no app."
-          )
-        );
-      }
+  const formatoValido =
+    normalizado.length === TAMANHO_DO_CODIGO &&
+    [...normalizado].every((c) => ALFABETO_DO_CODIGO.includes(c));
 
-      await travar(tx, resgate.userId, resgate.offerId);
-      if (
-        resgate.usagePeriod !== "unlimited" &&
-        (await usosNoPeriodo(
-          tx,
-          resgate.userId,
-          resgate.offerId,
-          resgate,
-          agora
-        )) >= resgate.limitPerUser
-      ) {
-        return Err(limiteAtingido(resgate, agora));
-      }
-
-      const [consumido] = await tx
-        .update(redemptions)
-        .set({
-          status: "redeemed",
-          redeemedAt: agora,
-          operatorId: operadorId,
-          updatedAt: agora,
-        })
-        .where(
-          and(eq(redemptions.id, resgate.id), eq(redemptions.status, "issued"))
+  const resultado = await withUser(db, operadorId, async (tx) => {
+    const [vinculo] = await tx
+      .select({ placeId: partnerOperators.placeId })
+      .from(partnerOperators)
+      .where(
+        and(
+          eq(partnerOperators.userId, operadorId),
+          eq(partnerOperators.placeId, placeId)
         )
-        .returning({ id: redemptions.id });
-      if (!consumido) {
-        return Err(
-          AppErrors.domain(
-            "RESGATE_NAO_ENCONTRADO",
-            "Código não encontrado para esta casa, ou já usado."
-          )
-        );
-      }
-      return Ok({ resgateId: consumido.id, usadoEm: agora });
-    });
-  } catch (causa) {
-    return Err(
-      AppErrors.infrastructure(
-        "DATABASE_ERROR",
-        "Falha ao acessar o banco de dados.",
-        causa
       )
-    );
+      .limit(1);
+    if (!vinculo) {
+      return Err(
+        AppErrors.security(
+          "RESGATE_OPERADOR_SEM_CASA",
+          "Sua conta não opera esta casa."
+        )
+      );
+    }
+    if (
+      (await tentativasErradasRecentes(tx, operadorId, agora)) >=
+      TENTATIVAS_ERRADAS_PERMITIDAS
+    ) {
+      return Err(
+        AppErrors.domain(
+          "RESGATE_TENTATIVAS_EXCEDIDAS",
+          `Muitos códigos errados. Tente de novo em ${JANELA_DAS_TENTATIVAS_EM_MINUTOS} minutos.`
+        )
+      );
+    }
+
+    const desfecho = await consumirNaCasa(tx, {
+      normalizado,
+      formatoValido,
+      placeId,
+      operadorId,
+      agora,
+    });
+    await tx.insert(redemptionAttempts).values({
+      id: novoId(),
+      userId: operadorId,
+      placeId,
+      succeeded: desfecho.ok,
+      createdAt: agora,
+    });
+    return Ok(desfecho);
+  });
+
+  if (!resultado.ok) return resultado;
+  return resultado.value.ok
+    ? Ok(resultado.value.valor)
+    : Err(resultado.value.erro);
+}
+
+async function consumirNaCasa(
+  tx: DbExecutor,
+  {
+    normalizado,
+    formatoValido,
+    placeId,
+    operadorId,
+    agora,
+  }: {
+    normalizado: string;
+    formatoValido: boolean;
+    placeId: string;
+    operadorId: string;
+    agora: Date;
   }
+): Promise<Desfecho> {
+  if (!formatoValido) {
+    return {
+      ok: false,
+      erro: AppErrors.validation("RESGATE_CODIGO_INVALIDO", "Código inválido."),
+    };
+  }
+  const [resgate] = await tx
+    .select({
+      id: redemptions.id,
+      userId: redemptions.userId,
+      offerId: redemptions.offerId,
+      expiresAt: redemptions.expiresAt,
+      beneficio: offers.title,
+      limitPerUser: offers.limitPerUser,
+      usagePeriod: offers.usagePeriod,
+    })
+    .from(redemptions)
+    .innerJoin(offers, eq(offers.id, redemptions.offerId))
+    .where(
+      and(
+        eq(redemptions.tokenHash, hashDoCodigo(normalizado)),
+        eq(redemptions.placeId, placeId),
+        eq(redemptions.status, "issued")
+      )
+    )
+    .limit(1);
+  if (!resgate) return { ok: false, erro: naoEncontrado() };
+
+  if (resgate.expiresAt <= agora) {
+    await tx
+      .update(redemptions)
+      .set({ status: "expired", updatedAt: agora })
+      .where(
+        and(eq(redemptions.id, resgate.id), eq(redemptions.status, "issued"))
+      );
+    return {
+      ok: false,
+      erro: AppErrors.domain(
+        "RESGATE_EXPIRADO",
+        "O código expirou. Peça para gerar outro no app."
+      ),
+    };
+  }
+  if (resgate.userId === operadorId) {
+    return {
+      ok: false,
+      erro: AppErrors.security(
+        "RESGATE_PROPRIO_CODIGO",
+        "Quem opera a casa não valida o próprio código."
+      ),
+    };
+  }
+
+  await travar(tx, resgate.userId, resgate.offerId);
+  if (
+    resgate.usagePeriod !== "unlimited" &&
+    (await usosNoPeriodo(
+      tx,
+      resgate.userId,
+      resgate.offerId,
+      resgate,
+      agora
+    )) >= resgate.limitPerUser
+  ) {
+    return { ok: false, erro: limiteAtingido(resgate, agora) };
+  }
+
+  const [consumido] = await tx
+    .update(redemptions)
+    .set({
+      status: "redeemed",
+      redeemedAt: agora,
+      operatorId: operadorId,
+      updatedAt: agora,
+    })
+    .where(
+      and(eq(redemptions.id, resgate.id), eq(redemptions.status, "issued"))
+    )
+    .returning({ id: redemptions.id });
+  if (!consumido) return { ok: false, erro: naoEncontrado() };
+  return {
+    ok: true,
+    valor: {
+      resgateId: consumido.id,
+      usadoEm: agora,
+      beneficio: resgate.beneficio,
+    },
+  };
+}
+
+export type UsoDoBeneficio = {
+  /** Usos já confirmados na janela atual. */
+  usados: number;
+  /** Ainda dá para usar nesta janela. */
+  disponivel: boolean;
+  /** Quando a janela seguinte começa (`null` sem limite). */
+  renovaEm: Date | null;
+};
+
+/**
+ * Para a ficha: quanto a pessoa já usou de cada oferta na janela atual, no
+ * escopo dela (RLS). Ofertas sem uso não aparecem no mapa.
+ */
+export async function usosDosBeneficios(
+  db: Db,
+  userId: string,
+  ofertas: readonly { id: string; limite: number; periodo: OfferUsagePeriod }[],
+  agora: Date = new Date()
+): Promise<Result<Map<string, UsoDoBeneficio>>> {
+  return withUser(db, userId, async (tx) => {
+    const usos = new Map<string, UsoDoBeneficio>();
+    for (const oferta of ofertas) {
+      if (oferta.periodo === "unlimited") continue;
+      const regra = {
+        limitPerUser: oferta.limite,
+        usagePeriod: oferta.periodo,
+      };
+      const usados = await usosNoPeriodo(tx, userId, oferta.id, regra, agora);
+      if (usados === 0) continue;
+      usos.set(oferta.id, {
+        usados,
+        disponivel: usados < oferta.limite,
+        renovaEm: fimDoPeriodo(oferta.periodo, agora),
+      });
+    }
+    return Ok(usos);
+  });
+}
+
+export type ResgateDoHistorico = {
+  id: string;
+  /** Título da oferta; `null` se ela não está mais visível (encerrada). */
+  beneficio: string | null;
+  lugarNome: string | null;
+  lugarSlug: string | null;
+  cidade: string | null;
+  situacao: "redeemed" | "expired";
+  /** Quando foi usado, ou quando o código expirou. */
+  quando: Date;
+};
+
+/**
+ * O histórico da pessoa para o passaporte: usados e códigos que expiraram sem
+ * uso, mais recentes primeiro. Nunca devolve hash nem operador.
+ */
+export async function historicoDeResgates(
+  db: Db,
+  userId: string,
+  agora: Date = new Date()
+): Promise<Result<ResgateDoHistorico[]>> {
+  return withUser(db, userId, async (tx) => {
+    const linhas = await tx
+      .select({
+        id: redemptions.id,
+        status: redemptions.status,
+        redeemedAt: redemptions.redeemedAt,
+        expiresAt: redemptions.expiresAt,
+        beneficio: offers.title,
+        lugarNome: places.name,
+        lugarSlug: places.slug,
+        cidade: cities.name,
+      })
+      .from(redemptions)
+      .leftJoin(offers, eq(offers.id, redemptions.offerId))
+      .leftJoin(places, eq(places.id, redemptions.placeId))
+      .leftJoin(cities, eq(cities.id, places.cityId))
+      .where(
+        and(
+          eq(redemptions.userId, userId),
+          or(
+            inArray(redemptions.status, ["redeemed", "expired"]),
+            and(
+              eq(redemptions.status, "issued"),
+              lte(redemptions.expiresAt, agora)
+            )
+          )
+        )
+      )
+      .orderBy(
+        sql`coalesce(${redemptions.redeemedAt}, ${redemptions.expiresAt}) desc`
+      )
+      .limit(100);
+    return Ok(
+      linhas.map((linha) => ({
+        id: linha.id,
+        beneficio: linha.beneficio,
+        lugarNome: linha.lugarNome,
+        lugarSlug: linha.lugarSlug,
+        cidade: linha.cidade,
+        situacao: linha.status === "redeemed" ? "redeemed" : "expired",
+        quando:
+          linha.status === "redeemed" && linha.redeemedAt
+            ? linha.redeemedAt
+            : linha.expiresAt,
+      }))
+    );
+  });
 }

@@ -5,6 +5,7 @@ export const ROTAS = {
   favoritos: "/favoritos",
   passaporte: "/passaporte",
   perfil: "/perfil",
+  balcao: "/balcao",
   entrar: "/login",
   criarConta: "/cadastro",
   recuperarSenha: "/login/esqueci-a-senha",

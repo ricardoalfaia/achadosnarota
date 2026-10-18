@@ -10,8 +10,10 @@ import {
   Heart,
   LogOut,
   ShieldCheck,
+  Store,
 } from "lucide-react";
 
+import { casasDoOperador } from "@/features/balcao/servidor";
 import { dataCurta } from "@/features/passaporte";
 import { lerPassaporte } from "@/features/passaporte/servidor";
 import { CabecalhoDoApp } from "@/shared/casca/cabecalho-do-app";
@@ -43,7 +45,10 @@ const LINK_DA_LINHA = cn(
  */
 export default async function Perfil() {
   const usuario = await exigirSessao(ROTAS.perfil);
-  const passaporte = unwrapOrThrow(await lerPassaporte(usuario.id));
+  const [passaporte, casasQueOpera] = await Promise.all([
+    lerPassaporte(usuario.id).then(unwrapOrThrow),
+    casasDoOperador(usuario.id),
+  ]);
   const pessoa = pessoaDaSessao(usuario);
 
   return (
@@ -104,6 +109,15 @@ export default async function Perfil() {
               <ChevronRight aria-hidden="true" className="size-4" />
             </span>
           </Link>
+          {casasQueOpera.length > 0 && (
+            <Link href={ROTAS.balcao} className={LINK_DA_LINHA}>
+              <RotuloDaLinha icone={<Store />}>Modo balcão</RotuloDaLinha>
+              <span className="flex items-center gap-0.5 text-sm font-bold text-primary">
+                Validar códigos
+                <ChevronRight aria-hidden="true" className="size-4" />
+              </span>
+            </Link>
+          )}
           <Link href={ROTAS.favoritos} className={LINK_DA_LINHA}>
             <RotuloDaLinha icone={<Heart />}>Meus favoritos</RotuloDaLinha>
             <ChevronRight

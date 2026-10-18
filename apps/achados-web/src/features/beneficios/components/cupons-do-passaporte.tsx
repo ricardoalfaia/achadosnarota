@@ -7,7 +7,8 @@ import { ChevronRight, CircleCheck, History, MapPin } from "lucide-react";
 
 import { IconeDoBeneficio } from "@/features/catalogo";
 import { rotaDoLugar } from "@/shared/rotas";
-import type { BeneficioDisponivel } from "../domain/tipos";
+import { dataEHora } from "../domain/codigo";
+import type { BeneficioDisponivel, ItemDoHistorico } from "../domain/tipos";
 
 type Filtro = "disponiveis" | "utilizados" | "expirados";
 
@@ -55,22 +56,78 @@ function ItemDisponivel({ beneficio }: { beneficio: BeneficioDisponivel }) {
   );
 }
 
+/** Um uso confirmado pelo garçom, ou um código que expirou sem uso. */
+function ItemDoHistoricoDoPassaporte({ item }: { item: ItemDoHistorico }) {
+  const usado = item.situacao === "usado";
+  const conteudo = (
+    <>
+      <span
+        aria-hidden="true"
+        className={
+          usado
+            ? "flex size-11 shrink-0 items-center justify-center rounded-full bg-success-subtle text-success"
+            : "flex size-11 shrink-0 items-center justify-center rounded-full bg-surface-hover text-foreground-muted"
+        }
+      >
+        {usado ? (
+          <CircleCheck className="size-5" />
+        ) : (
+          <History className="size-5" />
+        )}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-sm font-bold text-foreground">
+          {item.titulo}
+        </span>
+        {item.lugarNome && (
+          <span className="block truncate text-xs text-foreground-muted">
+            {item.lugarNome}
+          </span>
+        )}
+        <span className="mt-0.5 block text-xs text-foreground-muted">
+          {usado ? "Usado em" : "Expirou em"} {dataEHora(item.quando)}
+        </span>
+      </span>
+    </>
+  );
+  return (
+    <li>
+      {item.lugarSlug ? (
+        <Link
+          href={rotaDoLugar(item.lugarSlug)}
+          className="flex items-center gap-3 rounded-2xl bg-surface p-3 ring-1 ring-border/60 outline-none focus-visible:outline-2 focus-visible:outline-ring"
+        >
+          {conteudo}
+        </Link>
+      ) : (
+        <div className="flex items-center gap-3 rounded-2xl bg-surface p-3 ring-1 ring-border/60">
+          {conteudo}
+        </div>
+      )}
+    </li>
+  );
+}
+
 /**
  * "Meus cupons" do passaporte: os benefícios disponíveis hoje e o histórico
- * de usados e expirados. O histórico nasce com o resgate (F4); até lá, as
- * duas abas dizem que ainda não há nada, sem números de exemplo.
+ * real: usos confirmados pelo garçom e códigos que expiraram sem uso.
  */
 export function CuponsDoPassaporte({
   disponiveis,
+  historico = [],
 }: {
   disponiveis: readonly BeneficioDisponivel[];
+  /** Vazio para quem não entrou. */
+  historico?: readonly ItemDoHistorico[];
 }) {
+  const utilizados = historico.filter((item) => item.situacao === "usado");
+  const expirados = historico.filter((item) => item.situacao === "expirado");
   return (
     <Abas<Filtro> valorInicial="disponiveis" variante="segmentos" manterEstado>
       <ListaDeAbas rotulo="Filtrar cupons">
         <Aba valor="disponiveis">Disponíveis ({disponiveis.length})</Aba>
-        <Aba valor="utilizados">Utilizados (0)</Aba>
-        <Aba valor="expirados">Expirados (0)</Aba>
+        <Aba valor="utilizados">Utilizados ({utilizados.length})</Aba>
+        <Aba valor="expirados">Expirados ({expirados.length})</Aba>
       </ListaDeAbas>
       <PainelDaAba valor="disponiveis">
         {disponiveis.length > 0 ? (
@@ -88,19 +145,36 @@ export function CuponsDoPassaporte({
         )}
       </PainelDaAba>
       <PainelDaAba valor="utilizados">
-        <EstadoVazio
-          icone={<CircleCheck />}
-          titulo="Nenhum cupom utilizado"
-          descricao="Os cupons que você usar nos estabelecimentos ficam registrados aqui."
-          className="py-8"
-        />
+        {utilizados.length > 0 ? (
+          <ul className="flex flex-col gap-2">
+            {utilizados.map((item) => (
+              <ItemDoHistoricoDoPassaporte key={item.id} item={item} />
+            ))}
+          </ul>
+        ) : (
+          <EstadoVazio
+            icone={<CircleCheck />}
+            titulo="Nenhum cupom utilizado"
+            descricao="Os cupons que você usar nos estabelecimentos ficam registrados aqui."
+            className="py-8"
+          />
+        )}
       </PainelDaAba>
       <PainelDaAba valor="expirados">
-        <EstadoVazio
-          icone={<History />}
-          titulo="Nenhum cupom expirado"
-          className="py-8"
-        />
+        {expirados.length > 0 ? (
+          <ul className="flex flex-col gap-2">
+            {expirados.map((item) => (
+              <ItemDoHistoricoDoPassaporte key={item.id} item={item} />
+            ))}
+          </ul>
+        ) : (
+          <EstadoVazio
+            icone={<History />}
+            titulo="Nenhum cupom expirado"
+            descricao="Códigos gerados e não usados em 10 minutos aparecem aqui."
+            className="py-8"
+          />
+        )}
       </PainelDaAba>
     </Abas>
   );

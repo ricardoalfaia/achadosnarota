@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
 import { unwrapOrThrow } from "@achados/core";
 
-import { CuponsDoPassaporte } from "@/features/beneficios";
-import { listarBeneficiosDisponiveis } from "@/features/beneficios/servidor";
+import {
+  CuponsDoPassaporte,
+  estatisticasDoHistorico,
+} from "@/features/beneficios";
+import {
+  historicoDoPassaporte,
+  listarBeneficiosDisponiveis,
+} from "@/features/beneficios/servidor";
 import {
   CartaoDoPassaporte,
   EstatisticasDoPassaporte,
@@ -26,10 +32,11 @@ export const metadata: Metadata = {
  */
 export default async function PaginaDoPassaporte() {
   const usuario = await sessaoLiberada();
-  const [passaporte, plano, disponiveis] = await Promise.all([
+  const [passaporte, plano, disponiveis, historico] = await Promise.all([
     usuario ? lerPassaporte(usuario.id) : null,
     lerPlanoAtivo(),
     listarBeneficiosDisponiveis(),
+    usuario ? historicoDoPassaporte(usuario.id) : [],
   ]);
   const meuPassaporte = passaporte
     ? unwrapOrThrow(passaporte)
@@ -48,7 +55,7 @@ export default async function PaginaDoPassaporte() {
       </Inclinavel>
 
       {ativo ? (
-        <EstatisticasDoPassaporte cupons={0} cidades={0} estabelecimentos={0} />
+        <EstatisticasDoPassaporte {...estatisticasDoHistorico(historico)} />
       ) : (
         <OfertaDoPassaporte
           plano={unwrapOrThrow(plano)}
@@ -63,7 +70,10 @@ export default async function PaginaDoPassaporte() {
         >
           {ativo ? "Meus cupons" : "Benefícios do passaporte"}
         </h2>
-        <CuponsDoPassaporte disponiveis={unwrapOrThrow(disponiveis)} />
+        <CuponsDoPassaporte
+          disponiveis={unwrapOrThrow(disponiveis)}
+          historico={historico}
+        />
       </section>
     </div>
   );

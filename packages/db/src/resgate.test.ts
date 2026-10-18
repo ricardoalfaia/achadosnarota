@@ -19,15 +19,19 @@ import {
   fimDoPeriodo,
   gerarCodigo,
   hashDoCodigo,
+  historicoDeResgates,
   inicioDoPeriodo,
   TAMANHO_DO_CODIGO,
+  usosDosBeneficios,
 } from "./resgate";
 import {
   categories,
   cities,
   offers,
+  partnerOperators,
   places,
   plans,
+  redemptionAttempts,
   redemptions,
   subscriptions,
   users,
@@ -125,10 +129,21 @@ if (motivo) {
 
 describe.skipIf(motivo !== null)("resgate (integração)", () => {
   let admin: Db;
+  // O assinante e o operador usam o papel do app (achados_app), sob RLS.
   let app: Db;
   const sufixo = randomBytes(4).toString("hex");
   const assinante = novoId();
   const semPassaporte = novoId();
+  const garcomA = novoId();
+  const garcomB = novoId();
+  const garcomDeOutraCasa = novoId();
+  const pessoas = [
+    assinante,
+    semPassaporte,
+    garcomA,
+    garcomB,
+    garcomDeOutraCasa,
+  ];
   const ids = {
     cidade: novoId(),
     categoria: novoId(),
@@ -140,11 +155,20 @@ describe.skipIf(motivo !== null)("resgate (integração)", () => {
     assinatura: novoId(),
   };
 
+  const usar = (codigo: string, operadorId = garcomA, placeId = ids.casa) =>
+    consumirResgate(app, { codigo, placeId, operadorId });
+
+  const emitir = async (offerId = ids.semLimite) => {
+    const r = await emitirResgate(app, assinante, offerId);
+    if (!r.ok) throw new Error(r.error.code);
+    return r.value;
+  };
+
   beforeAll(async () => {
     admin = criarDb(ADMIN_URL!, { max: 4 });
-    app = criarDb(APP_URL!, { max: 2 });
+    app = criarDb(APP_URL!, { max: 3 });
     await admin.insert(users).values(
-      [assinante, semPassaporte].map((id, i) => ({
+      pessoas.map((id, i) => ({
         id,
         name: `Resgate ${i}`,
         email: `resgate-${i}-${sufixo}@teste.achados.local`,
@@ -173,6 +197,11 @@ describe.skipIf(motivo !== null)("resgate (integração)", () => {
     await admin.insert(places).values([
       { ...casa, id: ids.casa, slug: `casa-${sufixo}`, name: "Casa" },
       { ...casa, id: ids.outraCasa, slug: `outra-${sufixo}`, name: "Outra" },
+    ]);
+    await admin.insert(partnerOperators).values([
+      { userId: garcomA, placeId: ids.casa },
+      { userId: garcomB, placeId: ids.casa },
+      { userId: garcomDeOutraCasa, placeId: ids.outraCasa },
     ]);
     const oferta = {
       placeId: ids.casa,
@@ -215,8 +244,13 @@ describe.skipIf(motivo !== null)("resgate (integração)", () => {
 
   afterAll(async () => {
     if (!admin) return;
-    const pessoas = [assinante, semPassaporte];
+    await admin
+      .delete(redemptionAttempts)
+      .where(inArray(redemptionAttempts.userId, pessoas));
     await admin.delete(redemptions).where(inArray(redemptions.userId, pessoas));
+    await admin
+      .delete(partnerOperators)
+      .where(inArray(partnerOperators.userId, pessoas));
     await admin
       .delete(subscriptions)
       .where(inArray(subscriptions.userId, pessoas));
@@ -240,9 +274,7 @@ describe.skipIf(motivo !== null)("resgate (integração)", () => {
   });
 
   it("emite código; o banco guarda só o hash", async () => {
-    const r = await emitirResgate(app, assinante, ids.semLimite);
-    expect(r.ok).toBe(true);
-    if (!r.ok) return;
+    const { codigo } = await emitir();
     const linhas = await admin
       .select({ tokenHash: redemptions.tokenHash })
       .from(redemptions)
@@ -253,73 +285,65 @@ describe.skipIf(motivo !== null)("resgate (integração)", () => {
           eq(redemptions.status, "issued")
         )
       );
-    expect(linhas).toEqual([{ tokenHash: hashDoCodigo(r.value.codigo) }]);
-    expect(JSON.stringify(linhas)).not.toContain(r.value.codigo);
+    expect(linhas).toEqual([{ tokenHash: hashDoCodigo(codigo) }]);
+    expect(JSON.stringify(linhas)).not.toContain(codigo);
+  });
+
+  it("o garçom da casa consome e vê o benefício a aplicar", async () => {
+    const { codigo } = await emitir();
+    const uso = await usar(codigo.toLowerCase());
+    expect(uso.ok).toBe(true);
+    if (uso.ok) expect(uso.value.beneficio).toBe("Café cortesia");
   });
 
   it("emitir de novo cancela o código anterior", async () => {
-    const primeiro = await emitirResgate(app, assinante, ids.semLimite);
-    const segundo = await emitirResgate(app, assinante, ids.semLimite);
-    expect(primeiro.ok && segundo.ok).toBe(true);
-    if (!primeiro.ok || !segundo.ok) return;
-    const usoDoPrimeiro = await consumirResgate(admin, {
-      codigo: primeiro.value.codigo,
-      placeId: ids.casa,
-      operadorId: "operador-1",
-    });
-    expect(usoDoPrimeiro.ok).toBe(false);
+    const primeiro = await emitir();
+    await emitir();
+    expect((await usar(primeiro.codigo)).ok).toBe(false);
   });
 
-  it("outra casa não consome o código", async () => {
-    const r = await emitirResgate(app, assinante, ids.semLimite);
-    if (!r.ok) throw new Error(r.error.code);
-    const uso = await consumirResgate(admin, {
-      codigo: r.value.codigo,
-      placeId: ids.outraCasa,
-      operadorId: "operador-2",
-    });
-    expect(uso.ok).toBe(false);
-    if (!uso.ok) expect(uso.error.code).toBe("RESGATE_NAO_ENCONTRADO");
+  it("quem não opera a casa não consome; garçom de outra casa não acha o código", async () => {
+    const { codigo } = await emitir();
+    const semVinculo = await usar(codigo, garcomDeOutraCasa, ids.casa);
+    expect(semVinculo.ok).toBe(false);
+    if (!semVinculo.ok)
+      expect(semVinculo.error.code).toBe("RESGATE_OPERADOR_SEM_CASA");
+
+    const naOutraCasa = await usar(codigo, garcomDeOutraCasa, ids.outraCasa);
+    expect(naOutraCasa.ok).toBe(false);
+    if (!naOutraCasa.ok)
+      expect(naOutraCasa.error.code).toBe("RESGATE_NAO_ENCONTRADO");
   });
 
   it("código expirado não vale e fica marcado como expirado", async () => {
-    const r = await emitirResgate(app, assinante, ids.semLimite);
-    if (!r.ok) throw new Error(r.error.code);
-    const depois = new Date(r.value.expiraEm.getTime() + 1_000);
-    const uso = await consumirResgate(admin, {
-      codigo: r.value.codigo,
+    const { codigo, expiraEm } = await emitir();
+    const uso = await consumirResgate(app, {
+      codigo,
       placeId: ids.casa,
-      operadorId: "operador-1",
-      agora: depois,
+      operadorId: garcomB,
+      agora: new Date(expiraEm.getTime() + 1_000),
     });
     expect(uso.ok).toBe(false);
     if (!uso.ok) expect(uso.error.code).toBe("RESGATE_EXPIRADO");
+    const [linha] = await admin
+      .select({ status: redemptions.status })
+      .from(redemptions)
+      .where(eq(redemptions.tokenHash, hashDoCodigo(codigo)));
+    expect(linha?.status).toBe("expired");
   });
 
   it("dois garçons ao mesmo tempo: só um consome", async () => {
-    const r = await emitirResgate(app, assinante, ids.semLimite);
-    if (!r.ok) throw new Error(r.error.code);
-    const tentativas = await Promise.all(
-      ["garcom-a", "garcom-b"].map((operadorId) =>
-        consumirResgate(admin, {
-          codigo: r.value.codigo.toLowerCase(),
-          placeId: ids.casa,
-          operadorId,
-        })
-      )
-    );
+    const { codigo } = await emitir();
+    const tentativas = await Promise.all([
+      usar(codigo, garcomA),
+      usar(codigo, garcomB),
+    ]);
     expect(tentativas.filter((t) => t.ok)).toHaveLength(1);
   });
 
   it("2 por 1 uma vez por ano: o segundo uso no ano é recusado", async () => {
-    const primeiro = await emitirResgate(app, assinante, ids.anual);
-    if (!primeiro.ok) throw new Error(primeiro.error.code);
-    const uso = await consumirResgate(admin, {
-      codigo: primeiro.value.codigo,
-      placeId: ids.casa,
-      operadorId: "garcom-a",
-    });
-    expect(uso.ok).toBe(true);
+    const { codigo } = await emitir(ids.anual);
+    expect((await usar(codigo)).ok).toBe(true);
 
     const segundo = await emitirResgate(app, assinante, ids.anual);
     expect(segundo.ok).toBe(false);
@@ -329,7 +353,29 @@ describe.skipIf(motivo !== null)("resgate (integração)", () => {
     }
   });
 
-  it("a pessoa não vê nem grava resgate como usado (RLS)", async () => {
+  it("depois de 5 códigos errados em 15 minutos, o garçom é bloqueado", async () => {
+    for (let i = 0; i < 5; i++) {
+      const errado = await usar("ZZZZZZ", garcomDeOutraCasa, ids.outraCasa);
+      expect(errado.ok).toBe(false);
+    }
+    const bloqueado = await usar("ZZZZZZ", garcomDeOutraCasa, ids.outraCasa);
+    expect(bloqueado.ok).toBe(false);
+    if (!bloqueado.ok)
+      expect(bloqueado.error.code).toBe("RESGATE_TENTATIVAS_EXCEDIDAS");
+  });
+
+  it("o garçom não apaga as próprias tentativas para zerar o limite (RLS)", async () => {
+    const r = await withUser(app, garcomDeOutraCasa, async (tx) => {
+      const apagadas = await tx
+        .delete(redemptionAttempts)
+        .where(eq(redemptionAttempts.userId, garcomDeOutraCasa))
+        .returning({ id: redemptionAttempts.id });
+      return { ok: true as const, value: apagadas.length };
+    });
+    expect(r).toEqual({ ok: true, value: 0 });
+  });
+
+  it("a pessoa não vê o resgate de outra nem marca o próprio como usado (RLS)", async () => {
     const outra = await withUser(app, semPassaporte, async (tx) => {
       const visiveis = await tx
         .select({ id: redemptions.id })
@@ -353,5 +399,49 @@ describe.skipIf(motivo !== null)("resgate (integração)", () => {
       return { ok: true as const, value: true };
     });
     expect(forjado.ok).toBe(false);
+
+    // Entrar pela política de cancelar o próprio código e sair como "usado".
+    const { codigo } = await emitir();
+    const autovalidado = await withUser(app, assinante, async (tx) => {
+      const alteradas = await tx
+        .update(redemptions)
+        .set({
+          status: "redeemed",
+          redeemedAt: new Date(),
+          operatorId: assinante,
+        })
+        .where(eq(redemptions.tokenHash, hashDoCodigo(codigo)))
+        .returning({ id: redemptions.id });
+      return { ok: true as const, value: alteradas.length };
+    });
+    expect(autovalidado.ok).toBe(false);
+  });
+
+  it("a ficha sabe que o 2 por 1 do ano já foi usado e quando renova", async () => {
+    const usos = await usosDosBeneficios(app, assinante, [
+      { id: ids.anual, limite: 1, periodo: "year" },
+      { id: ids.semLimite, limite: 1, periodo: "unlimited" },
+    ]);
+    expect(usos.ok).toBe(true);
+    if (!usos.ok) return;
+    const anual = usos.value.get(ids.anual);
+    expect(anual?.disponivel).toBe(false);
+    expect(anual?.renovaEm?.toISOString()).toMatch(/-01-01T03:00:00/);
+    expect(usos.value.has(ids.semLimite)).toBe(false);
+  });
+
+  it("o histórico traz os usos da própria pessoa, sem hash nem operador", async () => {
+    const historico = await historicoDeResgates(app, assinante);
+    expect(historico.ok).toBe(true);
+    if (!historico.ok) return;
+    expect(
+      historico.value.some(
+        (r) => r.beneficio === "2 por 1" && r.situacao === "redeemed"
+      )
+    ).toBe(true);
+    expect(JSON.stringify(historico.value)).not.toMatch(/tokenHash|operator/);
+
+    const deOutra = await historicoDeResgates(app, semPassaporte);
+    expect(deOutra.ok && deOutra.value).toEqual([]);
   });
 });

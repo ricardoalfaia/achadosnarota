@@ -1,3 +1,8 @@
 import "server-only";
 
-export { listarBeneficiosDisponiveis } from "./consultas.servidor";
+export {
+  historicoDoPassaporte,
+  listarBeneficiosDisponiveis,
+  usosNaFicha,
+  type UsoNaFicha,
+} from "./consultas.servidor";

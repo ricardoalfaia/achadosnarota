@@ -15,9 +15,9 @@ test("com passaporte ativo, o cartão mostra a titular, a validade e o código",
     page.getByRole("tab", { name: /Disponíveis \(8\)/ })
   ).toBeVisible();
 
-  await page.getByRole("tab", { name: "Utilizados (0)" }).click();
+  // O histórico é real: o teste do balcão pode ter registrado um uso.
   await expect(
-    page.getByRole("heading", { name: "Nenhum cupom utilizado" })
+    page.getByRole("tab", { name: /Utilizados \(\d+\)/ })
   ).toBeVisible();
 });
 
