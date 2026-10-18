@@ -112,6 +112,18 @@ function criarAuth() {
             return { data: user };
           },
         },
+        update: {
+          // A foto só muda pela Action do perfil, que envia ao bucket e grava
+          // direto no banco. Pelo endpoint público, qualquer um apontaria a
+          // própria foto para um endereço externo ou para a foto de outra
+          // pessoa (que seria apagada na troca seguinte).
+          before: async (user) => {
+            if (!("image" in user)) return;
+            const semFoto = { ...user };
+            delete semFoto.image;
+            return { data: semFoto };
+          },
+        },
       },
     },
     session: {

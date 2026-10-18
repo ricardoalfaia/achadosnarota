@@ -53,6 +53,7 @@ Os ADRs abaixo estão **Propostos** para revisão. A maior parte veio da base de
 | [0024](0024-identificadores-ulid.md)      | Identificadores de linha em ULID                                  | Proposto; implementado                                                     |
 | [0025](0025-app-pwa-do-assinante.md)      | App PWA do assinante: rotas, casca, dados e PWA                   | Proposto; implementado                                                     |
 | [0026](0026-app-administrativo.md)        | App administrativo: casca, telas de cadastro e dados provisórios  | Proposto; fase visual implementada, sem banco e sem login                  |
+| [0027](0027-foto-do-perfil-no-r2.md)      | Foto do perfil: ajuste no navegador, regravação no servidor e R2  | Proposto; implementado no app do assinante                                 |
 
 ## Ciclo de uma decisão
 

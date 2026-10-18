@@ -32,6 +32,12 @@ const ambienteServidorSchema = z.object({
   RESEND_API_KEY: opcional,
   // Só E2E: grava os e-mails num arquivo em vez de enviar (ver shared/email).
   EMAIL_CAIXA_DE_TESTE: opcional,
+  // Cloudflare R2 pela API S3 (fotos de perfil). Todas ou nenhuma.
+  R2_ACCOUNT_ID: opcional,
+  R2_API_KEY: opcional,
+  R2_SECRET: opcional,
+  R2_BUCKET: opcional,
+  R2_PUBLIC_URL: opcional.pipe(z.url({ protocol: /^https$/ }).optional()),
   // O app nunca recebe a conexão do dono das tabelas: com ela, o RLS não vale.
   DATABASE_URL_ADMIN: z
     .string()
@@ -49,6 +55,26 @@ export type ConfiguracaoDeEmail = {
   caixaDeTeste?: string | undefined;
 };
 
+/** O bucket do R2. As chaves nunca saem do servidor. */
+export type ConfiguracaoDoArmazenamento = {
+  contaId: string;
+  /** Access Key ID do token S3 do R2 (`R2_API_KEY`). */
+  chaveDeAcesso: string;
+  /** Secret Access Key (`R2_SECRET`). */
+  segredo: string;
+  bucket: string;
+  /** Endereço público de leitura do bucket, sem a barra final. */
+  urlPublica: string;
+};
+
+const VARIAVEIS_DO_R2 = [
+  "R2_ACCOUNT_ID",
+  "R2_API_KEY",
+  "R2_SECRET",
+  "R2_BUCKET",
+  "R2_PUBLIC_URL",
+] as const;
+
 export type AmbienteServidor = {
   /** URL pública do app: base do Better Auth e dos links enviados por e-mail. */
   appUrl: string;
@@ -59,6 +85,8 @@ export type AmbienteServidor = {
   /** Cadastro público aberto (`SIGNUP_ENABLED=true`). */
   cadastroAberto: boolean;
   email: ConfiguracaoDeEmail;
+  /** Ausente: o envio de fotos fica indisponível, o resto do app funciona. */
+  armazenamento?: ConfiguracaoDoArmazenamento | undefined;
 };
 
 type Fonte = Record<string, string | undefined>;
@@ -86,6 +114,15 @@ export function lerAmbienteServidor(fonte: Fonte): Result<AmbienteServidor> {
   const lido = ambienteServidorSchema.safeParse(fonte);
   if (!lido.success) return Err(falha(lido.error));
   const v = lido.data;
+  const faltandoNoR2 = VARIAVEIS_DO_R2.filter((nome) => !v[nome]);
+  if (faltandoNoR2.length > 0 && faltandoNoR2.length < VARIAVEIS_DO_R2.length)
+    return Err(
+      AppErrors.validation(
+        "AMBIENTE_INVALIDO",
+        `O R2 precisa de todas as variáveis; faltam: ${faltandoNoR2.join(", ")}.`,
+        { variaveis: faltandoNoR2 }
+      )
+    );
   return Ok({
     appUrl: v.APP_URL.replace(/\/+$/, ""),
     databaseUrl: v.DATABASE_URL,
@@ -96,5 +133,19 @@ export function lerAmbienteServidor(fonte: Fonte): Result<AmbienteServidor> {
       resendApiKey: v.RESEND_API_KEY,
       caixaDeTeste: v.EMAIL_CAIXA_DE_TESTE,
     },
+    armazenamento:
+      v.R2_ACCOUNT_ID &&
+      v.R2_API_KEY &&
+      v.R2_SECRET &&
+      v.R2_BUCKET &&
+      v.R2_PUBLIC_URL
+        ? {
+            contaId: v.R2_ACCOUNT_ID,
+            chaveDeAcesso: v.R2_API_KEY,
+            segredo: v.R2_SECRET,
+            bucket: v.R2_BUCKET,
+            urlPublica: v.R2_PUBLIC_URL.replace(/\/+$/, ""),
+          }
+        : undefined,
   });
 }

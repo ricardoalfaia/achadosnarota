@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { unwrapOrThrow } from "@achados/core";
-import { Avatar } from "@achados/ui";
 import { cn } from "@achados/ui/estilos";
 import {
   ChevronRight,
@@ -16,6 +15,7 @@ import {
 import { casasDoOperador } from "@/features/balcao/servidor";
 import { dataCurta } from "@/features/passaporte";
 import { lerPassaporte } from "@/features/passaporte/servidor";
+import { FotoDoPerfil } from "@/features/perfil";
 import { CabecalhoDoApp } from "@/shared/casca/cabecalho-do-app";
 import { EscolhaDeTema } from "@/shared/casca/escolha-de-tema";
 import { InstalarApp } from "@/shared/casca/instalar-app";
@@ -40,8 +40,9 @@ const LINK_DA_LINHA = cn(
 );
 
 /**
- * Perfil (protótipo, tela 5): o cartão de quem entrou, com o avatar em anel e
- * a situação do passaporte, e os ajustes em grupos (conta, app, sobre).
+ * Perfil (protótipo, tela 5): o cartão de quem entrou, com o avatar em anel
+ * (que abre a troca da foto) e a situação do passaporte, e os ajustes em
+ * grupos (conta, app, sobre).
  */
 export default async function Perfil() {
   const usuario = await exigirSessao(ROTAS.perfil);
@@ -60,22 +61,20 @@ export default async function Perfil() {
           aria-label="Quem está na rota"
           className="relative flex flex-col items-center overflow-hidden rounded-[2rem] bg-passport px-5 pt-8 pb-6 text-center text-white shadow-xl"
         >
-          <div className="relative">
-            <Avatar
-              nome={pessoa.nome}
-              tamanho="2xl"
-              anel
-              {...(pessoa.fotoUrl ? { fotoUrl: pessoa.fotoUrl } : {})}
-            />
-            {passaporte.situacao === "ativo" && (
-              <span
-                title="Passaporte ativo"
-                className="absolute right-1 bottom-1 flex size-8 items-center justify-center rounded-full border-[3px] border-[#0a1e2e] bg-accent-on-dark text-[#0a1e2e]"
-              >
-                <Crown aria-hidden="true" className="size-4" />
-              </span>
-            )}
-          </div>
+          <FotoDoPerfil
+            nome={pessoa.nome}
+            fotoUrl={pessoa.fotoUrl}
+            selo={
+              passaporte.situacao === "ativo" && (
+                <span
+                  title="Passaporte ativo"
+                  className="absolute right-1 bottom-1 flex size-8 items-center justify-center rounded-full border-[3px] border-[#0a1e2e] bg-accent-on-dark text-[#0a1e2e]"
+                >
+                  <Crown aria-hidden="true" className="size-4" />
+                </span>
+              )
+            }
+          />
           <h1 className="mt-4 text-2xl font-extrabold tracking-tight">
             {pessoa.nome}
           </h1>

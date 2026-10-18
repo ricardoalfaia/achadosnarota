@@ -110,4 +110,46 @@ describe("lerAmbienteServidor", () => {
       true
     );
   });
+
+  describe("R2", () => {
+    const R2 = {
+      R2_ACCOUNT_ID: "conta",
+      R2_API_KEY: "chave-de-acesso",
+      R2_SECRET: "segredo",
+      R2_BUCKET: "achados-teste",
+      R2_PUBLIC_URL: "https://pub-teste.r2.dev/",
+    };
+
+    it("sem nenhuma variável, o armazenamento fica ausente e o app sobe", () => {
+      const lido = lerAmbienteServidor(BASE);
+      expect(lido.ok && lido.value.armazenamento).toBeUndefined();
+    });
+
+    it("com todas, devolve o bucket e a URL pública sem a barra final", () => {
+      const lido = lerAmbienteServidor({ ...BASE, ...R2 });
+      expect(lido.ok && lido.value.armazenamento).toEqual({
+        contaId: "conta",
+        chaveDeAcesso: "chave-de-acesso",
+        segredo: "segredo",
+        bucket: "achados-teste",
+        urlPublica: "https://pub-teste.r2.dev",
+      });
+    });
+
+    it("com só parte delas, falha nomeando as que faltam", () => {
+      expect(
+        variaveisInvalidas({ ...BASE, ...R2, R2_SECRET: "", R2_BUCKET: "" })
+      ).toEqual({ variaveis: ["R2_SECRET", "R2_BUCKET"] });
+    });
+
+    it("a URL pública precisa ser https", () => {
+      expect(
+        variaveisInvalidas({
+          ...BASE,
+          ...R2,
+          R2_PUBLIC_URL: "http://pub-teste.r2.dev",
+        })
+      ).toEqual({ variaveis: ["R2_PUBLIC_URL"] });
+    });
+  });
 });
