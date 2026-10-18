@@ -7,7 +7,6 @@ import { ShieldAlert } from "lucide-react";
 import { sair } from "@/features/acesso/actions";
 import { ConfiguracaoDoAutenticador } from "@/features/acesso/components/configuracao-do-autenticador";
 import { FormularioDeEntrada } from "@/features/acesso/components/formulario-de-entrada";
-import { Marca } from "@/shared/casca/marca";
 import { ROTAS } from "@/shared/rotas";
 import { situacaoDaEquipe } from "@/shared/sessao/sessao.servidor";
 
@@ -17,6 +16,13 @@ const TITULO = {
   semSessao: "Entrar no painel",
   semAutenticador: "Configure o autenticador",
   foraDaEquipe: "Sem acesso ao painel",
+} as const;
+
+const APOIO = {
+  semSessao: "Use a conta da equipe do Achados na Rota.",
+  semAutenticador:
+    "O painel pede um código do aplicativo autenticador a cada entrada.",
+  foraDaEquipe: "Esta conta entrou, mas não está liberada para o painel.",
 } as const;
 
 /**
@@ -30,32 +36,34 @@ export default async function PaginaDeEntrada() {
   if (situacao.tipo === "equipe") redirect(ROTAS.inicio);
 
   return (
-    <main className="flex min-h-dvh items-center justify-center bg-surface-hover p-4">
-      <div className="w-full max-w-sm rounded-[2rem] bg-surface p-6 shadow-xl ring-1 ring-border/60">
-        <Marca className="mb-6" />
-        <h1 className="mb-4 text-xl font-extrabold tracking-tight text-foreground">
+    <>
+      <header className="mb-6">
+        <h1 className="text-2xl font-extrabold tracking-tight text-foreground lg:text-3xl">
           {TITULO[situacao.tipo]}
         </h1>
-        {situacao.tipo === "semSessao" && <FormularioDeEntrada />}
-        {situacao.tipo === "semAutenticador" && <ConfiguracaoDoAutenticador />}
-        {situacao.tipo === "foraDaEquipe" && (
-          <div className="flex flex-col gap-4">
-            <p className="flex items-start gap-2 text-sm leading-relaxed text-foreground-muted">
-              <ShieldAlert
-                aria-hidden="true"
-                className="mt-0.5 size-5 shrink-0 text-warning"
-              />
-              Esta conta não faz parte da equipe do Achados na Rota. Peça à
-              administração para liberar o seu acesso.
-            </p>
-            <form action={sair}>
-              <Botao type="submit" variante="contorno" larguraTotal>
-                Sair e entrar com outra conta
-              </Botao>
-            </form>
-          </div>
-        )}
-      </div>
-    </main>
+        <p className="mt-1.5 text-sm leading-snug text-foreground-muted">
+          {APOIO[situacao.tipo]}
+        </p>
+      </header>
+      {situacao.tipo === "semSessao" && <FormularioDeEntrada />}
+      {situacao.tipo === "semAutenticador" && <ConfiguracaoDoAutenticador />}
+      {situacao.tipo === "foraDaEquipe" && (
+        <div className="flex flex-col gap-4">
+          <p className="flex items-start gap-2 text-sm leading-relaxed text-foreground-muted">
+            <ShieldAlert
+              aria-hidden="true"
+              className="mt-0.5 size-5 shrink-0 text-warning"
+            />
+            Esta conta não faz parte da equipe do Achados na Rota. Peça à
+            administração para liberar o seu acesso.
+          </p>
+          <form action={sair}>
+            <Botao type="submit" variante="contorno" larguraTotal>
+              Sair e entrar com outra conta
+            </Botao>
+          </form>
+        </div>
+      )}
+    </>
   );
 }
