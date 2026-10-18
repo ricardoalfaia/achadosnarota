@@ -2,6 +2,7 @@ import { AppErrors, Err, Ok, type Result } from "@achados/core";
 import { z } from "zod";
 
 import type { Pendencia } from "@/shared/cadastro/pendencias";
+import { problemasDoHorario } from "./horario";
 import type { DadosDaCasa, StatusDaCasa } from "./tipos";
 
 // Regras do cadastro de casa. As mesmas funções servem ao formulário
@@ -10,6 +11,7 @@ import type { DadosDaCasa, StatusDaCasa } from "./tipos";
 export const SECOES_DA_CASA = [
   "dados",
   "local",
+  "horario",
   "fotos",
   "publicacao",
 ] as const;
@@ -58,6 +60,11 @@ export function pendenciasDaCasa(
   if (dados.site && !URL_DO_SITE.test(dados.site))
     falta("site", "local", "Endereço começando com https://");
 
+  for (const { motivo } of problemasDoHorario(dados.horarios))
+    falta("horarios", "horario", motivo);
+  if (dados.observacaoDoHorario.length > 200)
+    falta("observacaoDoHorario", "horario", "Use até 200 caracteres");
+
   if (dados.status === "published" && fotos === 0)
     falta("fotos", "fotos", "Publicar exige pelo menos uma foto");
 
@@ -78,6 +85,8 @@ export function novaCasa(): DadosDaCasa {
     endereco: "",
     telefone: "",
     site: "",
+    horarios: [],
+    observacaoDoHorario: "",
     status: "draft",
   };
 }
@@ -101,6 +110,16 @@ const esquema = z.object({
   endereco: texto.max(300),
   telefone: texto.max(20),
   site: texto.max(300),
+  horarios: z
+    .array(
+      z.object({
+        dia: z.number().int().min(0).max(6),
+        abre: z.string().max(5),
+        fecha: z.string().max(5),
+      })
+    )
+    .max(14),
+  observacaoDoHorario: texto.max(1000),
   status: z.enum(STATUS),
 });
 

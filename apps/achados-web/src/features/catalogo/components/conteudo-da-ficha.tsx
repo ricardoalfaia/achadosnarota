@@ -1,13 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { EstadoVazio, Etiqueta } from "@achados/ui";
-import { Crown, Globe, Images, MapPin, Phone } from "lucide-react";
+import { Clock, Crown, Globe, Images, MapPin, Phone } from "lucide-react";
 
 import {
   hrefDoTelefone,
   siteParaExibir,
   telefoneParaExibir,
 } from "../domain/apresentacao";
+import { semanaDoHorario } from "../domain/horario";
 import type { FichaDoLugar, Foto } from "../domain/tipos";
 
 /** Selo âmbar com a coroa: o lugar tem avaliação editorial publicada. */
@@ -108,14 +109,58 @@ export function SobreOLugar({
 }: {
   lugar: Pick<
     FichaDoLugar,
-    "descricao" | "resumo" | "endereco" | "telefone" | "site"
+    | "descricao"
+    | "resumo"
+    | "endereco"
+    | "telefone"
+    | "site"
+    | "horarios"
+    | "observacaoDoHorario"
   >;
 }) {
+  const semana = semanaDoHorario(lugar.horarios);
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-sm leading-relaxed text-foreground">
+      <p className="text-[15px] leading-relaxed text-foreground">
         {lugar.descricao ?? lugar.resumo}
       </p>
+      {lugar.horarios.length > 0 && (
+        <section
+          aria-labelledby="titulo-horario"
+          className="rounded-2xl border border-border bg-surface p-4"
+        >
+          <h3
+            id="titulo-horario"
+            className="mb-2 flex items-center gap-2 text-sm font-extrabold text-foreground"
+          >
+            <Clock aria-hidden="true" className="size-4 text-brand" />
+            Horário de funcionamento
+          </h3>
+          <dl className="flex flex-col gap-1.5 text-sm">
+            {semana.map((dia) => (
+              <div
+                key={dia.dia}
+                className={
+                  dia.hoje
+                    ? "flex justify-between gap-3 rounded-lg bg-primary-subtle px-2 py-1 font-bold text-foreground"
+                    : "flex justify-between gap-3 px-2 py-1 text-foreground-muted"
+                }
+              >
+                <dt>
+                  {dia.nome}
+                  {dia.hoje && <span className="sr-only"> (hoje)</span>}
+                </dt>
+                <dd className="text-right tabular-nums">{dia.turnos}</dd>
+              </div>
+            ))}
+          </dl>
+          {lugar.observacaoDoHorario && (
+            <p className="mt-2 text-xs text-foreground-muted">
+              {lugar.observacaoDoHorario}
+            </p>
+          )}
+        </section>
+      )}
       <dl className="flex flex-col divide-y divide-border rounded-2xl border border-border bg-surface text-sm">
         {lugar.endereco && (
           <div className="flex items-start gap-3 p-3">

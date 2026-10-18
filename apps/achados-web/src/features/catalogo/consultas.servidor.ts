@@ -8,6 +8,7 @@ import {
   editorialReviews,
   lerPublico,
   offers,
+  placeHours,
   placeMedia,
   places,
   type DbExecutor,
@@ -199,6 +200,7 @@ export const lerFichaDoLugar = cache(
           endereco: places.address,
           telefone: places.phone,
           site: places.website,
+          observacaoDoHorario: places.hoursNote,
           parecer: editorialReviews.summary,
           ressalvas: editorialReviews.caveats,
           visitadoEm: editorialReviews.visitedOn,
@@ -226,9 +228,17 @@ export const lerFichaDoLugar = cache(
         .limit(1);
       if (!lugar) return null;
 
-      const [fotos, beneficios] = await Promise.all([
+      const [fotos, beneficios, horarios] = await Promise.all([
         fotosDe(db, [lugar.id], { somenteCapa: false }),
         beneficiosDe(db, [lugar.id]),
+        db
+          .select({
+            dia: placeHours.weekday,
+            abre: placeHours.opens,
+            fecha: placeHours.closes,
+          })
+          .from(placeHours)
+          .where(eq(placeHours.placeId, lugar.id)),
       ]);
       const cartao = montarCartao(lugar, fotos, beneficios);
       const criterios = criteriosAvaliados(lugar);
@@ -237,6 +247,15 @@ export const lerFichaDoLugar = cache(
         tags: lugar.tags,
         fotos: fotos.map(({ url, alt }) => ({ url, alt })),
         beneficios: beneficios.map(beneficioDaInterface),
+        // O banco devolve "HH:MM:SS"; a tela usa "HH:MM".
+        horarios: horarios.map(({ dia, abre, fecha }) => ({
+          dia,
+          abre: abre.slice(0, 5),
+          fecha: fecha.slice(0, 5),
+        })),
+        ...(lugar.observacaoDoHorario
+          ? { observacaoDoHorario: lugar.observacaoDoHorario }
+          : {}),
         ...(lugar.descricao ? { descricao: lugar.descricao } : {}),
         ...(lugar.endereco ? { endereco: lugar.endereco } : {}),
         ...(lugar.telefone ? { telefone: lugar.telefone } : {}),

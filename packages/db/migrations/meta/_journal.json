@@ -36,6 +36,13 @@
       "when": 1792316909245,
       "tag": "0004_equipe_e_auditoria",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792320096575,
+      "tag": "0005_horario_de_funcionamento",
+      "breakpoints": true
     }
   ]
 }

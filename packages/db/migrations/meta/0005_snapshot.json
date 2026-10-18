@@ -1,0 +1,2843 @@
+{
+  "id": "64bd1a0d-14ed-4d80-a001-93df697b4534",
+  "prevId": "14338ca8-3c70-4b84-8975-73907b1b342b",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.account": {
+      "name": "account",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "account_id": {
+          "name": "account_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "provider_id": {
+          "name": "provider_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "access_token": {
+          "name": "access_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "refresh_token": {
+          "name": "refresh_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id_token": {
+          "name": "id_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "access_token_expires_at": {
+          "name": "access_token_expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "refresh_token_expires_at": {
+          "name": "refresh_token_expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "scope": {
+          "name": "scope",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "password": {
+          "name": "password",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "account_user_id_idx": {
+          "name": "account_user_id_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "account_user_id_user_id_fk": {
+          "name": "account_user_id_user_id_fk",
+          "tableFrom": "account",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.rate_limit": {
+      "name": "rate_limit",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "count": {
+          "name": "count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "last_request": {
+          "name": "last_request",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "rate_limit_key_unique": {
+          "name": "rate_limit_key_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "key"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.session": {
+      "name": "session",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token": {
+          "name": "token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "ip_address": {
+          "name": "ip_address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_agent": {
+          "name": "user_agent",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "session_user_id_idx": {
+          "name": "session_user_id_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "session_user_id_user_id_fk": {
+          "name": "session_user_id_user_id_fk",
+          "tableFrom": "session",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "session_token_unique": {
+          "name": "session_token_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "token"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.two_factor": {
+      "name": "two_factor",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "secret": {
+          "name": "secret",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "backup_codes": {
+          "name": "backup_codes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "verified": {
+          "name": "verified",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "failed_verification_count": {
+          "name": "failed_verification_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "locked_until": {
+          "name": "locked_until",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "two_factor_secret_idx": {
+          "name": "two_factor_secret_idx",
+          "columns": [
+            {
+              "expression": "secret",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "two_factor_user_id_idx": {
+          "name": "two_factor_user_id_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "two_factor_user_id_user_id_fk": {
+          "name": "two_factor_user_id_user_id_fk",
+          "tableFrom": "two_factor",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.user": {
+      "name": "user",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email_verified": {
+          "name": "email_verified",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "image": {
+          "name": "image",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "two_factor_enabled": {
+          "name": "two_factor_enabled",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "must_change_password": {
+          "name": "must_change_password",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "terms_version": {
+          "name": "terms_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "terms_accepted_at": {
+          "name": "terms_accepted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "user_email_unique": {
+          "name": "user_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.verification": {
+      "name": "verification",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "identifier": {
+          "name": "identifier",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "value": {
+          "name": "value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "verification_identifier_idx": {
+          "name": "verification_identifier_idx",
+          "columns": [
+            {
+              "expression": "identifier",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.category": {
+      "name": "category",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "icon": {
+          "name": "icon",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "category_slug_unique": {
+          "name": "category_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        }
+      },
+      "policies": {
+        "category_leitura_publica": {
+          "name": "category_leitura_publica",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "achados_app"
+          ],
+          "using": "true"
+        },
+        "category_insert_da_equipe": {
+          "name": "category_insert_da_equipe",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "achados_app"
+          ],
+          "withCheck": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin'))"
+        },
+        "category_update_da_equipe": {
+          "name": "category_update_da_equipe",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "achados_app"
+          ],
+          "using": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin'))",
+          "withCheck": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin'))"
+        }
+      },
+      "checkConstraints": {
+        "category_id_ulid": {
+          "name": "category_id_ulid",
+          "value": "\"id\" ~ '^[0-9A-HJKMNP-TV-Z]{26}$'"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.city": {
+      "name": "city",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "state": {
+          "name": "state",
+          "type": "char(2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "city_slug_unique": {
+          "name": "city_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        }
+      },
+      "policies": {
+        "city_leitura_publica": {
+          "name": "city_leitura_publica",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "achados_app"
+          ],
+          "using": "true"
+        },
+        "city_insert_da_equipe": {
+          "name": "city_insert_da_equipe",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "achados_app"
+          ],
+          "withCheck": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin'))"
+        },
+        "city_update_da_equipe": {
+          "name": "city_update_da_equipe",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "achados_app"
+          ],
+          "using": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin'))",
+          "withCheck": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin'))"
+        }
+      },
+      "checkConstraints": {
+        "city_id_ulid": {
+          "name": "city_id_ulid",
+          "value": "\"id\" ~ '^[0-9A-HJKMNP-TV-Z]{26}$'"
+        },
+        "city_state_uf": {
+          "name": "city_state_uf",
+          "value": "\"city\".\"state\" ~ '^[A-Z]{2}$'"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.place_media": {
+      "name": "place_media",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "place_id": {
+          "name": "place_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "alt": {
+          "name": "alt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "place_media_place_id_idx": {
+          "name": "place_media_place_id_idx",
+          "columns": [
+            {
+              "expression": "place_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "place_media_place_id_place_id_fk": {
+          "name": "place_media_place_id_place_id_fk",
+          "tableFrom": "place_media",
+          "tableTo": "place",
+          "columnsFrom": [
+            "place_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "place_media_place_position": {
+          "name": "place_media_place_position",
+          "nullsNotDistinct": false,
+          "columns": [
+            "place_id",
+            "position"
+          ]
+        }
+      },
+      "policies": {
+        "place_media_leitura_publica": {
+          "name": "place_media_leitura_publica",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "achados_app"
+          ],
+          "using": "exists (select 1 from place p where p.id = place_id and p.status = 'published')"
+        },
+        "place_media_leitura_da_equipe": {
+          "name": "place_media_leitura_da_equipe",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "achados_app"
+          ],
+          "using": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin', 'curator', 'commercial'))"
+        },
+        "place_media_insert_da_equipe": {
+          "name": "place_media_insert_da_equipe",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "achados_app"
+          ],
+          "withCheck": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin', 'curator'))"
+        },
+        "place_media_update_da_equipe": {
+          "name": "place_media_update_da_equipe",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "achados_app"
+          ],
+          "using": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin', 'curator'))",
+          "withCheck": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin', 'curator'))"
+        },
+        "place_media_delete_da_equipe": {
+          "name": "place_media_delete_da_equipe",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "achados_app"
+          ],
+          "using": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin', 'curator'))"
+        }
+      },
+      "checkConstraints": {
+        "place_media_id_ulid": {
+          "name": "place_media_id_ulid",
+          "value": "\"id\" ~ '^[0-9A-HJKMNP-TV-Z]{26}$'"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.place": {
+      "name": "place",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "city_id": {
+          "name": "city_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category_id": {
+          "name": "category_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "specialty": {
+          "name": "specialty",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "summary": {
+          "name": "summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tags": {
+          "name": "tags",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::text[]"
+        },
+        "address": {
+          "name": "address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "phone": {
+          "name": "phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "website": {
+          "name": "website",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hours_note": {
+          "name": "hours_note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "latitude": {
+          "name": "latitude",
+          "type": "numeric(9, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "longitude": {
+          "name": "longitude",
+          "type": "numeric(9, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "place_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'draft'"
+        },
+        "published_at": {
+          "name": "published_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "place_city_id_idx": {
+          "name": "place_city_id_idx",
+          "columns": [
+            {
+              "expression": "city_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "place_category_id_idx": {
+          "name": "place_category_id_idx",
+          "columns": [
+            {
+              "expression": "category_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "place_city_id_city_id_fk": {
+          "name": "place_city_id_city_id_fk",
+          "tableFrom": "place",
+          "tableTo": "city",
+          "columnsFrom": [
+            "city_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "place_category_id_category_id_fk": {
+          "name": "place_category_id_category_id_fk",
+          "tableFrom": "place",
+          "tableTo": "category",
+          "columnsFrom": [
+            "category_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "place_slug_unique": {
+          "name": "place_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        }
+      },
+      "policies": {
+        "place_leitura_publica": {
+          "name": "place_leitura_publica",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "achados_app"
+          ],
+          "using": "status = 'published'"
+        },
+        "place_leitura_da_equipe": {
+          "name": "place_leitura_da_equipe",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "achados_app"
+          ],
+          "using": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin', 'curator', 'commercial'))"
+        },
+        "place_insert_da_equipe": {
+          "name": "place_insert_da_equipe",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "achados_app"
+          ],
+          "withCheck": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin', 'curator'))"
+        },
+        "place_update_da_equipe": {
+          "name": "place_update_da_equipe",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "achados_app"
+          ],
+          "using": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin', 'curator'))",
+          "withCheck": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin', 'curator'))"
+        }
+      },
+      "checkConstraints": {
+        "place_id_ulid": {
+          "name": "place_id_ulid",
+          "value": "\"id\" ~ '^[0-9A-HJKMNP-TV-Z]{26}$'"
+        },
+        "place_phone_digits": {
+          "name": "place_phone_digits",
+          "value": "\"place\".\"phone\" ~ '^[0-9]{10,13}$'"
+        },
+        "place_published_at": {
+          "name": "place_published_at",
+          "value": "\"place\".\"status\" <> 'published' or \"place\".\"published_at\" is not null"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.editorial_review": {
+      "name": "editorial_review",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "place_id": {
+          "name": "place_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "score": {
+          "name": "score",
+          "type": "numeric(2, 1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "summary": {
+          "name": "summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "caveats": {
+          "name": "caveats",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hygiene": {
+          "name": "hygiene",
+          "type": "numeric(2, 1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "presentation": {
+          "name": "presentation",
+          "type": "numeric(2, 1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "flavor": {
+          "name": "flavor",
+          "type": "numeric(2, 1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sophistication": {
+          "name": "sophistication",
+          "type": "numeric(2, 1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "service": {
+          "name": "service",
+          "type": "numeric(2, 1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ambience": {
+          "name": "ambience",
+          "type": "numeric(2, 1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "value": {
+          "name": "value",
+          "type": "numeric(2, 1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "highlight": {
+          "name": "highlight",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tips": {
+          "name": "tips",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::text[]"
+        },
+        "visited_on": {
+          "name": "visited_on",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "seal": {
+          "name": "seal",
+          "type": "editorial_seal",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "review_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'draft'"
+        },
+        "published_at": {
+          "name": "published_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "editorial_review_place_id_idx": {
+          "name": "editorial_review_place_id_idx",
+          "columns": [
+            {
+              "expression": "place_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "editorial_review_one_published": {
+          "name": "editorial_review_one_published",
+          "columns": [
+            {
+              "expression": "place_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "status = 'published'",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "editorial_review_place_id_place_id_fk": {
+          "name": "editorial_review_place_id_place_id_fk",
+          "tableFrom": "editorial_review",
+          "tableTo": "place",
+          "columnsFrom": [
+            "place_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "editorial_review_leitura_publica": {
+          "name": "editorial_review_leitura_publica",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "achados_app"
+          ],
+          "using": "status = 'published'\n        and exists (select 1 from place p where p.id = place_id and p.status = 'published')"
+        },
+        "editorial_review_leitura_da_equipe": {
+          "name": "editorial_review_leitura_da_equipe",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "achados_app"
+          ],
+          "using": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin', 'curator', 'commercial'))"
+        },
+        "editorial_review_insert_da_equipe": {
+          "name": "editorial_review_insert_da_equipe",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "achados_app"
+          ],
+          "withCheck": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin', 'curator'))"
+        },
+        "editorial_review_update_da_equipe": {
+          "name": "editorial_review_update_da_equipe",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "achados_app"
+          ],
+          "using": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin', 'curator'))",
+          "withCheck": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin', 'curator'))"
+        }
+      },
+      "checkConstraints": {
+        "editorial_review_id_ulid": {
+          "name": "editorial_review_id_ulid",
+          "value": "\"id\" ~ '^[0-9A-HJKMNP-TV-Z]{26}$'"
+        },
+        "editorial_review_score": {
+          "name": "editorial_review_score",
+          "value": "\"editorial_review\".\"score\" between 0 and 5"
+        },
+        "editorial_review_hygiene": {
+          "name": "editorial_review_hygiene",
+          "value": "\"editorial_review\".\"hygiene\" is null or \"editorial_review\".\"hygiene\" between 0 and 5"
+        },
+        "editorial_review_presentation": {
+          "name": "editorial_review_presentation",
+          "value": "\"editorial_review\".\"presentation\" is null or \"editorial_review\".\"presentation\" between 0 and 5"
+        },
+        "editorial_review_flavor": {
+          "name": "editorial_review_flavor",
+          "value": "\"editorial_review\".\"flavor\" is null or \"editorial_review\".\"flavor\" between 0 and 5"
+        },
+        "editorial_review_sophistication": {
+          "name": "editorial_review_sophistication",
+          "value": "\"editorial_review\".\"sophistication\" is null or \"editorial_review\".\"sophistication\" between 0 and 5"
+        },
+        "editorial_review_service": {
+          "name": "editorial_review_service",
+          "value": "\"editorial_review\".\"service\" is null or \"editorial_review\".\"service\" between 0 and 5"
+        },
+        "editorial_review_ambience": {
+          "name": "editorial_review_ambience",
+          "value": "\"editorial_review\".\"ambience\" is null or \"editorial_review\".\"ambience\" between 0 and 5"
+        },
+        "editorial_review_value": {
+          "name": "editorial_review_value",
+          "value": "\"editorial_review\".\"value\" is null or \"editorial_review\".\"value\" between 0 and 5"
+        },
+        "editorial_review_published_at": {
+          "name": "editorial_review_published_at",
+          "value": "\"editorial_review\".\"status\" <> 'published' or \"editorial_review\".\"published_at\" is not null"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.offer": {
+      "name": "offer",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "place_id": {
+          "name": "place_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "terms": {
+          "name": "terms",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "offer_kind",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "icon": {
+          "name": "icon",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "limit_per_user": {
+          "name": "limit_per_user",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "usage_period": {
+          "name": "usage_period",
+          "type": "offer_usage_period",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'year'"
+        },
+        "valid_from": {
+          "name": "valid_from",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "valid_until": {
+          "name": "valid_until",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "offer_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'draft'"
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "offer_place_id_idx": {
+          "name": "offer_place_id_idx",
+          "columns": [
+            {
+              "expression": "place_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "offer_place_id_place_id_fk": {
+          "name": "offer_place_id_place_id_fk",
+          "tableFrom": "offer",
+          "tableTo": "place",
+          "columnsFrom": [
+            "place_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "offer_leitura_publica": {
+          "name": "offer_leitura_publica",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "achados_app"
+          ],
+          "using": "status = 'active'\n        and (valid_from is null or valid_from <= now())\n        and (valid_until is null or valid_until > now())\n        and exists (select 1 from place p where p.id = place_id and p.status = 'published')"
+        },
+        "offer_leitura_da_equipe": {
+          "name": "offer_leitura_da_equipe",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "achados_app"
+          ],
+          "using": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin', 'curator', 'commercial'))"
+        },
+        "offer_insert_da_equipe": {
+          "name": "offer_insert_da_equipe",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "achados_app"
+          ],
+          "withCheck": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin', 'commercial'))"
+        },
+        "offer_update_da_equipe": {
+          "name": "offer_update_da_equipe",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "achados_app"
+          ],
+          "using": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin', 'commercial'))",
+          "withCheck": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin', 'commercial'))"
+        }
+      },
+      "checkConstraints": {
+        "offer_id_ulid": {
+          "name": "offer_id_ulid",
+          "value": "\"id\" ~ '^[0-9A-HJKMNP-TV-Z]{26}$'"
+        },
+        "offer_limit_per_user": {
+          "name": "offer_limit_per_user",
+          "value": "\"offer\".\"limit_per_user\" >= 1"
+        },
+        "offer_valid_range": {
+          "name": "offer_valid_range",
+          "value": "\"offer\".\"valid_until\" is null or \"offer\".\"valid_from\" is null or \"offer\".\"valid_until\" > \"offer\".\"valid_from\""
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.plan": {
+      "name": "plan",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "price_cents": {
+          "name": "price_cents",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "currency": {
+          "name": "currency",
+          "type": "char(3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'BRL'"
+        },
+        "period": {
+          "name": "period",
+          "type": "plan_period",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'year'"
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "plan_leitura_publica": {
+          "name": "plan_leitura_publica",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "achados_app"
+          ],
+          "using": "active"
+        }
+      },
+      "checkConstraints": {
+        "plan_id_ulid": {
+          "name": "plan_id_ulid",
+          "value": "\"id\" ~ '^[0-9A-HJKMNP-TV-Z]{26}$'"
+        },
+        "plan_price_positive": {
+          "name": "plan_price_positive",
+          "value": "\"plan\".\"price_cents\" > 0"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.subscription": {
+      "name": "subscription",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "plan_id": {
+          "name": "plan_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "subscription_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "provider_subscription_id": {
+          "name": "provider_subscription_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "starts_at": {
+          "name": "starts_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ends_at": {
+          "name": "ends_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "subscription_user_id_idx": {
+          "name": "subscription_user_id_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "subscription_provider_id": {
+          "name": "subscription_provider_id",
+          "columns": [
+            {
+              "expression": "provider_subscription_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "provider_subscription_id is not null",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "subscription_user_id_user_id_fk": {
+          "name": "subscription_user_id_user_id_fk",
+          "tableFrom": "subscription",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "subscription_plan_id_plan_id_fk": {
+          "name": "subscription_plan_id_plan_id_fk",
+          "tableFrom": "subscription",
+          "tableTo": "plan",
+          "columnsFrom": [
+            "plan_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "subscription_leitura_da_propria_pessoa": {
+          "name": "subscription_leitura_da_propria_pessoa",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "achados_app"
+          ],
+          "using": "user_id = nullif(current_setting('app.user_id', true), '')"
+        }
+      },
+      "checkConstraints": {
+        "subscription_id_ulid": {
+          "name": "subscription_id_ulid",
+          "value": "\"id\" ~ '^[0-9A-HJKMNP-TV-Z]{26}$'"
+        },
+        "subscription_active_period": {
+          "name": "subscription_active_period",
+          "value": "\"subscription\".\"status\" <> 'active' or (\"subscription\".\"starts_at\" is not null and \"subscription\".\"ends_at\" is not null and \"subscription\".\"ends_at\" > \"subscription\".\"starts_at\")"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.favorite": {
+      "name": "favorite",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "place_id": {
+          "name": "place_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "favorite_place_id_idx": {
+          "name": "favorite_place_id_idx",
+          "columns": [
+            {
+              "expression": "place_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "favorite_user_id_user_id_fk": {
+          "name": "favorite_user_id_user_id_fk",
+          "tableFrom": "favorite",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "favorite_place_id_place_id_fk": {
+          "name": "favorite_place_id_place_id_fk",
+          "tableFrom": "favorite",
+          "tableTo": "place",
+          "columnsFrom": [
+            "place_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "favorite_user_id_place_id_pk": {
+          "name": "favorite_user_id_place_id_pk",
+          "columns": [
+            "user_id",
+            "place_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {
+        "favorite_da_propria_pessoa": {
+          "name": "favorite_da_propria_pessoa",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "achados_app"
+          ],
+          "using": "user_id = nullif(current_setting('app.user_id', true), '')",
+          "withCheck": "user_id = nullif(current_setting('app.user_id', true), '')"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.redemption": {
+      "name": "redemption",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "offer_id": {
+          "name": "offer_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "place_id": {
+          "name": "place_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "subscription_id": {
+          "name": "subscription_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token_hash": {
+          "name": "token_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "redemption_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'issued'"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "redeemed_at": {
+          "name": "redeemed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "operator_id": {
+          "name": "operator_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "redemption_token_issued": {
+          "name": "redemption_token_issued",
+          "columns": [
+            {
+              "expression": "token_hash",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "status = 'issued'",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "redemption_user_offer_idx": {
+          "name": "redemption_user_offer_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "offer_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "redemption_place_idx": {
+          "name": "redemption_place_idx",
+          "columns": [
+            {
+              "expression": "place_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "redemption_user_id_user_id_fk": {
+          "name": "redemption_user_id_user_id_fk",
+          "tableFrom": "redemption",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "redemption_offer_id_offer_id_fk": {
+          "name": "redemption_offer_id_offer_id_fk",
+          "tableFrom": "redemption",
+          "tableTo": "offer",
+          "columnsFrom": [
+            "offer_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "redemption_place_id_place_id_fk": {
+          "name": "redemption_place_id_place_id_fk",
+          "tableFrom": "redemption",
+          "tableTo": "place",
+          "columnsFrom": [
+            "place_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "redemption_subscription_id_subscription_id_fk": {
+          "name": "redemption_subscription_id_subscription_id_fk",
+          "tableFrom": "redemption",
+          "tableTo": "subscription",
+          "columnsFrom": [
+            "subscription_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "redemption_leitura_da_propria_pessoa": {
+          "name": "redemption_leitura_da_propria_pessoa",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "achados_app"
+          ],
+          "using": "user_id = nullif(current_setting('app.user_id', true), '')"
+        },
+        "redemption_emissao_da_propria_pessoa": {
+          "name": "redemption_emissao_da_propria_pessoa",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "achados_app"
+          ],
+          "withCheck": "user_id = nullif(current_setting('app.user_id', true), '') and status = 'issued' and redeemed_at is null and operator_id is null"
+        },
+        "redemption_cancelamento_da_propria_pessoa": {
+          "name": "redemption_cancelamento_da_propria_pessoa",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "achados_app"
+          ],
+          "using": "user_id = nullif(current_setting('app.user_id', true), '') and status = 'issued'",
+          "withCheck": "user_id = nullif(current_setting('app.user_id', true), '') and status = 'voided' and redeemed_at is null and operator_id is null"
+        },
+        "redemption_leitura_da_equipe": {
+          "name": "redemption_leitura_da_equipe",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "achados_app"
+          ],
+          "using": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin', 'commercial'))"
+        },
+        "redemption_leitura_do_operador": {
+          "name": "redemption_leitura_do_operador",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "achados_app"
+          ],
+          "using": "exists (select 1 from partner_operator po where po.user_id = nullif(current_setting('app.user_id', true), '') and po.place_id = \"redemption\".\"place_id\")"
+        },
+        "redemption_consumo_do_operador": {
+          "name": "redemption_consumo_do_operador",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "achados_app"
+          ],
+          "using": "status = 'issued' and exists (select 1 from partner_operator po where po.user_id = nullif(current_setting('app.user_id', true), '') and po.place_id = \"redemption\".\"place_id\")",
+          "withCheck": "exists (select 1 from partner_operator po where po.user_id = nullif(current_setting('app.user_id', true), '') and po.place_id = \"redemption\".\"place_id\")\n        and ((status = 'redeemed' and operator_id = nullif(current_setting('app.user_id', true), '') and operator_id <> user_id and redeemed_at is not null)\n          or (status = 'expired' and operator_id is null))"
+        }
+      },
+      "checkConstraints": {
+        "redemption_id_ulid": {
+          "name": "redemption_id_ulid",
+          "value": "\"id\" ~ '^[0-9A-HJKMNP-TV-Z]{26}$'"
+        },
+        "redemption_redeemed_at": {
+          "name": "redemption_redeemed_at",
+          "value": "\"redemption\".\"status\" <> 'redeemed' or \"redemption\".\"redeemed_at\" is not null"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.partner_operator": {
+      "name": "partner_operator",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "place_id": {
+          "name": "place_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "partner_operator_place_idx": {
+          "name": "partner_operator_place_idx",
+          "columns": [
+            {
+              "expression": "place_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "partner_operator_user_id_user_id_fk": {
+          "name": "partner_operator_user_id_user_id_fk",
+          "tableFrom": "partner_operator",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "partner_operator_place_id_place_id_fk": {
+          "name": "partner_operator_place_id_place_id_fk",
+          "tableFrom": "partner_operator",
+          "tableTo": "place",
+          "columnsFrom": [
+            "place_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "partner_operator_user_id_place_id_pk": {
+          "name": "partner_operator_user_id_place_id_pk",
+          "columns": [
+            "user_id",
+            "place_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {
+        "partner_operator_leitura_da_propria_pessoa": {
+          "name": "partner_operator_leitura_da_propria_pessoa",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "achados_app"
+          ],
+          "using": "user_id = nullif(current_setting('app.user_id', true), '')"
+        },
+        "partner_operator_leitura_da_equipe": {
+          "name": "partner_operator_leitura_da_equipe",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "achados_app"
+          ],
+          "using": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin'))"
+        },
+        "partner_operator_insert_da_equipe": {
+          "name": "partner_operator_insert_da_equipe",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "achados_app"
+          ],
+          "withCheck": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin'))"
+        },
+        "partner_operator_delete_da_equipe": {
+          "name": "partner_operator_delete_da_equipe",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "achados_app"
+          ],
+          "using": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin'))"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.redemption_attempt": {
+      "name": "redemption_attempt",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "place_id": {
+          "name": "place_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "succeeded": {
+          "name": "succeeded",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "redemption_attempt_user_idx": {
+          "name": "redemption_attempt_user_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "redemption_attempt_user_id_user_id_fk": {
+          "name": "redemption_attempt_user_id_user_id_fk",
+          "tableFrom": "redemption_attempt",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "redemption_attempt_place_id_place_id_fk": {
+          "name": "redemption_attempt_place_id_place_id_fk",
+          "tableFrom": "redemption_attempt",
+          "tableTo": "place",
+          "columnsFrom": [
+            "place_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "redemption_attempt_leitura_da_propria_pessoa": {
+          "name": "redemption_attempt_leitura_da_propria_pessoa",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "achados_app"
+          ],
+          "using": "user_id = nullif(current_setting('app.user_id', true), '')"
+        },
+        "redemption_attempt_registro_da_propria_pessoa": {
+          "name": "redemption_attempt_registro_da_propria_pessoa",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "achados_app"
+          ],
+          "withCheck": "user_id = nullif(current_setting('app.user_id', true), '')"
+        }
+      },
+      "checkConstraints": {
+        "redemption_attempt_id_ulid": {
+          "name": "redemption_attempt_id_ulid",
+          "value": "\"id\" ~ '^[0-9A-HJKMNP-TV-Z]{26}$'"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.audit_event": {
+      "name": "audit_event",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "actor_id": {
+          "name": "actor_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "action": {
+          "name": "action",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "entity": {
+          "name": "entity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "entity_id": {
+          "name": "entity_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "details": {
+          "name": "details",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "audit_event_entity_idx": {
+          "name": "audit_event_entity_idx",
+          "columns": [
+            {
+              "expression": "entity",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "entity_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "audit_event_created_idx": {
+          "name": "audit_event_created_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "audit_event_actor_id_user_id_fk": {
+          "name": "audit_event_actor_id_user_id_fk",
+          "tableFrom": "audit_event",
+          "tableTo": "user",
+          "columnsFrom": [
+            "actor_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "audit_event_registro_da_equipe": {
+          "name": "audit_event_registro_da_equipe",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "achados_app"
+          ],
+          "withCheck": "actor_id = nullif(current_setting('app.user_id', true), '') and exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin', 'curator', 'commercial'))"
+        },
+        "audit_event_leitura_da_administracao": {
+          "name": "audit_event_leitura_da_administracao",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "achados_app"
+          ],
+          "using": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin'))"
+        }
+      },
+      "checkConstraints": {
+        "audit_event_id_ulid": {
+          "name": "audit_event_id_ulid",
+          "value": "\"id\" ~ '^[0-9A-HJKMNP-TV-Z]{26}$'"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.staff_member": {
+      "name": "staff_member",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "staff_role",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "staff_member_user_id_user_id_fk": {
+          "name": "staff_member_user_id_user_id_fk",
+          "tableFrom": "staff_member",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "staff_member_leitura_da_propria_pessoa": {
+          "name": "staff_member_leitura_da_propria_pessoa",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "achados_app"
+          ],
+          "using": "user_id = nullif(current_setting('app.user_id', true), '')"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.place_hours": {
+      "name": "place_hours",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "place_id": {
+          "name": "place_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "weekday": {
+          "name": "weekday",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "opens": {
+          "name": "opens",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "closes": {
+          "name": "closes",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "place_hours_place_idx": {
+          "name": "place_hours_place_idx",
+          "columns": [
+            {
+              "expression": "place_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "weekday",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "place_hours_place_id_place_id_fk": {
+          "name": "place_hours_place_id_place_id_fk",
+          "tableFrom": "place_hours",
+          "tableTo": "place",
+          "columnsFrom": [
+            "place_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "place_hours_leitura_publica": {
+          "name": "place_hours_leitura_publica",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "achados_app"
+          ],
+          "using": "exists (select 1 from place p where p.id = place_id and p.status = 'published')"
+        },
+        "place_hours_leitura_da_equipe": {
+          "name": "place_hours_leitura_da_equipe",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "achados_app"
+          ],
+          "using": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin', 'curator', 'commercial'))"
+        },
+        "place_hours_insert_da_equipe": {
+          "name": "place_hours_insert_da_equipe",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "achados_app"
+          ],
+          "withCheck": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin', 'curator'))"
+        },
+        "place_hours_update_da_equipe": {
+          "name": "place_hours_update_da_equipe",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "achados_app"
+          ],
+          "using": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin', 'curator'))",
+          "withCheck": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin', 'curator'))"
+        },
+        "place_hours_delete_da_equipe": {
+          "name": "place_hours_delete_da_equipe",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "achados_app"
+          ],
+          "using": "exists (select 1 from staff_member sm where sm.user_id = nullif(current_setting('app.user_id', true), '') and sm.role in ('admin', 'curator'))"
+        }
+      },
+      "checkConstraints": {
+        "place_hours_id_ulid": {
+          "name": "place_hours_id_ulid",
+          "value": "\"id\" ~ '^[0-9A-HJKMNP-TV-Z]{26}$'"
+        },
+        "place_hours_weekday": {
+          "name": "place_hours_weekday",
+          "value": "\"place_hours\".\"weekday\" between 0 and 6"
+        },
+        "place_hours_interval": {
+          "name": "place_hours_interval",
+          "value": "\"place_hours\".\"opens\" <> \"place_hours\".\"closes\""
+        }
+      },
+      "isRLSEnabled": true
+    }
+  },
+  "enums": {
+    "public.place_status": {
+      "name": "place_status",
+      "schema": "public",
+      "values": [
+        "draft",
+        "published",
+        "archived"
+      ]
+    },
+    "public.review_status": {
+      "name": "review_status",
+      "schema": "public",
+      "values": [
+        "draft",
+        "in_review",
+        "approved",
+        "published",
+        "superseded",
+        "withdrawn"
+      ]
+    },
+    "public.editorial_seal": {
+      "name": "editorial_seal",
+      "schema": "public",
+      "values": [
+        "featured",
+        "beloved",
+        "verified",
+        "new"
+      ]
+    },
+    "public.offer_kind": {
+      "name": "offer_kind",
+      "schema": "public",
+      "values": [
+        "discount",
+        "courtesy",
+        "two_for_one"
+      ]
+    },
+    "public.offer_status": {
+      "name": "offer_status",
+      "schema": "public",
+      "values": [
+        "draft",
+        "pending_review",
+        "active",
+        "paused",
+        "expired",
+        "archived"
+      ]
+    },
+    "public.offer_usage_period": {
+      "name": "offer_usage_period",
+      "schema": "public",
+      "values": [
+        "day",
+        "week",
+        "month",
+        "year",
+        "unlimited"
+      ]
+    },
+    "public.plan_period": {
+      "name": "plan_period",
+      "schema": "public",
+      "values": [
+        "year"
+      ]
+    },
+    "public.subscription_status": {
+      "name": "subscription_status",
+      "schema": "public",
+      "values": [
+        "pending",
+        "active",
+        "past_due",
+        "canceled",
+        "expired",
+        "refunded"
+      ]
+    },
+    "public.redemption_status": {
+      "name": "redemption_status",
+      "schema": "public",
+      "values": [
+        "issued",
+        "redeemed",
+        "expired",
+        "voided"
+      ]
+    },
+    "public.staff_role": {
+      "name": "staff_role",
+      "schema": "public",
+      "values": [
+        "admin",
+        "curator",
+        "commercial"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

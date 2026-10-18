@@ -19,13 +19,22 @@ import {
   Tecla,
   ZonaDeArquivo,
 } from "@achados/ui";
-import { Camera, ImageIcon, Info, MapPin, Send, Store } from "lucide-react";
+import {
+  Camera,
+  Clock,
+  ImageIcon,
+  Info,
+  MapPin,
+  Send,
+  Store,
+} from "lucide-react";
 
 import { usePodeEscrever } from "@/shared/sessao/equipe-provider";
 import { STATUS_DA_CASA } from "../domain/apresentacao";
 import type { Casa, StatusDaCasa } from "../domain/tipos";
 import type { SecaoDaCasa } from "../domain/validacao";
 import { useFormularioDaCasa } from "../hooks/use-formulario-da-casa";
+import { EditorDoHorario } from "./editor-do-horario";
 
 const SITUACOES: { valor: StatusDaCasa; label: string; descricao: string }[] = [
   {
@@ -95,6 +104,13 @@ export function FormularioDaCasa({
             contador={f.contagem.local}
           >
             Endereço e contato
+          </Aba>
+          <Aba
+            valor="horario"
+            icone={<Clock className="size-4" />}
+            contador={f.contagem.horario}
+          >
+            Horário
           </Aba>
           <Aba
             valor="fotos"
@@ -231,6 +247,17 @@ export function FormularioDaCasa({
                 placeholder="https://"
               />
             </GradeDeCampos>
+          </PainelDaAba>
+
+          <PainelDaAba valor="horario">
+            <EditorDoHorario
+              turnos={f.dados.horarios}
+              aoEditar={f.editarHorario}
+              observacao={f.dados.observacaoDoHorario}
+              aoMudarObservacao={(v) => f.mudar("observacaoDoHorario", v)}
+              erroDaObservacao={f.erroDe("observacaoDoHorario")}
+              somenteLeitura={!podeSalvar}
+            />
           </PainelDaAba>
 
           <PainelDaAba valor="fotos">

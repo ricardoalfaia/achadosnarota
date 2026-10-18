@@ -221,6 +221,45 @@ function mediaDos(criterios: NotasPorCriterio): string {
   return (Math.round(media * 10) / 10).toFixed(1);
 }
 
+/** Turnos fictícios: [dias da semana (0 = domingo), abre, fecha]. */
+type Turno = [readonly number[], string, string];
+const TER_A_DOM = [0, 2, 3, 4, 5, 6] as const;
+const TODOS = [0, 1, 2, 3, 4, 5, 6] as const;
+
+const HORARIOS: Record<string, { turnos: Turno[]; observacao?: string }> = {
+  "rancho-portugues": {
+    turnos: [
+      [TER_A_DOM, "11:30", "15:00"],
+      [[2, 3, 4, 5, 6], "19:00", "23:00"],
+    ],
+    observacao: "Fecha às segundas. Domingo só almoço.",
+  },
+  "choperia-pinguim": {
+    turnos: [
+      [[2, 3, 4, 5], "17:00", "01:00"],
+      [[0, 6], "12:00", "01:00"],
+    ],
+  },
+  "cafe-da-serra": { turnos: [[TODOS, "08:00", "19:00"]] },
+  "mirante-do-vale": {
+    turnos: [
+      [[0, 3, 4, 5, 6], "12:00", "16:00"],
+      [[3, 4, 5, 6], "19:00", "23:00"],
+    ],
+    observacao: "Menu degustação só com reserva.",
+  },
+  "pousada-morada-dos-ventos": {
+    turnos: [[TODOS, "07:00", "22:00"]],
+    observacao: "Horário da recepção. Check-in a partir das 14h.",
+  },
+  "emporio-rota-real": {
+    turnos: [
+      [[1, 2, 3, 4, 5, 6], "09:00", "18:00"],
+      [[0], "09:00", "14:00"],
+    ],
+  },
+};
+
 const ORIGEM_DAS_FOTOS =
   "Imagem ilustrativa do protótipo; só para desenvolvimento.";
 
@@ -564,6 +603,17 @@ async function semearCatalogo(db: Db): Promise<Map<string, string>> {
       .returning({ id: s.places.id });
     const placeId = linha!.id;
     idsDosLugares.set(lugar.slug, placeId);
+
+    const horario = HORARIOS[lugar.slug];
+    await db
+      .update(s.places)
+      .set({ hoursNote: horario?.observacao ?? null })
+      .where(eq(s.places.id, placeId));
+    await db.delete(s.placeHours).where(eq(s.placeHours.placeId, placeId));
+    const turnos = (horario?.turnos ?? []).flatMap(([dias, opens, closes]) =>
+      dias.map((weekday) => ({ id: novoId(), placeId, weekday, opens, closes }))
+    );
+    if (turnos.length > 0) await db.insert(s.placeHours).values(turnos);
 
     // Fotos, avaliação e ofertas do lugar são refeitas a cada seed.
     await db.delete(s.placeMedia).where(eq(s.placeMedia.placeId, placeId));

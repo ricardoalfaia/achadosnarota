@@ -1,4 +1,5 @@
 import type { NotaDoCriterio } from "./curadoria";
+import type { Turno } from "./horario";
 
 // O que a descoberta mostra, já no formato da interface. Sem ids internos:
 // lugar e categoria são identificados pelo slug, que é público.
@@ -84,6 +85,10 @@ export type FichaDoLugar = CartaoDeLugar & {
   fotos: Foto[];
   avaliacao?: Avaliacao;
   beneficios: Beneficio[];
+  /** Turnos da semana (dia 0 = domingo, "HH:MM"); vazio sem horário. */
+  horarios: Turno[];
+  /** "Fecha em feriados", "Cozinha até 22h". */
+  observacaoDoHorario?: string;
 };
 
 /** Filtros da exploração, vindos da URL (P07). */

@@ -61,6 +61,15 @@ export async function lerCasa(entrada: unknown): Promise<Result<Casa>> {
       endereco: lugar.address ?? "",
       telefone: lugar.phone ?? "",
       site: lugar.website ?? "",
+      // O banco devolve "HH:MM:SS"; o formulário usa "HH:MM".
+      horarios: banco.place_hours
+        .filter((h) => h.placeId === lugar.id)
+        .map((h) => ({
+          dia: h.weekday,
+          abre: h.opens.slice(0, 5),
+          fecha: h.closes.slice(0, 5),
+        })),
+      observacaoDoHorario: lugar.hoursNote ?? "",
       status: lugar.status,
       fotos: banco.place_media
         .filter((m) => m.placeId === lugar.id)

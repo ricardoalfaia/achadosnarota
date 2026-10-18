@@ -38,6 +38,8 @@ function dadosDaCasa(casa: Casa): DadosDaCasa {
     endereco: casa.endereco,
     telefone: casa.telefone,
     site: casa.site,
+    horarios: casa.horarios,
+    observacaoDoHorario: casa.observacaoDoHorario,
     status: casa.status,
   };
 }
@@ -95,8 +97,14 @@ export function useFormularioDaCasa({
     );
   }
 
+  /** Aplica uma edição pura do horário (domain/horario) aos dados. */
+  const editarHorario = (
+    edicao: (turnos: DadosDaCasa["horarios"]) => DadosDaCasa["horarios"]
+  ) => mudar("horarios", edicao(dados.horarios));
+
   return {
     ...formulario,
+    editarHorario,
     opcoes,
     fotos,
     novo: casa === null,

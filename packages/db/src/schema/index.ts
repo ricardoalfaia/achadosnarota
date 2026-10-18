@@ -7,3 +7,4 @@ export * from "./favoritos";
 export * from "./resgates";
 export * from "./operadores";
 export * from "./equipe";
+export * from "./horarios";

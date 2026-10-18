@@ -128,3 +128,9 @@ Decisões do responsável em 18/10/2026, aplicando o ADR-005 de produto (ainda p
 - **Limite de tentativas**: 5 códigos errados em 15 minutos bloqueiam o operador (`redemption_attempt`, sem o código digitado). O operador só registra e lê as próprias tentativas; não apaga nem altera.
 - **No app do cliente**: o ticket mostra "Usado · volta em dd/mm/aaaa" quando o limite da janela acabou (`usosDosBeneficios`), e as abas "Utilizados" e "Expirados" do passaporte e os números (cupons, casas, cidades) vêm do histórico real (`historicoDeResgates`).
 - **Pendente**: tela de vínculo de operadores no admin (hoje pelo seed), papel de escrita da equipe e auditoria (`audit_events`).
+
+## Horário de funcionamento (proposto)
+
+- `place_hours` (migração `0005_horario_de_funcionamento`): um turno por linha, até dois por dia, `weekday` 0 = domingo; `closes` menor que `opens` atravessa a meia-noite; dia sem turno é dia fechado. `place.hours_note` guarda a observação ("Fecha em feriados"). Leitura pública só de casa publicada; a equipe lê tudo; administração e curadoria escrevem.
+- Na ficha, o topo mostra "Aberto agora · fecha às 23h" ou "Fechado · abre amanhã às 11h30" e a aba Sobre traz a semana com o dia de hoje em destaque (`features/catalogo/domain/horario.ts`, no horário de Brasília, testado inclusive no turno que passa da meia-noite).
+- Pendente: exceções por data (feriados) e a casa informar o próprio horário pelo portal do parceiro, com papel próprio e sem tocar no editorial.

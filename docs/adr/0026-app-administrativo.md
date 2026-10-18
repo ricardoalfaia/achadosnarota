@@ -60,6 +60,7 @@ O [ADR-0021](0021-paginas-de-cadastro.md) implementado uma vez e usado por casas
 - Cada mudança aceita grava `audit_event` na mesma transação, com ação, entidade e situação, sem dado pessoal (nunca e-mail). A auditoria só acrescenta: o app não altera nem apaga.
 - Publicar uma curadoria substitui a publicada anterior da casa na mesma transação (índice único do banco).
 - **Parceiros**: a página lista os operadores do balcão por casa e vincula pelo e-mail de uma conta existente (só administração).
+- **Horário de funcionamento** na casa: aba "Horário" com até dois turnos por dia, cópia de um dia para a semana, turno que passa da meia-noite e observação; a gravação troca os turnos da casa na mesma transação (`features/casas/domain/horario.ts`, testado).
 - A fonte em memória (`shared/provisorio`) saiu.
 
 ### Design system

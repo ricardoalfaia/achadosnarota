@@ -1,5 +1,7 @@
 import type { PlaceStatus } from "@achados/db";
 
+import type { TurnoDaCasa } from "./horario";
+
 // A casa (estabelecimento) no painel: só dados de descoberta. Avaliação
 // editorial e promoção comercial são domínios próprios (ADR-004 de produto);
 // a lista mostra contagens deles, sem misturar as escritas.
@@ -45,6 +47,10 @@ export type DadosDaCasa = {
   /** Só dígitos, com DDD. */
   telefone: string;
   site: string;
+  /** Turnos da semana; dia sem turno é dia fechado. */
+  horarios: readonly TurnoDaCasa[];
+  /** "Fecha em feriados", "Cozinha até 22h". */
+  observacaoDoHorario: string;
   status: StatusDaCasa;
 };
 

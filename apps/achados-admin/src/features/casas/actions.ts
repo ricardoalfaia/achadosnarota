@@ -8,11 +8,20 @@ import {
   type ActionResult,
   type Result,
 } from "@achados/core";
-import { categories, cities, novoId, placeMedia, places } from "@achados/db";
+import {
+  categories,
+  cities,
+  novoId,
+  placeHours,
+  placeMedia,
+  places,
+  type Tx,
+} from "@achados/db";
 import { and, count, eq, ne } from "drizzle-orm";
 
 import { idDoRegistro } from "@/shared/cadastro/id.servidor";
 import { auditar, naEquipe, semPermissao } from "@/shared/db/equipe.servidor";
+import type { DadosDaCasa } from "./domain/tipos";
 import { lerDadosDaCasa, SLUG_EM_USO } from "./domain/validacao";
 
 /**
@@ -26,6 +35,25 @@ export async function salvarCasa(
   dados: unknown
 ): Promise<ActionResult<{ id: string }>> {
   return toActionResult(await gravar(id, dados));
+}
+
+/** O horário é a lista inteira: troca os turnos da casa na mesma transação. */
+async function gravarHorario(
+  tx: Tx,
+  placeId: string,
+  turnos: DadosDaCasa["horarios"]
+) {
+  await tx.delete(placeHours).where(eq(placeHours.placeId, placeId));
+  if (turnos.length > 0)
+    await tx.insert(placeHours).values(
+      turnos.map(({ dia, abre, fecha }) => ({
+        id: novoId(),
+        placeId,
+        weekday: dia,
+        opens: abre,
+        closes: fecha,
+      }))
+    );
 }
 
 async function gravar(
@@ -103,6 +131,7 @@ async function gravar(
       address: d.endereco || null,
       phone: d.telefone || null,
       website: d.site || null,
+      hoursNote: d.observacaoDoHorario || null,
       status: d.status,
       publishedAt:
         d.status === "published" ? (atual?.publishedAt ?? agora) : null,
@@ -116,6 +145,7 @@ async function gravar(
         .where(eq(places.id, atual.id))
         .returning({ id: places.id });
       if (alteradas.length === 0) return semPermissao("casas");
+      await gravarHorario(tx, atual.id, d.horarios);
       await auditar(tx, pessoa, {
         acao: atual.status !== d.status ? `casa.${d.status}` : "casa.alterada",
         entidade: "place",
@@ -126,6 +156,7 @@ async function gravar(
     }
     const novaId = novoId();
     await tx.insert(places).values({ ...linha, id: novaId });
+    await gravarHorario(tx, novaId, d.horarios);
     await auditar(tx, pessoa, {
       acao: "casa.criada",
       entidade: "place",

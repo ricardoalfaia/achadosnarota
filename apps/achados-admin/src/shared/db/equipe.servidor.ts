@@ -7,6 +7,7 @@ import {
   cities,
   editorialReviews,
   offers,
+  placeHours,
   placeMedia,
   places,
   withUser,
@@ -15,6 +16,7 @@ import {
   type EditorialReview,
   type Offer,
   type Place,
+  type PlaceHours,
   type PlaceMedia,
   type Tx,
 } from "@achados/db";
@@ -80,6 +82,7 @@ export type Tabelas = {
   category: Category[];
   place: Place[];
   place_media: PlaceMedia[];
+  place_hours: PlaceHours[];
   offer: Offer[];
   editorial_review: EditorialReview[];
 };
@@ -91,14 +94,23 @@ export type Tabelas = {
  * listagens passam a consultas filtradas e paginadas.
  */
 export async function tabelasDaEquipe(tx: Tx): Promise<Tabelas> {
-  const [city, category, place, place_media, offer, editorial_review] =
+  const [city, category, place, place_media, place_hours, offer, review] =
     await Promise.all([
       tx.select().from(cities),
       tx.select().from(categories),
       tx.select().from(places),
       tx.select().from(placeMedia),
+      tx.select().from(placeHours),
       tx.select().from(offers),
       tx.select().from(editorialReviews),
     ]);
-  return { city, category, place, place_media, offer, editorial_review };
+  return {
+    city,
+    category,
+    place,
+    place_media,
+    place_hours,
+    offer,
+    editorial_review: review,
+  };
 }

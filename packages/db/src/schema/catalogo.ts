@@ -95,6 +95,8 @@ export const places = pgTable(
     /** Telefone só com dígitos, com DDD: "1236448899". */
     phone: text("phone"),
     website: text("website"),
+    /** Observação do horário: "Fecha em feriados", "Cozinha até 22h". */
+    hoursNote: text("hours_note"),
     latitude: numeric("latitude", { precision: 9, scale: 6 }),
     longitude: numeric("longitude", { precision: 9, scale: 6 }),
     status: placeStatusEnum("status").notNull().default("draft"),
