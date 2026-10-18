@@ -29,6 +29,13 @@
       "when": 1792296437497,
       "tag": "0003_operadores_do_balcao",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792316909245,
+      "tag": "0004_equipe_e_auditoria",
+      "breakpoints": true
     }
   ]
 }

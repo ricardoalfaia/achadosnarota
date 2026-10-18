@@ -12,7 +12,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { atualizadoEm, checkUlid, criadoEm, idUlid, refUlid } from "./_colunas";
-import { leituraPublica } from "./_rls";
+import { escritaDaEquipe, leituraDaEquipe, leituraPublica } from "./_rls";
 import { places } from "./catalogo";
 
 // Curadoria (docs/produto/02, contexto Editorial). Isolada das ofertas
@@ -116,6 +116,8 @@ export const editorialReviews = pgTable(
       sql`status = 'published'
         and exists (select 1 from place p where p.id = place_id and p.status = 'published')`
     ),
+    leituraDaEquipe("editorial_review"),
+    ...escritaDaEquipe("editorial_review", ["admin", "curator"]),
   ]
 ).enableRLS();
 

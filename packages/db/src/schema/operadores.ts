@@ -9,7 +9,13 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { checkUlid, criadoEm, idUlid, refUlid } from "./_colunas";
-import { appRole, leituraDaPropriaPessoa, USUARIO_ATUAL } from "./_rls";
+import {
+  appRole,
+  escritaDaEquipe,
+  leituraDaEquipe,
+  leituraDaPropriaPessoa,
+  USUARIO_ATUAL,
+} from "./_rls";
 import { users } from "./auth";
 import { places } from "./catalogo";
 
@@ -32,6 +38,9 @@ export const partnerOperators = pgTable(
     primaryKey({ columns: [t.userId, t.placeId] }),
     index("partner_operator_place_idx").on(t.placeId),
     leituraDaPropriaPessoa("partner_operator"),
+    // A administração vincula e desvincula operadores.
+    leituraDaEquipe("partner_operator", ["admin"]),
+    ...escritaDaEquipe("partner_operator", ["admin"], ["insert", "delete"]),
   ]
 ).enableRLS();
 

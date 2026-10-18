@@ -62,3 +62,49 @@ export function leituraDaPropriaPessoa(tabela: string) {
     using: sql`user_id = ${USUARIO_ATUAL}`,
   });
 }
+
+/**
+ * Papéis da equipe do Achados na Rota (tabela `staff_member`): `admin` faz
+ * tudo; `curator` escreve casas e curadoria; `commercial` escreve promoções e
+ * acompanha resgates. Editorial e comercial não se escrevem (ADR-004 de
+ * produto): a separação está nas políticas, não só nas telas.
+ */
+export const PAPEIS_DA_EQUIPE = ["admin", "curator", "commercial"] as const;
+export type PapelDaEquipe = (typeof PAPEIS_DA_EQUIPE)[number];
+
+/** A pessoa do contexto (`withUser`) é da equipe com um destes papéis. */
+export function daEquipe(papeis: readonly PapelDaEquipe[]): SQL {
+  const lista = sql.raw(papeis.map((p) => `'${p}'`).join(", "));
+  return sql`exists (select 1 from staff_member sm where sm.user_id = ${USUARIO_ATUAL} and sm.role in (${lista}))`;
+}
+
+/** A equipe lê todas as linhas, inclusive rascunho, pausada e em revisão. */
+export function leituraDaEquipe(
+  tabela: string,
+  papeis: readonly PapelDaEquipe[] = PAPEIS_DA_EQUIPE
+) {
+  return pgPolicy(`${tabela}_leitura_da_equipe`, {
+    as: "permissive",
+    for: "select",
+    to: appRole,
+    using: daEquipe(papeis),
+  });
+}
+
+/** Escrita da equipe com estes papéis, nas operações pedidas. */
+export function escritaDaEquipe(
+  tabela: string,
+  papeis: readonly PapelDaEquipe[],
+  operacoes: readonly ("insert" | "update" | "delete")[] = ["insert", "update"]
+) {
+  const condicao = daEquipe(papeis);
+  return operacoes.map((operacao) =>
+    pgPolicy(`${tabela}_${operacao}_da_equipe`, {
+      as: "permissive",
+      for: operacao,
+      to: appRole,
+      ...(operacao === "insert" ? {} : { using: condicao }),
+      ...(operacao === "delete" ? {} : { withCheck: condicao }),
+    })
+  );
+}

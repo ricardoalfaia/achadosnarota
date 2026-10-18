@@ -10,7 +10,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { atualizadoEm, checkUlid, criadoEm, idUlid, refUlid } from "./_colunas";
-import { leituraPublica } from "./_rls";
+import { escritaDaEquipe, leituraDaEquipe, leituraPublica } from "./_rls";
 import { places } from "./catalogo";
 
 // Benefícios (docs/produto/02, contexto Benefits). Oferta é comercial e
@@ -93,6 +93,8 @@ export const offers = pgTable(
         and (valid_until is null or valid_until > now())
         and exists (select 1 from place p where p.id = place_id and p.status = 'published')`
     ),
+    leituraDaEquipe("offer"),
+    ...escritaDaEquipe("offer", ["admin", "commercial"]),
   ]
 ).enableRLS();
 

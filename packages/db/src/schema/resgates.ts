@@ -11,7 +11,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { atualizadoEm, checkUlid, criadoEm, idUlid, refUlid } from "./_colunas";
-import { appRole, USUARIO_ATUAL } from "./_rls";
+import { appRole, leituraDaEquipe, USUARIO_ATUAL } from "./_rls";
 import { subscriptions } from "./assinaturas";
 import { users } from "./auth";
 import { offers } from "./beneficios";
@@ -98,6 +98,9 @@ export const redemptions = pgTable(
       using: sql`user_id = ${USUARIO_ATUAL} and status = 'issued'`,
       withCheck: sql`user_id = ${USUARIO_ATUAL} and status = 'voided' and redeemed_at is null and operator_id is null`,
     }),
+    // A administração e o comercial acompanham os resgates (sem o código:
+    // só o hash existe).
+    leituraDaEquipe("redemption", ["admin", "commercial"]),
     // O operador do balcão vê os códigos emitidos para as casas que opera...
     pgPolicy("redemption_leitura_do_operador", {
       as: "permissive",

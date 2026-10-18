@@ -488,6 +488,29 @@ const PESSOAS = [
     favoritos: [],
     opera: ["rancho-portugues", "choperia-pinguim"],
   },
+  // Equipe do painel administrativo, uma conta por papel. O painel exige o
+  // autenticador (2FA): ele é configurado no primeiro acesso.
+  {
+    email: "admin@achados.local",
+    name: "Ada Administração",
+    assinante: false,
+    favoritos: [],
+    equipe: "admin",
+  },
+  {
+    email: "curadoria@achados.local",
+    name: "Caio Curador",
+    assinante: false,
+    favoritos: [],
+    equipe: "curator",
+  },
+  {
+    email: "comercial@achados.local",
+    name: "Clara Comercial",
+    assinante: false,
+    favoritos: [],
+    equipe: "commercial",
+  },
 ] as const;
 
 async function semearCatalogo(db: Db): Promise<Map<string, string>> {
@@ -658,6 +681,16 @@ async function semearPessoas(
           endsAt: fim,
         });
       }
+    }
+
+    if ("equipe" in pessoa) {
+      await db
+        .insert(s.staffMembers)
+        .values({ userId: usuario.id, role: pessoa.equipe })
+        .onConflictDoUpdate({
+          target: s.staffMembers.userId,
+          set: { role: pessoa.equipe },
+        });
     }
 
     const casas = ("opera" in pessoa ? pessoa.opera : [])

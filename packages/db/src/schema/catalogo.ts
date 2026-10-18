@@ -13,7 +13,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { atualizadoEm, checkUlid, criadoEm, idUlid, refUlid } from "./_colunas";
-import { leituraPublica } from "./_rls";
+import { escritaDaEquipe, leituraDaEquipe, leituraPublica } from "./_rls";
 
 // Descoberta (docs/produto/02, contexto Discovery): cidades, categorias,
 // estabelecimentos e fotos. Leitura pública só do que está publicado; a
@@ -35,6 +35,7 @@ export const cities = pgTable(
     checkUlid("city", t.id),
     check("city_state_uf", sql`${t.state} ~ '^[A-Z]{2}$'`),
     leituraPublica("city"),
+    ...escritaDaEquipe("city", ["admin"]),
   ]
 ).enableRLS();
 
@@ -52,7 +53,11 @@ export const categories = pgTable(
     position: integer("position").notNull().default(0),
     createdAt: criadoEm(),
   },
-  (t) => [checkUlid("category", t.id), leituraPublica("category")]
+  (t) => [
+    checkUlid("category", t.id),
+    leituraPublica("category"),
+    ...escritaDaEquipe("category", ["admin"]),
+  ]
 ).enableRLS();
 
 export const PLACE_STATUS = ["draft", "published", "archived"] as const;
@@ -107,6 +112,8 @@ export const places = pgTable(
     index("place_city_id_idx").on(t.cityId),
     index("place_category_id_idx").on(t.categoryId),
     leituraPublica("place", sql`status = 'published'`),
+    leituraDaEquipe("place"),
+    ...escritaDaEquipe("place", ["admin", "curator"]),
   ]
 ).enableRLS();
 
@@ -135,6 +142,12 @@ export const placeMedia = pgTable(
     leituraPublica(
       "place_media",
       sql`exists (select 1 from place p where p.id = place_id and p.status = 'published')`
+    ),
+    leituraDaEquipe("place_media"),
+    ...escritaDaEquipe(
+      "place_media",
+      ["admin", "curator"],
+      ["insert", "update", "delete"]
     ),
   ]
 ).enableRLS();
