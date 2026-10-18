@@ -7,5 +7,6 @@ export { FormularioDeCadastro } from "./components/formulario-de-cadastro";
 export { FormularioDeEntrada } from "./components/formulario-de-entrada";
 export { FormularioDeRecuperacao } from "./components/formulario-de-recuperacao";
 export { FormularioDeRedefinicao } from "./components/formulario-de-redefinicao";
+export { BotaoDeVoltar } from "./components/botao-de-voltar";
 export { MarcaDeAcesso } from "./components/marca-de-acesso";
 export type { Etapa, EstadoDoAcesso } from "./domain/estado";

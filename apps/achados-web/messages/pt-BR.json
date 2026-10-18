@@ -1,5 +1,16 @@
 {
   "Acesso": {
+    "casca": {
+      "voltar": "Voltar",
+      "painel": {
+        "selo": "Passaporte Achados na Rota",
+        "titulo": "Sua próxima experiência começa aqui.",
+        "texto": "Entre para guardar seus achados e usar os benefícios do passaporte nos lugares avaliados pela curadoria.",
+        "curadoria": "Curadoria independente: selo e posição não se compram",
+        "beneficios": "Benefícios nas casas parceiras, com as regras à vista",
+        "favoritos": "Seus favoritos salvos em qualquer aparelho"
+      }
+    },
     "conexao": {
       "servicoIndisponivel": "O {sistema} está sem acesso aos dados neste momento. Tente entrar de novo em instantes."
     },
