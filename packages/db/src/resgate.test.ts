@@ -27,12 +27,14 @@ import {
 import {
   categories,
   cities,
+  courtesies,
   offers,
   partnerOperators,
   places,
   plans,
   redemptionAttempts,
   redemptions,
+  staffMembers,
   subscriptions,
   users,
 } from "./schema";
@@ -137,7 +139,13 @@ describe.skipIf(motivo !== null)("resgate (integração)", () => {
   const garcomA = novoId();
   const garcomB = novoId();
   const garcomDeOutraCasa = novoId();
+  const administradora = novoId();
+  const convidada = novoId();
+  const convidadaRevogada = novoId();
   const pessoas = [
+    administradora,
+    convidada,
+    convidadaRevogada,
     assinante,
     semPassaporte,
     garcomA,
@@ -174,6 +182,9 @@ describe.skipIf(motivo !== null)("resgate (integração)", () => {
         email: `resgate-${i}-${sufixo}@teste.achados.local`,
       }))
     );
+    await admin
+      .insert(staffMembers)
+      .values({ userId: administradora, role: "admin" });
     await admin.insert(cities).values({
       id: ids.cidade,
       name: "Cidade Resgate",
@@ -248,6 +259,10 @@ describe.skipIf(motivo !== null)("resgate (integração)", () => {
       .delete(redemptionAttempts)
       .where(inArray(redemptionAttempts.userId, pessoas));
     await admin.delete(redemptions).where(inArray(redemptions.userId, pessoas));
+    await admin.delete(courtesies).where(inArray(courtesies.userId, pessoas));
+    await admin
+      .delete(staffMembers)
+      .where(inArray(staffMembers.userId, pessoas));
     await admin
       .delete(partnerOperators)
       .where(inArray(partnerOperators.userId, pessoas));
@@ -443,5 +458,89 @@ describe.skipIf(motivo !== null)("resgate (integração)", () => {
 
     const deOutra = await historicoDeResgates(app, semPassaporte);
     expect(deOutra.ok && deOutra.value).toEqual([]);
+  });
+
+  describe("cortesia", () => {
+    const SETE_DIAS = 7 * 86_400_000;
+
+    /** A administradora libera, pelo papel do app e sob RLS. */
+    const liberar = (
+      para: string,
+      por = administradora,
+      inicio = new Date(Date.now() - 60_000),
+      dias = 7
+    ) =>
+      withUser(app, por, async (tx) => {
+        await tx.insert(courtesies).values({
+          id: novoId(),
+          userId: para,
+          grantedBy: por,
+          startsAt: inicio,
+          endsAt: new Date(inicio.getTime() + dias * 86_400_000),
+        });
+        return { ok: true as const, value: undefined };
+      });
+
+    it("liberada pela administração, vale para os benefícios e o resgate aponta para ela", async () => {
+      expect((await liberar(convidada)).ok).toBe(true);
+      const r = await emitirResgate(app, convidada, ids.semLimite);
+      expect(r.ok).toBe(true);
+      const [resgate] = await admin
+        .select({
+          cortesia: redemptions.courtesyId,
+          assinatura: redemptions.subscriptionId,
+        })
+        .from(redemptions)
+        .where(eq(redemptions.userId, convidada));
+      expect(resgate?.cortesia).not.toBeNull();
+      expect(resgate?.assinatura).toBeNull();
+    });
+
+    it("uma por pessoa na vida: a segunda é recusada", async () => {
+      expect((await liberar(convidada)).ok).toBe(false);
+    });
+
+    it("revogada, deixa de valer na hora", async () => {
+      expect((await liberar(convidadaRevogada)).ok).toBe(true);
+      const revogada = await withUser(app, administradora, async (tx) => {
+        await tx
+          .update(courtesies)
+          .set({ revokedAt: new Date(), revokedBy: administradora })
+          .where(eq(courtesies.userId, convidadaRevogada));
+        return { ok: true as const, value: undefined };
+      });
+      expect(revogada.ok).toBe(true);
+      const r = await emitirResgate(app, convidadaRevogada, ids.semLimite);
+      expect(r.ok).toBe(false);
+      if (!r.ok) expect(r.error.code).toBe("RESGATE_SEM_PASSAPORTE");
+    });
+
+    it("só de 7 dias: o banco recusa outro prazo", async () => {
+      expect(
+        (await liberar(semPassaporte, administradora, new Date(), 30)).ok
+      ).toBe(false);
+    });
+
+    it("quem não é da administração não libera, nem a administração para si (RLS)", async () => {
+      expect((await liberar(semPassaporte, garcomA)).ok).toBe(false);
+      expect((await liberar(administradora)).ok).toBe(false);
+      const [linha] = await admin
+        .select({ id: courtesies.id })
+        .from(courtesies)
+        .where(inArray(courtesies.userId, [semPassaporte, administradora]));
+      expect(linha).toBeUndefined();
+    });
+
+    it("cortesia vencida não vale", async () => {
+      await admin.insert(courtesies).values({
+        id: novoId(),
+        userId: semPassaporte,
+        grantedBy: administradora,
+        startsAt: new Date(Date.now() - SETE_DIAS - 60_000),
+        endsAt: new Date(Date.now() - 60_000),
+      });
+      const r = await emitirResgate(app, semPassaporte, ids.semLimite);
+      expect(r.ok).toBe(false);
+    });
   });
 });

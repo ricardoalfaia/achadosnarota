@@ -6,6 +6,7 @@ import {
   formatarPreco,
   passaporteDe,
   type LinhaDaAssinatura,
+  type LinhaDaCortesia,
 } from "./passaporte";
 
 const agora = new Date("2026-10-17T12:00:00Z");
@@ -26,8 +27,44 @@ describe("passaporteDe", () => {
     const p = passaporteDe([assinatura()], agora);
     expect(p).toEqual({
       situacao: "ativo",
+      origem: "assinatura",
       validoAte: new Date(agora.getTime() + 335 * dia),
       codigoDoMembro: "AR-VW1234",
+    });
+  });
+
+  describe("cortesia", () => {
+    const cortesia = (
+      extra: Partial<LinhaDaCortesia> = {}
+    ): LinhaDaCortesia => ({
+      id: "01JABCDEFGHJKMNPQRSTCORTE7",
+      startsAt: new Date(agora.getTime() - 2 * dia),
+      endsAt: new Date(agora.getTime() + 5 * dia),
+      revokedAt: null,
+      ...extra,
+    });
+
+    it("sem assinatura, a cortesia vigente dá passaporte ativo", () => {
+      expect(passaporteDe([], agora, [cortesia()])).toEqual({
+        situacao: "ativo",
+        origem: "cortesia",
+        validoAte: new Date(agora.getTime() + 5 * dia),
+        codigoDoMembro: "AR-CORTE7",
+      });
+    });
+
+    it("a assinatura paga vem antes da cortesia", () => {
+      const p = passaporteDe([assinatura()], agora, [cortesia()]);
+      expect(p.situacao === "ativo" && p.origem).toBe("assinatura");
+    });
+
+    it("revogada ou vencida não vale", () => {
+      expect(
+        passaporteDe([], agora, [cortesia({ revokedAt: agora })]).situacao
+      ).toBe("inativo");
+      expect(
+        passaporteDe([], agora, [cortesia({ endsAt: agora })]).situacao
+      ).toBe("inativo");
     });
   });
 

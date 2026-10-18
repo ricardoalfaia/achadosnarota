@@ -42,7 +42,11 @@ export function CartaoDoPassaporte({
             )}
           >
             <Crown aria-hidden="true" className="size-3" />
-            {ativo ? "Passaporte ativo" : "Inativo"}
+            {!ativo
+              ? "Inativo"
+              : passaporte.origem === "cortesia"
+                ? "Cortesia"
+                : "Passaporte ativo"}
           </span>
         </div>
 

@@ -12,7 +12,7 @@ import {
 
 import { atualizadoEm, checkUlid, criadoEm, idUlid, refUlid } from "./_colunas";
 import { appRole, leituraDaEquipe, USUARIO_ATUAL } from "./_rls";
-import { subscriptions } from "./assinaturas";
+import { courtesies, subscriptions } from "./assinaturas";
 import { users } from "./auth";
 import { offers } from "./beneficios";
 import { places } from "./catalogo";
@@ -51,9 +51,14 @@ export const redemptions = pgTable(
     placeId: refUlid("place_id")
       .notNull()
       .references(() => places.id, { onDelete: "restrict" }),
-    subscriptionId: refUlid("subscription_id")
-      .notNull()
-      .references(() => subscriptions.id, { onDelete: "restrict" }),
+    /** O passaporte que autorizou: a assinatura paga ou a cortesia, nunca as duas. */
+    subscriptionId: refUlid("subscription_id").references(
+      () => subscriptions.id,
+      { onDelete: "restrict" }
+    ),
+    courtesyId: refUlid("courtesy_id").references(() => courtesies.id, {
+      onDelete: "restrict",
+    }),
     /** SHA-256 do código. O código em si nunca é gravado. */
     tokenHash: text("token_hash").notNull(),
     status: redemptionStatusEnum("status").notNull().default("issued"),
@@ -66,6 +71,10 @@ export const redemptions = pgTable(
   },
   (t) => [
     checkUlid("redemption", t.id),
+    check(
+      "redemption_um_passaporte",
+      sql`num_nonnulls(${t.subscriptionId}, ${t.courtesyId}) = 1`
+    ),
     check(
       "redemption_redeemed_at",
       sql`${t.status} <> 'redeemed' or ${t.redeemedAt} is not null`

@@ -2,15 +2,22 @@ import "server-only";
 
 import { cache } from "react";
 import { Ok, type Result } from "@achados/core";
-import { lerPublico, plans, subscriptions, withUser } from "@achados/db";
+import {
+  courtesies,
+  lerPublico,
+  plans,
+  subscriptions,
+  withUser,
+} from "@achados/db";
 import { asc, desc } from "drizzle-orm";
 
 import { banco } from "@/shared/db/banco.servidor";
 import { passaporteDe, type Passaporte, type Plano } from "./domain/passaporte";
 
 /**
- * O passaporte de quem está logado. O app só lê a própria assinatura (RLS);
- * quem cria e muda o estado é o webhook do provedor de pagamento.
+ * O passaporte de quem está logado. O app só lê a própria assinatura e a
+ * própria cortesia (RLS); a assinatura muda pelo webhook do provedor de
+ * pagamento, e a cortesia, pela administração no painel.
  */
 export const lerPassaporte = cache(
   async (userId: string): Promise<Result<Passaporte>> =>
@@ -24,7 +31,15 @@ export const lerPassaporte = cache(
         })
         .from(subscriptions)
         .orderBy(desc(subscriptions.endsAt));
-      return Ok(passaporteDe(linhas, new Date()));
+      const cortesias = await tx
+        .select({
+          id: courtesies.id,
+          startsAt: courtesies.startsAt,
+          endsAt: courtesies.endsAt,
+          revokedAt: courtesies.revokedAt,
+        })
+        .from(courtesies);
+      return Ok(passaporteDe(linhas, new Date(), cortesias));
     })
 );
 

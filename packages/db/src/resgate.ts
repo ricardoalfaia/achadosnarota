@@ -1,12 +1,24 @@
 import { createHash, randomInt } from "node:crypto";
 import { AppErrors, Err, Ok, type AppError, type Result } from "@achados/core";
-import { and, count, eq, gt, gte, inArray, lte, or, sql } from "drizzle-orm";
+import {
+  and,
+  count,
+  eq,
+  gt,
+  gte,
+  inArray,
+  isNull,
+  lte,
+  or,
+  sql,
+} from "drizzle-orm";
 
 import type { Db, DbExecutor } from "./client";
 import { withUser } from "./escopo";
 import { novoId } from "./id";
 import {
   cities,
+  courtesies,
   offers,
   partnerOperators,
   places,
@@ -143,6 +155,45 @@ async function travar(tx: DbExecutor, userId: string, offerId: string) {
   );
 }
 
+/**
+ * O que autoriza o benefício agora: a assinatura paga vigente ou, sem ela, a
+ * cortesia vigente e não revogada. Devolve a coluna do resgate que aponta
+ * para ele.
+ */
+async function passaporteVigente(
+  tx: DbExecutor,
+  userId: string,
+  agora: Date
+): Promise<{ subscriptionId: string } | { courtesyId: string } | null> {
+  const [assinatura] = await tx
+    .select({ id: subscriptions.id })
+    .from(subscriptions)
+    .where(
+      and(
+        eq(subscriptions.userId, userId),
+        eq(subscriptions.status, "active"),
+        lte(subscriptions.startsAt, agora),
+        gt(subscriptions.endsAt, agora)
+      )
+    )
+    .limit(1);
+  if (assinatura) return { subscriptionId: assinatura.id };
+
+  const [cortesia] = await tx
+    .select({ id: courtesies.id })
+    .from(courtesies)
+    .where(
+      and(
+        eq(courtesies.userId, userId),
+        isNull(courtesies.revokedAt),
+        lte(courtesies.startsAt, agora),
+        gt(courtesies.endsAt, agora)
+      )
+    )
+    .limit(1);
+  return cortesia ? { courtesyId: cortesia.id } : null;
+}
+
 export type CodigoEmitido = {
   /** Mostrado uma vez na tela da pessoa; nunca gravado nem registrado em log. */
   codigo: string;
@@ -163,19 +214,8 @@ export async function emitirResgate(
 ): Promise<Result<CodigoEmitido>> {
   return withUser(db, userId, async (tx) => {
     await travar(tx, userId, offerId);
-    const [assinatura] = await tx
-      .select({ id: subscriptions.id })
-      .from(subscriptions)
-      .where(
-        and(
-          eq(subscriptions.userId, userId),
-          eq(subscriptions.status, "active"),
-          lte(subscriptions.startsAt, agora),
-          gt(subscriptions.endsAt, agora)
-        )
-      )
-      .limit(1);
-    if (!assinatura) {
+    const passaporte = await passaporteVigente(tx, userId, agora);
+    if (!passaporte) {
       return Err(
         AppErrors.domain(
           "RESGATE_SEM_PASSAPORTE",
@@ -230,7 +270,7 @@ export async function emitirResgate(
       userId,
       offerId,
       placeId: oferta.placeId,
-      subscriptionId: assinatura.id,
+      ...passaporte,
       tokenHash: hashDoCodigo(codigo),
       expiresAt: expiraEm,
     });

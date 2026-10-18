@@ -43,6 +43,13 @@
       "when": 1792320096575,
       "tag": "0005_horario_de_funcionamento",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792325662571,
+      "tag": "0006_cortesias_e_assinantes",
+      "breakpoints": true
     }
   ]
 }

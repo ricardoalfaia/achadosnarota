@@ -92,7 +92,7 @@ export default async function Perfil() {
           >
             <Crown aria-hidden="true" className="size-4" />
             {passaporte.situacao === "ativo"
-              ? `Passaporte ativo até ${dataCurta(passaporte.validoAte)}`
+              ? `${passaporte.origem === "cortesia" ? "Cortesia" : "Passaporte ativo"} até ${dataCurta(passaporte.validoAte)}`
               : "Conhecer o Passaporte"}
             <ChevronRight aria-hidden="true" className="size-4" />
           </Link>
@@ -103,7 +103,9 @@ export default async function Perfil() {
             <RotuloDaLinha icone={<Crown />}>Plano atual</RotuloDaLinha>
             <span className="flex items-center gap-0.5 text-sm font-bold text-primary">
               {passaporte.situacao === "ativo"
-                ? "Passaporte anual"
+                ? passaporte.origem === "cortesia"
+                  ? "Cortesia de 7 dias"
+                  : "Passaporte anual"
                 : "Sem passaporte"}
               <ChevronRight aria-hidden="true" className="size-4" />
             </span>

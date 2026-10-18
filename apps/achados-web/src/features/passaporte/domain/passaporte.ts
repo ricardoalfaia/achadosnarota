@@ -2,7 +2,13 @@
 // sem banco.
 
 export type Passaporte =
-  | { situacao: "ativo"; validoAte: Date; codigoDoMembro: string }
+  | {
+      situacao: "ativo";
+      /** Pago (assinatura) ou liberado pela equipe por 7 dias (cortesia). */
+      origem: "assinatura" | "cortesia";
+      validoAte: Date;
+      codigoDoMembro: string;
+    }
   | { situacao: "inativo" };
 
 export type Plano = {
@@ -18,14 +24,24 @@ export type LinhaDaAssinatura = {
   endsAt: Date | null;
 };
 
+export type LinhaDaCortesia = {
+  id: string;
+  startsAt: Date;
+  endsAt: Date;
+  revokedAt: Date | null;
+};
+
 /**
  * O passaporte vale se a assinatura está `active` e o período cobre `agora`.
  * Assinatura ativa com período vencido não vale: a reconciliação com o
- * provedor pode atrasar, e o benefício não pode.
+ * provedor pode atrasar, e o benefício não pode. Sem assinatura vigente, vale
+ * a cortesia que cobre `agora` e não foi revogada (a mesma regra do banco ao
+ * emitir o código, em `@achados/db`).
  */
 export function passaporteDe(
   assinaturas: readonly LinhaDaAssinatura[],
-  agora: Date
+  agora: Date,
+  cortesias: readonly LinhaDaCortesia[] = []
 ): Passaporte {
   const vigente = assinaturas
     .filter(
@@ -37,9 +53,21 @@ export function passaporteDe(
         a.endsAt > agora
     )
     .sort((a, b) => b.endsAt!.getTime() - a.endsAt!.getTime())[0];
-  if (!vigente) return { situacao: "inativo" };
+  if (!vigente) {
+    const cortesia = cortesias.find(
+      (c) => c.revokedAt === null && c.startsAt <= agora && c.endsAt > agora
+    );
+    if (!cortesia) return { situacao: "inativo" };
+    return {
+      situacao: "ativo",
+      origem: "cortesia",
+      validoAte: cortesia.endsAt,
+      codigoDoMembro: codigoDoMembro(cortesia.id),
+    };
+  }
   return {
     situacao: "ativo",
+    origem: "assinatura",
     validoAte: vigente.endsAt!,
     codigoDoMembro: codigoDoMembro(vigente.id),
   };
