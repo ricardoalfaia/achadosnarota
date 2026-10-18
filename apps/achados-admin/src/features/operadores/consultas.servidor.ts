@@ -1,21 +1,14 @@
 import "server-only";
 
 import { Ok, type Result } from "@achados/core";
-import { partnerOperators, places, users } from "@achados/db";
+import { cities, partnerOperators, places, users } from "@achados/db";
 import { asc, eq, ne } from "drizzle-orm";
 
 import { naEquipe } from "@/shared/db/equipe.servidor";
+import type { CasaComOperadores } from "./domain/balcao";
 
 // Quem opera o balcão de cada casa (vínculo usado pelo modo balcão do app).
 // Só a administração lê e escreve os vínculos (RLS em partner_operator).
-
-export type OperadorDaCasa = { usuarioId: string; nome: string; email: string };
-
-export type CasaComOperadores = {
-  id: string;
-  nome: string;
-  operadores: OperadorDaCasa[];
-};
 
 export async function casasComOperadores(): Promise<
   Result<CasaComOperadores[]>
@@ -23,8 +16,9 @@ export async function casasComOperadores(): Promise<
   return naEquipe(async (tx) => {
     const [casas, vinculos] = await Promise.all([
       tx
-        .select({ id: places.id, nome: places.name })
+        .select({ id: places.id, nome: places.name, cidade: cities.name })
         .from(places)
+        .innerJoin(cities, eq(cities.id, places.cityId))
         .where(ne(places.status, "archived"))
         .orderBy(asc(places.name)),
       tx

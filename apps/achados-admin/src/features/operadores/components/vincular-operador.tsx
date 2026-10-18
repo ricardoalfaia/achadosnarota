@@ -1,56 +1,65 @@
 "use client";
 
-import { useActionState } from "react";
-import { Alerta, Botao, CampoDeTexto } from "@achados/ui";
+import { useActionState, useEffect } from "react";
+import { Alerta, Botao, CampoDeTexto, Select } from "@achados/ui";
+import { UserPlus } from "lucide-react";
 
 import { vincularOperador, type EstadoDoVinculo } from "../actions";
 
-/** O formulário de vínculo: o e-mail da conta e a casa que ela vai operar. */
+/**
+ * O formulário de vínculo: o e-mail da conta e a casa que ela vai operar.
+ * Com `casa`, a casa já vem escolhida (aberto de dentro do balcão dela).
+ */
 export function VincularOperador({
   casas,
+  casa,
+  aoVincular,
 }: {
   casas: readonly { id: string; nome: string }[];
+  casa?: { id: string; nome: string };
+  /** Depois de um vínculo que deu certo. */
+  aoVincular?: () => void;
 }) {
   const [estado, enviar, enviando] = useActionState<EstadoDoVinculo, FormData>(
     vincularOperador,
     {}
   );
+  useEffect(() => {
+    if (estado.mensagem) aoVincular?.();
+  }, [estado, aoVincular]);
+
   return (
-    <form
-      action={enviar}
-      className="flex flex-col gap-4 rounded-card bg-surface p-5 ring-1 ring-border/60"
-    >
-      <h2 className="text-base font-extrabold text-foreground">
-        Vincular operador
-      </h2>
-      <p className="text-sm text-foreground-muted">
-        A pessoa cria a conta no app e você vincula pelo e-mail. Ela passa a ver
-        o modo balcão no perfil e só valida códigos desta casa.
-      </p>
+    <form action={enviar} className="flex flex-col gap-4">
       <CampoDeTexto
         label="E-mail da conta"
         name="email"
         tipo="email"
+        ajuda="A pessoa precisa ter criado a conta no app."
         required
       />
-      <label className="flex flex-col gap-1.5 text-sm font-semibold text-foreground">
-        Casa
-        <select
+      {casa ? (
+        <input type="hidden" name="casaId" value={casa.id} />
+      ) : (
+        <Select
+          label="Casa"
           name="casaId"
           required
-          className="h-control-lg rounded-control border border-border bg-surface px-3 text-sm text-foreground outline-none focus:border-ring"
-        >
-          {casas.map((casa) => (
-            <option key={casa.id} value={casa.id}>
-              {casa.nome}
-            </option>
-          ))}
-        </select>
-      </label>
+          opcoes={casas.map((c) => ({ valor: c.id, label: c.nome }))}
+          valorInicial={casas[0]?.id ?? null}
+          pesquisavel={casas.length > 8}
+        />
+      )}
       {estado.erro && <Alerta intencao="erro">{estado.erro}</Alerta>}
-      {estado.mensagem && <Alerta intencao="sucesso">{estado.mensagem}</Alerta>}
-      <Botao type="submit" carregando={enviando}>
-        Vincular
+      {estado.mensagem && !aoVincular && (
+        <Alerta intencao="sucesso">{estado.mensagem}</Alerta>
+      )}
+      <Botao
+        type="submit"
+        icone={<UserPlus />}
+        carregando={enviando}
+        larguraTotal
+      >
+        {casa ? `Vincular a ${casa.nome}` : "Vincular"}
       </Botao>
     </form>
   );

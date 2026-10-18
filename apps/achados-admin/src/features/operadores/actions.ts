@@ -68,11 +68,15 @@ export async function vincularOperador(
   return { mensagem: `Operador vinculado a ${resultado.value}.` };
 }
 
-export async function desvincularOperador(dados: FormData): Promise<void> {
+export async function desvincularOperador(
+  _anterior: EstadoDoVinculo,
+  dados: FormData
+): Promise<EstadoDoVinculo> {
   const usuarioId = campo(dados, "usuarioId");
   const casaId = campo(dados, "casaId");
-  if (!usuarioId || !ehUlid(casaId)) return;
-  await naEquipe(async (tx, pessoa) => {
+  if (!ehUlid(usuarioId) || !ehUlid(casaId))
+    return { erro: "Vínculo inválido." };
+  const resultado = await naEquipe(async (tx, pessoa) => {
     const removidos = await tx
       .delete(partnerOperators)
       .where(
@@ -91,5 +95,7 @@ export async function desvincularOperador(dados: FormData): Promise<void> {
     });
     return Ok(undefined);
   });
+  if (!resultado.ok) return { erro: mensagemDe(resultado.error) };
   revalidatePath(ROTAS.parceiros);
+  return { mensagem: "Operador desvinculado." };
 }
