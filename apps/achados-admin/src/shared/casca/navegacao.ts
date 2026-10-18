@@ -49,7 +49,6 @@ export const NAVEGACAO: readonly SecaoDeNavegacao[] = [
         id: "resgates",
         rotulo: "Resgates",
         href: ROTAS.resgates,
-        emConstrucao: true,
       },
     ],
   },

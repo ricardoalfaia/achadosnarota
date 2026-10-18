@@ -63,6 +63,12 @@ O [ADR-0021](0021-paginas-de-cadastro.md) implementado uma vez e usado por casas
 - **Horário de funcionamento** na casa: aba "Horário" com até dois turnos por dia, cópia de um dia para a semana, turno que passa da meia-noite e observação; a gravação troca os turnos da casa na mesma transação (`features/casas/domain/horario.ts`, testado).
 - A fonte em memória (`shared/provisorio`) saiu.
 
+### Foto da equipe e relatório de resgates (18/10/2026)
+
+- **Foto da equipe**: "Pôr/Mudar a minha foto" no menu do usuário, com o mesmo fluxo do app ([ADR-0027](0027-foto-do-perfil-no-r2.md)): ajuste no círculo, regravação no servidor (sharp, sem metadados), envio assinado ao R2 e remoção que apaga o objeto. A sessão da equipe traz a foto da conta.
+- **Relatório de resgates** na página Resgates (administração e comercial; a curadoria vê o aviso, e a RLS não lhe entrega resgates): período (7, 30, 90 dias ou ano) e casa na URL; benefícios usados com a comparação ao período anterior (porcentagem só com base de 5 usos ou mais), códigos gerados, taxa de uso, assinantes e casas com uso; usos por dia, mapa de calor dia × hora (Brasília), rankings de casas e benefícios e os últimos usos, sem identificar o assinante. Exportação em CSV (`/api/relatorios/resgates`, separador ";", fórmulas neutralizadas, sem o assinante). Regras em `features/relatorios/domain/relatorio.ts`, testadas; gráficos em SVG, sem biblioteca.
+- O seed cria um histórico sintético de 90 dias (viajantes fictícios, respeitando a regra de cada benefício), só no desenvolvimento e na homologação.
+
 ### Design system
 
 - Novo `AreaDeTexto` em `@achados/ui` (texto de várias linhas na moldura dos campos, com contador), com história no Storybook.
@@ -99,7 +105,7 @@ As três áreas seguem o mesmo padrão e a parte comum mora em `shared/cadastro`
 - Revisor distinto do autor na publicação editorial (docs/produto/03).
 - Levar a regra do selo e dos critérios para um pacote de domínio comum com o app do assinante.
 - Avaliar extrair os adaptadores do Query para um pacote, se um terceiro app precisar deles.
-- A validação do código no balcão ficou no modo balcão do app do assinante ([ADR-0025](0025-app-pwa-do-assinante.md)); falta a página Resgates do painel (acompanhamento por casa e por promoção).
+- A validação do código no balcão ficou no modo balcão do app do assinante ([ADR-0025](0025-app-pwa-do-assinante.md)); a página Resgates do painel traz o relatório.
 
 Nenhuma exceção registrada.
 

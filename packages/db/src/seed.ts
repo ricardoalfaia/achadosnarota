@@ -16,6 +16,7 @@ import { and, eq, inArray } from "drizzle-orm";
 import { criarDb, encerrarDb, type Db } from "./client";
 import { novoId } from "./id";
 import * as s from "./schema";
+import { semearHistoricoDeResgates } from "./seed-historico";
 
 if (process.env.APP_ENV === "production") {
   console.error("✗ seed é só para desenvolvimento.");
@@ -773,6 +774,11 @@ async function main() {
     const idsDosLugares = await semearCatalogo(db);
     const planId = await semearPlano(db);
     await semearPessoas(db, planId, idsDosLugares);
+    const resgates = await semearHistoricoDeResgates(
+      db,
+      planId,
+      LUGARES.map((l) => l.slug)
+    );
 
     // Lugares que saíram da lista do seed deixam de aparecer no app.
     const slugs = LUGARES.map((l) => l.slug);
@@ -785,7 +791,7 @@ async function main() {
         .where(inArray(s.places.slug, sobras));
 
     console.log(
-      `✓ seed: ${CIDADES.length} cidades, ${CATEGORIAS.length} categorias, ${LUGARES.length} lugares, ${PESSOAS.length} pessoas (senha ${SENHA}).`
+      `✓ seed: ${CIDADES.length} cidades, ${CATEGORIAS.length} categorias, ${LUGARES.length} lugares, ${PESSOAS.length} pessoas (senha ${SENHA}), ${resgates} resgates sintéticos.`
     );
   } finally {
     await encerrarDb(db);
