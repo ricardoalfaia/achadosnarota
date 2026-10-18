@@ -34,3 +34,9 @@ export {
   type UsoDoBeneficio,
 } from "./resgate";
 export { PAPEIS_DA_EQUIPE, type PapelDaEquipe } from "./schema/_rls";
+export {
+  processarEventoDePagamento,
+  type AcaoDoPagamento,
+  type CompraDoPassaporte,
+  type DesfechoDoEvento,
+} from "./pagamentos";

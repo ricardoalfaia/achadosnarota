@@ -51,6 +51,7 @@ export const lerPlanoAtivo = cache(async (): Promise<Result<Plano | null>> => {
   const r = await lerPublico(banco(), (db) =>
     db
       .select({
+        id: plans.id,
         nome: plans.name,
         precoEmCentavos: plans.priceCents,
         moeda: plans.currency,
@@ -61,3 +62,33 @@ export const lerPlanoAtivo = cache(async (): Promise<Result<Plano | null>> => {
   );
   return r.ok ? Ok(r.value[0] ?? null) : r;
 });
+
+/**
+ * A situação das compras da pessoa: há um Pix esperando compensar (das
+ * últimas 24 horas; depois disso venceu) e se ela já teve um passaporte pago
+ * (para o botão dizer "Renovar").
+ */
+export async function situacaoDasCompras(
+  userId: string
+): Promise<{ pendente: boolean; jaTevePassaporte: boolean }> {
+  const desde = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const resultado = await withUser(banco(), userId, async (tx) =>
+    Ok(
+      await tx
+        .select({
+          status: subscriptions.status,
+          criadaEm: subscriptions.createdAt,
+        })
+        .from(subscriptions)
+    )
+  );
+  if (!resultado.ok) return { pendente: false, jaTevePassaporte: false };
+  return {
+    pendente: resultado.value.some(
+      (s) => s.status === "pending" && s.criadaEm > desde
+    ),
+    jaTevePassaporte: resultado.value.some((s) =>
+      ["active", "expired"].includes(s.status)
+    ),
+  };
+}

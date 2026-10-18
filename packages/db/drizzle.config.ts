@@ -17,7 +17,9 @@ export default defineConfig({
   dialect: "postgresql",
   dbCredentials: { url },
   // O papel achados_app é criado fora das migrations (pgRole(...).existing()).
-  entities: { roles: { provider: "", exclude: ["achados_app"] } },
+  entities: {
+    roles: { provider: "", exclude: ["achados_app", "achados_pagamentos"] },
+  },
   strict: true,
   verbose: true,
 });

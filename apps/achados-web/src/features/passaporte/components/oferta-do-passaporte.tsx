@@ -5,6 +5,7 @@ import { BadgeCheck, Crown, MapPinned, Ticket } from "lucide-react";
 
 import { rotaDeCriarConta } from "@/shared/rotas";
 import { formatarPreco, type Plano } from "../domain/passaporte";
+import { BotaoDeAssinar } from "./botao-de-assinar";
 
 const INCLUI = [
   {
@@ -21,15 +22,22 @@ const INCLUI = [
 /**
  * O plano para quem ainda não tem passaporte: o preço vindo do banco, o que
  * inclui e as condições. A assinatura depende do provedor de pagamento (ADR-006
- * de produto), ainda não homologado: o botão fica indisponível e diz isso, sem
- * fingir uma compra.
+ * de produto, Stripe): "Assinar" leva ao Checkout, com cartão ou Pix; a
+ * ativação vem só do webhook. Sem os pagamentos configurados, o botão fica
+ * indisponível e diz isso, sem fingir uma compra.
  */
 export function OfertaDoPassaporte({
   plano,
   logado,
+  assinaturaDisponivel,
+  jaFoiAssinante = false,
 }: {
   plano: Plano | null;
   logado: boolean;
+  /** Pagamentos configurados (Stripe) e plano à venda. */
+  assinaturaDisponivel: boolean;
+  /** Já teve passaporte (vencido): o botão vira "Renovar". */
+  jaFoiAssinante?: boolean;
 }) {
   return (
     <section
@@ -71,12 +79,21 @@ export function OfertaDoPassaporte({
         validade, mostrados antes do resgate.
       </p>
       <div className="mt-4 flex flex-col gap-2">
-        <Botao larguraTotal desabilitado aria-describedby="aviso-do-plano">
-          Assinar
-        </Botao>
-        <p id="aviso-do-plano" className="text-[11px] text-foreground-muted">
-          A assinatura abre em breve, com pagamento por provedor homologado.
-        </p>
+        {assinaturaDisponivel ? (
+          <BotaoDeAssinar rotulo={jaFoiAssinante ? "Renovar" : "Assinar"} />
+        ) : (
+          <>
+            <Botao larguraTotal desabilitado aria-describedby="aviso-do-plano">
+              Assinar
+            </Botao>
+            <p
+              id="aviso-do-plano"
+              className="text-[11px] text-foreground-muted"
+            >
+              A assinatura está indisponível no momento.
+            </p>
+          </>
+        )}
         {!logado && (
           <Link
             href={rotaDeCriarConta("/passaporte")}

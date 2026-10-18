@@ -25,6 +25,9 @@ export const PADROES_DEV = {
   DATABASE_URL: "postgresql://achados_app:achados_app@127.0.0.1:4550/achados",
   // Dono do schema: migrations, seed e bootstrap.
   DATABASE_URL_ADMIN: "postgresql://achados:achados@127.0.0.1:4550/achados",
+  // achados_pagamentos: só o webhook do provedor (ADR-006 de produto).
+  DATABASE_URL_PAGAMENTOS:
+    "postgresql://achados_pagamentos:achados_pagamentos@127.0.0.1:4550/achados",
 };
 
 /** host:porta/banco, sem usuário nem senha — seguro para log. */

@@ -11,15 +11,16 @@
 
 Os documentos de produto são a fonte do produto. Um ADR de frontend que depende de uma decisão de produto cita o ADR de produto e não a redefine. Dependências principais:
 
-| ADR de produto                                                      | ADRs de frontend que dependem dele                                             |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| [ADR-001](../produto/adr/ADR-001.md) monólito modular e Next.js PWA | [0025](0025-app-pwa-do-assinante.md)                                           |
-| [ADR-002](../produto/adr/ADR-002.md) PostgreSQL e Drizzle           | [0013](0013-ambientes-e-configuracao.md), [0024](0024-identificadores-ulid.md) |
-| [ADR-003](../produto/adr/ADR-003.md) identidade e RBAC              | [0020](0020-autenticacao-e-sessao.md)                                          |
-| [ADR-004](../produto/adr/ADR-004.md) separação editorial-comercial  | [0025](0025-app-pwa-do-assinante.md)                                           |
-| [ADR-005](../produto/adr/ADR-005.md) resgate transacional           | [0025](0025-app-pwa-do-assinante.md) (resgate pendente na F4)                  |
-| [ADR-008](../produto/adr/ADR-008.md) SEO e publicação editorial     | [0006](0006-estado-http-e-cache.md), [0025](0025-app-pwa-do-assinante.md)      |
-| [ADR-010](../produto/adr/ADR-010.md) auditoria e observabilidade    | [0004](0004-result-error.md), [0010](0010-governanca.md)                       |
+| ADR de produto                                                       | ADRs de frontend que dependem dele                                             |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| [ADR-001](../produto/adr/ADR-001.md) monólito modular e Next.js PWA  | [0025](0025-app-pwa-do-assinante.md)                                           |
+| [ADR-002](../produto/adr/ADR-002.md) PostgreSQL e Drizzle            | [0013](0013-ambientes-e-configuracao.md), [0024](0024-identificadores-ulid.md) |
+| [ADR-003](../produto/adr/ADR-003.md) identidade e RBAC               | [0020](0020-autenticacao-e-sessao.md)                                          |
+| [ADR-004](../produto/adr/ADR-004.md) separação editorial-comercial   | [0025](0025-app-pwa-do-assinante.md)                                           |
+| [ADR-006](../produto/adr/ADR-006.md) pagamentos por provedor externo | [0029](0029-pagamentos-com-stripe.md)                                          |
+| [ADR-005](../produto/adr/ADR-005.md) resgate transacional            | [0025](0025-app-pwa-do-assinante.md) (resgate pendente na F4)                  |
+| [ADR-008](../produto/adr/ADR-008.md) SEO e publicação editorial      | [0006](0006-estado-http-e-cache.md), [0025](0025-app-pwa-do-assinante.md)      |
+| [ADR-010](../produto/adr/ADR-010.md) auditoria e observabilidade     | [0004](0004-result-error.md), [0010](0010-governanca.md)                       |
 
 ## Estado do registro
 
@@ -55,6 +56,7 @@ Os ADRs abaixo estão **Propostos** para revisão. A maior parte veio da base de
 | [0026](0026-app-administrativo.md)        | App administrativo: casca, telas de cadastro e dados provisórios  | Proposto; fase visual implementada, sem banco e sem login                  |
 | [0027](0027-foto-do-perfil-no-r2.md)      | Foto do perfil: ajuste no navegador, regravação no servidor e R2  | Proposto; implementado no app do assinante                                 |
 | [0028](0028-assinantes-e-cortesia.md)     | Assinantes no painel e cortesia de 7 dias                         | Proposto; implementado, migration 0006 só no banco local                   |
+| [0029](0029-pagamentos-com-stripe.md)     | Pagamentos com Stripe: passaporte anual com cartão e Pix          | Proposto; implementado em modo de teste                                    |
 
 ## Ciclo de uma decisão
 

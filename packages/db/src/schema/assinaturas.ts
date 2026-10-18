@@ -20,6 +20,7 @@ import {
   leituraDaEquipe,
   leituraDaPropriaPessoa,
   leituraPublica,
+  paymentsRole,
   USUARIO_ATUAL,
 } from "./_rls";
 import { users } from "./auth";
@@ -49,6 +50,12 @@ export const plans = pgTable(
     checkUlid("plan", t.id),
     check("plan_price_positive", sql`${t.priceCents} > 0`),
     leituraPublica("plan", sql`active`),
+    pgPolicy("plan_leitura_dos_pagamentos", {
+      as: "permissive",
+      for: "select",
+      to: paymentsRole,
+      using: sql`true`,
+    }),
     // A administração vê também os planos inativos (assinaturas antigas).
     leituraDaEquipe("plan", ["admin"]),
   ]
@@ -79,8 +86,10 @@ export const subscriptions = pgTable(
       .notNull()
       .references(() => plans.id, { onDelete: "restrict" }),
     status: subscriptionStatusEnum("status").notNull().default("pending"),
-    /** Identificador no provedor de pagamento, quando houver. */
+    /** Identificador no provedor (a sessão de checkout da Stripe). */
     providerSubscriptionId: text("provider_subscription_id"),
+    /** O pagamento no provedor (PaymentIntent), para estorno e conciliação. */
+    providerPaymentId: text("provider_payment_id"),
     startsAt: timestamp("starts_at", { withTimezone: true }),
     endsAt: timestamp("ends_at", { withTimezone: true }),
     createdAt: criadoEm(),
@@ -101,6 +110,37 @@ export const subscriptions = pgTable(
     // dados mínimos, docs/produto/04). Ninguém da equipe escreve: a
     // assinatura muda só pelo webhook do provedor (ADR-006 de produto).
     leituraDaEquipe("subscription", ["admin"]),
+    // O webhook do provedor, e só ele, cria e atualiza assinaturas.
+    pgPolicy("subscription_escrita_dos_pagamentos", {
+      as: "permissive",
+      for: "all",
+      to: paymentsRole,
+      using: sql`true`,
+      withCheck: sql`true`,
+    }),
+  ]
+).enableRLS();
+
+/**
+ * Cada evento do provedor processado, pelo id dele (`evt_...`): o mesmo
+ * evento entregue de novo não muda nada (deduplicação, ADR-006 de produto).
+ * Não guarda o corpo do evento (pode ter e-mail e dados do pagador).
+ */
+export const paymentEvents = pgTable(
+  "payment_event",
+  {
+    id: text("id").primaryKey(),
+    type: text("type").notNull(),
+    createdAt: criadoEm(),
+  },
+  () => [
+    pgPolicy("payment_event_dos_pagamentos", {
+      as: "permissive",
+      for: "all",
+      to: paymentsRole,
+      using: sql`true`,
+      withCheck: sql`true`,
+    }),
   ]
 ).enableRLS();
 
@@ -167,4 +207,5 @@ export const courtesies = pgTable(
 
 export type Plan = typeof plans.$inferSelect;
 export type Subscription = typeof subscriptions.$inferSelect;
+export type PaymentEvent = typeof paymentEvents.$inferSelect;
 export type Courtesy = typeof courtesies.$inferSelect;

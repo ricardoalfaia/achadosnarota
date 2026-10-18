@@ -38,6 +38,29 @@ const ambienteServidorSchema = z.object({
   R2_SECRET: opcional,
   R2_BUCKET: opcional,
   R2_PUBLIC_URL: opcional.pipe(z.url({ protocol: /^https$/ }).optional()),
+  // Stripe (ADR-006 de produto). Todas ou nenhuma: sem elas, a assinatura
+  // fica indisponível e o resto do app funciona. A chave secreta e o segredo
+  // do webhook nunca saem do servidor.
+  STRIPE_SECRET_KEY: opcional.pipe(
+    z
+      .string()
+      .regex(/^(sk|rk)_(test|live)_/)
+      .optional()
+  ),
+  STRIPE_WEBHOOK_SECRET: opcional.pipe(
+    z
+      .string()
+      .regex(/^whsec_/)
+      .optional()
+  ),
+  // Conexão como achados_pagamentos: só a rota do webhook usa (escreve
+  // assinaturas); o resto do app usa DATABASE_URL.
+  DATABASE_URL_PAGAMENTOS: opcional.pipe(
+    z
+      .string()
+      .regex(/^postgres(?:ql)?:\/\/.+/)
+      .optional()
+  ),
   // O app nunca recebe a conexão do dono das tabelas: com ela, o RLS não vale.
   DATABASE_URL_ADMIN: z
     .string()
@@ -87,7 +110,22 @@ export type AmbienteServidor = {
   email: ConfiguracaoDeEmail;
   /** Ausente: o envio de fotos fica indisponível, o resto do app funciona. */
   armazenamento?: ConfiguracaoDoArmazenamento | undefined;
+  /** Ausente: a assinatura fica indisponível, o resto do app funciona. */
+  pagamentos?: ConfiguracaoDosPagamentos | undefined;
 };
+
+/** A Stripe e a conexão do webhook. Nada disso sai do servidor. */
+export type ConfiguracaoDosPagamentos = {
+  chaveSecreta: string;
+  segredoDoWebhook: string;
+  databaseUrl: string;
+};
+
+export const VARIAVEIS_DOS_PAGAMENTOS = [
+  "STRIPE_SECRET_KEY",
+  "STRIPE_WEBHOOK_SECRET",
+  "DATABASE_URL_PAGAMENTOS",
+] as const;
 
 type Fonte = Record<string, string | undefined>;
 
@@ -123,6 +161,20 @@ export function lerAmbienteServidor(fonte: Fonte): Result<AmbienteServidor> {
         { variaveis: faltandoNoR2 }
       )
     );
+  const faltandoNosPagamentos = VARIAVEIS_DOS_PAGAMENTOS.filter(
+    (nome) => !v[nome]
+  );
+  if (
+    faltandoNosPagamentos.length > 0 &&
+    faltandoNosPagamentos.length < VARIAVEIS_DOS_PAGAMENTOS.length
+  )
+    return Err(
+      AppErrors.validation(
+        "AMBIENTE_INVALIDO",
+        `Os pagamentos precisam de todas as variáveis; faltam: ${faltandoNosPagamentos.join(", ")}.`,
+        { variaveis: faltandoNosPagamentos }
+      )
+    );
   return Ok({
     appUrl: v.APP_URL.replace(/\/+$/, ""),
     databaseUrl: v.DATABASE_URL,
@@ -145,6 +197,16 @@ export function lerAmbienteServidor(fonte: Fonte): Result<AmbienteServidor> {
             segredo: v.R2_SECRET,
             bucket: v.R2_BUCKET,
             urlPublica: v.R2_PUBLIC_URL.replace(/\/+$/, ""),
+          }
+        : undefined,
+    pagamentos:
+      v.STRIPE_SECRET_KEY &&
+      v.STRIPE_WEBHOOK_SECRET &&
+      v.DATABASE_URL_PAGAMENTOS
+        ? {
+            chaveSecreta: v.STRIPE_SECRET_KEY,
+            segredoDoWebhook: v.STRIPE_WEBHOOK_SECRET,
+            databaseUrl: v.DATABASE_URL_PAGAMENTOS,
           }
         : undefined,
   });

@@ -12,6 +12,14 @@ import { pgPolicy, pgRole } from "drizzle-orm/pg-core";
 export const appRole = pgRole("achados_app").existing();
 
 /**
+ * Papel dos pagamentos: só a rota do webhook do provedor (ADR-006 de produto)
+ * conecta com ele (`DATABASE_URL_PAGAMENTOS`). É o único que cria e muda
+ * assinaturas; o papel do app só as lê. Criado fora das migrations
+ * (scripts/setup-papel-de-pagamentos.mjs), com grants só nas tabelas dele.
+ */
+export const paymentsRole = pgRole("achados_pagamentos").existing();
+
+/**
  * Usuário fixado na transação por withUser() (ids do Better Auth são ULID).
  *
  * `current_setting(..., true)` devolve NULL se a variável nunca foi definida

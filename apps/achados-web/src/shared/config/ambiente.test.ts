@@ -111,6 +111,45 @@ describe("lerAmbienteServidor", () => {
     );
   });
 
+  describe("pagamentos (Stripe)", () => {
+    const STRIPE = {
+      STRIPE_SECRET_KEY: "sk_test_abc",
+      STRIPE_WEBHOOK_SECRET: "whsec_abc",
+      DATABASE_URL_PAGAMENTOS:
+        "postgresql://achados_pagamentos:x@127.0.0.1:4550/achados",
+    };
+
+    it("sem as variáveis, os pagamentos ficam ausentes e o app sobe", () => {
+      const lido = lerAmbienteServidor(BASE);
+      expect(lido.ok && lido.value.pagamentos).toBeUndefined();
+    });
+
+    it("com todas, devolve a configuração", () => {
+      const lido = lerAmbienteServidor({ ...BASE, ...STRIPE });
+      expect(lido.ok && lido.value.pagamentos).toEqual({
+        chaveSecreta: "sk_test_abc",
+        segredoDoWebhook: "whsec_abc",
+        databaseUrl: STRIPE.DATABASE_URL_PAGAMENTOS,
+      });
+    });
+
+    it("com só parte delas, falha nomeando as que faltam", () => {
+      expect(
+        variaveisInvalidas({ ...BASE, ...STRIPE, STRIPE_WEBHOOK_SECRET: "" })
+      ).toEqual({ variaveis: ["STRIPE_WEBHOOK_SECRET"] });
+    });
+
+    it("recusa chave que não é da Stripe", () => {
+      expect(
+        variaveisInvalidas({
+          ...BASE,
+          ...STRIPE,
+          STRIPE_SECRET_KEY: "pk_test_x",
+        })
+      ).toEqual({ variaveis: ["STRIPE_SECRET_KEY"] });
+    });
+  });
+
   describe("R2", () => {
     const R2 = {
       R2_ACCOUNT_ID: "conta",

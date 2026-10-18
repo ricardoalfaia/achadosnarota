@@ -12,6 +12,7 @@ export type Passaporte =
   | { situacao: "inativo" };
 
 export type Plano = {
+  id: string;
   nome: string;
   precoEmCentavos: number;
   moeda: string;

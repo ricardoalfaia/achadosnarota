@@ -1,3 +1,7 @@
 import "server-only";
 
-export { lerPassaporte, lerPlanoAtivo } from "./consultas.servidor";
+export {
+  lerPassaporte,
+  lerPlanoAtivo,
+  situacaoDasCompras,
+} from "./consultas.servidor";
