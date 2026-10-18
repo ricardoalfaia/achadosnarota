@@ -21,6 +21,9 @@ next-env.d.ts
 # Credenciais locais na raiz (ex.: banco do Neon): nunca versionar.
 /.env.production
 /.env.homolog
+# O admin ainda não tem modelos versionados: o .env.production dele é local.
+/apps/achados-admin/.env.production
+/apps/achados-admin/.env.homolog
 
 # Material de origem já copiado para docs/produto.
 /achados-na-rota-documentacao/
@@ -28,3 +31,5 @@ next-env.d.ts
 /page.jpeg
 /pwa.jpeg
 /WhatsApp Image *.jpeg
+
+
