@@ -75,9 +75,10 @@ export type FiltroDoCatalogo = {
   busca?: string;
 };
 
-/** O topo da versão desktop: o primeiro destaque e os totais do catálogo. */
+/** O topo da exploração: os primeiros destaques e os totais do catálogo. */
 export type VitrineDoCatalogo = {
-  destaque?: CartaoDeLugar;
+  /** Os primeiros da curadoria, na ordem dela (selo, depois nota). */
+  destaques: CartaoDeLugar[];
   lugares: number;
   cidades: number;
 };

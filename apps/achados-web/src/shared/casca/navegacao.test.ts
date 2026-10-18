@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { itemAtivo, ITENS_DA_NAVEGACAO } from "./navegacao";
+import { barraVisivel, itemAtivo, ITENS_DA_NAVEGACAO } from "./navegacao";
 
 describe("itemAtivo", () => {
   it("a raiz é Explorar", () => {
@@ -28,5 +28,14 @@ describe("itemAtivo", () => {
       "Passaporte",
       "Perfil",
     ]);
+  });
+});
+
+describe("barraVisivel", () => {
+  it("some só na ficha do lugar", () => {
+    expect(barraVisivel("/lugar/rancho-portugues")).toBe(false);
+    expect(barraVisivel("/")).toBe(true);
+    expect(barraVisivel("/favoritos")).toBe(true);
+    expect(barraVisivel("/passaporte")).toBe(true);
   });
 });

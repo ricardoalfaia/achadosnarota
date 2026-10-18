@@ -28,8 +28,8 @@ export function CartaoDeLugar({
   prioridade?: boolean;
 }) {
   return (
-    <article className="group relative flex h-full flex-col overflow-hidden rounded-card border border-border bg-surface shadow-sm transition-[box-shadow,translate] duration-300 hover:shadow-md lg:rounded-3xl lg:hover:-translate-y-1 lg:hover:shadow-xl">
-      <div className="relative h-40 bg-surface-hover lg:h-52">
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-3xl bg-surface shadow-[0_1px_2px_rgb(15_23_42/0.05),0_12px_28px_-16px_rgb(15_23_42/0.25)] ring-1 ring-border/60 transition-[box-shadow,translate,scale] duration-300 ease-spring active:scale-[0.985] lg:hover:-translate-y-1 lg:hover:shadow-xl">
+      <div className="relative h-52 bg-surface-hover">
         {lugar.foto && (
           <Image
             src={lugar.foto.url}
@@ -41,50 +41,50 @@ export function CartaoDeLugar({
           />
         )}
         {lugar.selo && (
-          <div className="absolute top-2 left-2">
+          <div className="absolute top-3 left-3">
             <SeloDoLugar selo={lugar.selo} tamanho="sm" />
           </div>
         )}
-        <Etiqueta tom="claro" tamanho="sm" className="absolute bottom-2 left-2">
+        <Etiqueta tom="claro" tamanho="sm" className="absolute bottom-3 left-3">
           {lugar.especialidade}
         </Etiqueta>
       </div>
 
-      <div className="flex flex-1 flex-col p-3 lg:p-5">
+      <div className="flex flex-1 flex-col p-4 lg:p-5">
         <div className="flex items-center justify-between gap-2">
-          <h3 className="truncate text-sm font-bold text-foreground lg:text-lg lg:font-extrabold lg:group-hover:text-primary">
+          <h3 className="truncate text-lg font-extrabold tracking-tight text-foreground lg:group-hover:text-primary">
             <Link
               href={rotaDoLugar(lugar.slug)}
-              className="outline-none after:absolute after:inset-0 after:rounded-card focus-visible:after:outline-2 focus-visible:after:outline-offset-2 focus-visible:after:outline-ring"
+              className="outline-none after:absolute after:inset-0 after:rounded-3xl focus-visible:after:outline-2 focus-visible:after:outline-offset-2 focus-visible:after:outline-ring"
             >
               {lugar.nome}
             </Link>
           </h3>
           {lugar.nota !== undefined && <Nota valor={lugar.nota} />}
         </div>
-        <p className="mt-0.5 flex items-center gap-1 text-[11px] text-foreground-muted">
-          <MapPin aria-hidden="true" className="size-3 shrink-0" />
+        <p className="mt-0.5 flex items-center gap-1 text-[13px] text-foreground-muted">
+          <MapPin aria-hidden="true" className="size-3.5 shrink-0" />
           {lugar.local}
         </p>
         <p className="mt-2.5 mb-4 hidden text-xs leading-relaxed text-foreground-muted lg:line-clamp-2">
           {lugar.resumo}
         </p>
         {lugar.beneficio && (
-          <p className="mt-2.5 flex items-center justify-between gap-2 rounded-xl border border-primary-border bg-primary-subtle p-2 text-xs font-bold text-primary lg:mt-auto">
+          <p className="mt-3 flex items-center justify-between gap-2 rounded-2xl bg-primary-subtle px-3 py-2.5 text-[13px] font-bold text-primary lg:mt-auto">
             <span className="flex min-w-0 items-center gap-1.5">
               <IconeDoBeneficio
                 chave={lugar.beneficio.icone}
-                className="size-3.5 shrink-0 text-brand"
+                className="size-4 shrink-0 text-brand"
               />
               <span className="truncate">{lugar.beneficio.titulo}</span>
             </span>
-            <ChevronRight aria-hidden="true" className="size-3 shrink-0" />
+            <ChevronRight aria-hidden="true" className="size-4 shrink-0" />
           </p>
         )}
       </div>
 
       {favorito && (
-        <div className="absolute top-2 right-2 z-10">{favorito}</div>
+        <div className="absolute top-3 right-3 z-10">{favorito}</div>
       )}
     </article>
   );

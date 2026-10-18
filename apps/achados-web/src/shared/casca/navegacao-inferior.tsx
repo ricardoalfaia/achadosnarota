@@ -61,8 +61,9 @@ function ItemDaBarra({
  * na largura da coluna do app (até 480px) e respeita a área segura do iPhone.
  */
 export function NavegacaoInferior() {
-  const { ativo, leitor, antesDoLeitor, depoisDoLeitor } =
+  const { visivel, ativo, leitor, antesDoLeitor, depoisDoLeitor } =
     useNavegacaoInferior();
+  if (!visivel) return null;
 
   return (
     <>

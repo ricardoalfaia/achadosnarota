@@ -1,11 +1,12 @@
 "use client";
 
 import { DataBoundary } from "@achados/data-boundary";
+import { cn } from "@achados/ui/estilos";
 import { ArrowRight } from "lucide-react";
 
 import {
   BarraDeBusca,
-  CartaoDescubra,
+  CarrosselDeAchados,
   DestaquesDaRota,
   EsqueletoDaLista,
   FiltroDeCategorias,
@@ -20,8 +21,9 @@ import type { Plano } from "@/features/passaporte";
 import { HeroDesktop } from "./hero-desktop";
 
 /**
- * A exploração. No celular (protótipo `pwa.html`): busca, categorias, o
- * cartão "Descubra" e os destaques. A partir de 1024px (protótipo
+ * A exploração. No celular: o lema em letra grande, busca, categorias, o
+ * carrossel dos achados da curadoria e a lista; filtrando, o lema sai do
+ * caminho e a lista sobe. A partir de 1024px (protótipo
  * `index.html`): o topo com a foto da estrada e os destaques em grade. O
  * filtro mora na URL e muda no lugar; a lista vem do cache do Query.
  */
@@ -50,11 +52,23 @@ export function Exploracao({
         />
       </div>
 
-      <div className="flex flex-col gap-4 p-4 lg:hidden">
-        <h1 className="sr-only">Explorar lugares</h1>
+      <div className="flex flex-col gap-4 px-4 pt-5 pb-6 lg:hidden">
+        <h1
+          className={cn(
+            "text-[2.375rem] leading-[0.98] font-extrabold tracking-[-0.035em] text-foreground-brand",
+            filtrando && "sr-only"
+          )}
+        >
+          Descubra lugares que{" "}
+          <span className="text-brand-gradient">valem a pena</span>
+        </h1>
         <BarraDeBusca cidades={cidades} />
         <FiltroDeCategorias categorias={categorias} />
-        {!filtrando && <CartaoDescubra />}
+        {!filtrando && (
+          <div className="mt-2">
+            <CarrosselDeAchados lugares={vitrine.destaques} />
+          </div>
+        )}
       </div>
 
       <section
@@ -67,7 +81,7 @@ export function Exploracao({
             <span className="mb-2 hidden h-1 w-12 rounded-full bg-brand lg:block" />
             <h2
               id="titulo-destaques"
-              className="text-sm font-extrabold text-foreground lg:text-3xl lg:tracking-tight"
+              className="text-xl font-extrabold tracking-tight text-foreground lg:text-3xl"
             >
               {filtrando ? "Lugares encontrados" : "Destaques da Rota"}
             </h2>
@@ -83,7 +97,7 @@ export function Exploracao({
                 cidade: undefined,
                 busca: undefined,
               })}
-              className="flex items-center gap-1 text-[11px] font-bold text-primary lg:text-sm"
+              className="flex items-center gap-1 text-sm font-bold text-primary"
             >
               Ver todos
               <ArrowRight aria-hidden="true" className="size-3" />

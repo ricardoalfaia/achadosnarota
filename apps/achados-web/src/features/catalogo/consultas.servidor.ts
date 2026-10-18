@@ -282,10 +282,12 @@ export async function slugsPublicados(): Promise<Result<string[]>> {
 }
 
 /**
- * O que o topo da versão desktop mostra para convencer: o primeiro destaque da
+ * O que o topo da exploração mostra para convencer: os primeiros destaques da
  * curadoria e quantos lugares e cidades já foram avaliados. Tudo contado no
  * banco; nenhum número fixo no código.
  */
+const QUANTOS_NA_VITRINE = 5;
+
 export const lerVitrine = cache(async (): Promise<Result<VitrineDoCatalogo>> =>
   lerPublico(banco(), async (db) => {
     const [primeiros, [totais]] = await Promise.all([
@@ -295,7 +297,7 @@ export const lerVitrine = cache(async (): Promise<Result<VitrineDoCatalogo>> =>
           sql`${editorialReviews.score} desc nulls last`,
           asc(places.name)
         )
-        .limit(1),
+        .limit(QUANTOS_NA_VITRINE),
       db
         .select({
           lugares: sql<number>`count(*)::int`,
@@ -303,9 +305,8 @@ export const lerVitrine = cache(async (): Promise<Result<VitrineDoCatalogo>> =>
         })
         .from(places),
     ]);
-    const [destaque] = await cartoesDe(db, primeiros);
     return {
-      ...(destaque ? { destaque } : {}),
+      destaques: await cartoesDe(db, primeiros),
       lugares: totais?.lugares ?? 0,
       cidades: totais?.cidades ?? 0,
     };

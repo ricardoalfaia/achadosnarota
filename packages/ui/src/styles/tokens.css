@@ -552,7 +552,22 @@
   --animate-pop: pop 320ms var(--ease-spring) both;
   /* Cartão que flutua devagar (floatGentle do protótipo). */
   --animate-flutuar: flutuar 6s ease-in-out infinite;
+  /*
+   * Itens de lista que entram em sequência: cada um define --ordem (0, 1, 2…)
+   * e espera 60ms a mais que o anterior, até o oitavo. Só CSS: funciona antes
+   * da hidratação e não esconde conteúdo se o JavaScript falhar.
+   */
+  --animate-entrar: subir 480ms var(--ease-smooth)
+    calc(min(var(--ordem, 0), 8) * 60ms) both;
+  /* A tela que acaba de abrir (template das rotas): só opacidade. */
+  --animate-pagina: fade-in 240ms ease-out both;
 
+  @keyframes subir {
+    from {
+      opacity: 0;
+      translate: 0 16px;
+    }
+  }
   @keyframes fade-in-up {
     from {
       opacity: 0;

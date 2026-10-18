@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import { EstadoVazio } from "@achados/ui";
 import { estiloDoBotao } from "@achados/ui/estilos";
@@ -37,9 +37,13 @@ export function ListaDeLugares({
     );
   }
   return (
-    <ul className="flex flex-col gap-4 lg:grid lg:grid-cols-3 lg:gap-6 xl:grid-cols-4">
+    <ul className="flex flex-col gap-5 lg:grid lg:grid-cols-3 lg:gap-6 xl:grid-cols-4">
       {lugares.map((lugar, indice) => (
-        <li key={lugar.slug}>
+        <li
+          key={lugar.slug}
+          style={{ "--ordem": indice } as CSSProperties}
+          className="animate-entrar"
+        >
           <CartaoDeLugar
             lugar={lugar}
             prioridade={indice === 0}
@@ -62,9 +66,9 @@ export function EsqueletoDaLista() {
       {[0, 1, 2, 3].map((i) => (
         <li
           key={i}
-          className="overflow-hidden rounded-card border border-border bg-surface lg:rounded-3xl"
+          className="overflow-hidden rounded-3xl bg-surface ring-1 ring-border/60"
         >
-          <div className="h-40 animate-pulse bg-surface-hover lg:h-52" />
+          <div className="h-52 animate-pulse bg-surface-hover" />
           <div className="flex flex-col gap-2 p-3">
             <div className="h-3.5 w-1/2 animate-pulse rounded bg-surface-hover" />
             <div className="h-3 w-1/3 animate-pulse rounded bg-surface-hover" />

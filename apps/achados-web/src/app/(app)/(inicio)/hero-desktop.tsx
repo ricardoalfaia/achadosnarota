@@ -97,9 +97,9 @@ export function HeroDesktop({
             inclinacao="forte"
             className="absolute top-0 left-0 opacity-90"
           />
-          {vitrine.destaque && (
+          {vitrine.destaques[0] && (
             <div className="relative z-10 mt-16 animate-flutuar">
-              <CartaoEmDestaque lugar={vitrine.destaque} />
+              <CartaoEmDestaque lugar={vitrine.destaques[0]} />
             </div>
           )}
           <div className="relative z-10 mt-5 self-end">

@@ -83,7 +83,10 @@ test("filtro inválido na URL é ignorado, não quebra a página", async ({
 
 test("o cartão leva à ficha do lugar", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("link", { name: "Rancho Português" }).click();
+  await page
+    .locator("#destaques")
+    .getByRole("link", { name: "Rancho Português" })
+    .click();
 
   await expect(page).toHaveURL(/\/lugar\/rancho-portugues$/);
   await expect(
@@ -96,7 +99,11 @@ test("a ficha mostra curadoria, ações, benefícios com regras e as outras abas
 }) => {
   await page.goto("/lugar/rancho-portugues");
 
-  await expect(page.getByText("Curadoria Achados na Rota")).toBeVisible();
+  // O cabeçalho existe para o celular (sobre a foto) e para o desktop; só um
+  // aparece por largura de tela.
+  await expect(
+    page.getByText("Curadoria Achados na Rota").filter({ visible: true })
+  ).toBeVisible();
   await expect(page.getByLabel("Nota 4,8 de 5").first()).toBeVisible();
   await expect(page.getByRole("link", { name: /Ligar para/ })).toHaveAttribute(
     "href",
@@ -122,7 +129,7 @@ test("a ficha mostra curadoria, ações, benefícios com regras e as outras abas
   ).toBeVisible();
 
   await page.getByRole("tab", { name: "Fotos" }).click();
-  await expect(page.getByRole("tabpanel").getByRole("img")).toHaveCount(4);
+  await expect(page.getByRole("tabpanel").getByRole("img")).toHaveCount(5);
 
   await page.getByRole("tab", { name: "Sobre" }).click();
   await expect(page.getByRole("tabpanel")).toContainText("Pindamonhangaba");
@@ -130,7 +137,7 @@ test("a ficha mostra curadoria, ações, benefícios com regras e as outras abas
 
 test("o total de fotos do topo abre a aba de fotos", async ({ page }) => {
   await page.goto("/lugar/rancho-portugues");
-  await page.getByRole("link", { name: "4 fotos" }).click();
+  await page.getByRole("link", { name: "5 fotos" }).click();
   await expect(page).toHaveURL(/\?aba=fotos$/);
   await expect(page.getByRole("tab", { name: "Fotos" })).toHaveAttribute(
     "aria-selected",
@@ -197,4 +204,27 @@ test("trocar de categoria não recarrega a página e voltar usa o cache", async 
   expect(pedidos.filter((p) => p === "documento")).toHaveLength(0);
   expect(pedidos.filter((p) => p.includes("categoria=bares"))).toHaveLength(1);
   expect(pedidos).toHaveLength(1);
+});
+
+test("no celular, a exploração abre com o carrossel dos achados", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const carrossel = page.getByRole("region", { name: "Achados da curadoria" });
+  await expect(carrossel.getByRole("listitem")).toHaveCount(5);
+  await carrossel.getByRole("link").first().click();
+  await expect(page).toHaveURL(/\/lugar\//);
+});
+
+test("na ficha, a barra inferior dá lugar ao botão do benefício", async ({
+  page,
+}) => {
+  await page.goto("/lugar/rancho-portugues");
+  await expect(
+    page.getByRole("navigation", { name: "Navegação principal" })
+  ).toHaveCount(0);
+  // Sem conta, o botão leva a entrar e volta para a ficha.
+  await expect(
+    page.getByRole("link", { name: "Entrar e usar" })
+  ).toHaveAttribute("href", "/login?voltar=%2Flugar%2Francho-portugues");
 });

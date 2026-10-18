@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { unwrapOrThrow } from "@achados/core";
-import { EstadoVazio, Etiqueta, Nota } from "@achados/ui";
+import { EstadoVazio, Etiqueta } from "@achados/ui";
 import { HydrationBoundary } from "@tanstack/react-query";
-import { MapPin, Ticket } from "lucide-react";
+import { Ticket } from "lucide-react";
 
 import {
+  BarraDoBeneficio,
   BotaoDeResgate,
   CartaoDeBeneficio,
   situacaoDoResgate,
@@ -16,8 +17,8 @@ import {
   AcoesRapidas,
   AvaliacaoEditorial,
   BotaoDeCompartilhar,
+  CabecalhoDaFicha,
   GaleriaDeFotos,
-  SeloDaCuradoria,
   SobreOLugar,
   TopoDaFicha,
 } from "@/features/catalogo";
@@ -26,7 +27,7 @@ import { BotaoDeFavorito } from "@/features/favoritos";
 import { prefetchDosFavoritos } from "@/features/favoritos/servidor";
 import { lerPassaporte } from "@/features/passaporte/servidor";
 import { estadoDesidratado } from "@/shared/consultas/cliente.servidor";
-import { rotaDoLugar } from "@/shared/rotas";
+import { rotaDeEntrar, rotaDoLugar } from "@/shared/rotas";
 import { sessaoLiberada } from "@/shared/sessao/sessao.servidor";
 
 export async function generateMetadata({
@@ -50,7 +51,11 @@ export async function generateMetadata({
   };
 }
 
-/** A ficha pública de um lugar (protótipo, tela 2). */
+/**
+ * A ficha pública de um lugar (protótipo, tela 2). No celular, a foto domina
+ * com o nome por cima, e o pé fixo leva ao benefício no lugar da barra de
+ * navegação; no desktop, foto e texto lado a lado.
+ */
 export default async function PaginaDoLugar({
   params,
   searchParams,
@@ -71,6 +76,7 @@ export default async function PaginaDoLugar({
       : false,
   });
   const caminho = rotaDoLugar(ficha.slug);
+  const [principal] = ficha.beneficios;
 
   return (
     <HydrationBoundary state={estadoDesidratado()}>
@@ -89,29 +95,16 @@ export default async function PaginaDoLugar({
               />
             </>
           }
-        />
+        >
+          <CabecalhoDaFicha lugar={ficha} variante="foto" />
+        </TopoDaFicha>
 
-        <div className="flex flex-col gap-4 p-4 lg:p-0">
-          <header>
-            {ficha.avaliacao && <SeloDaCuradoria />}
-            <h1 className="mt-2 text-2xl leading-tight font-extrabold text-foreground lg:text-4xl lg:tracking-tight">
-              {ficha.nome}
-            </h1>
-            <div className="mt-1 flex flex-wrap items-center gap-2 text-xs">
-              {ficha.nota !== undefined && (
-                <Nota valor={ficha.nota} complemento="(curadoria)" />
-              )}
-              {ficha.nota !== undefined && (
-                <span aria-hidden="true" className="text-foreground-subtle">
-                  •
-                </span>
-              )}
-              <span className="flex items-center gap-1 text-foreground-muted">
-                <MapPin aria-hidden="true" className="size-3.5" />
-                {ficha.local}
-              </span>
-            </div>
-          </header>
+        <div className="flex flex-col gap-5 px-4 pt-5 lg:gap-4 lg:p-0">
+          <CabecalhoDaFicha
+            lugar={ficha}
+            variante="pagina"
+            className="hidden lg:block"
+          />
 
           {ficha.tags.length > 0 && (
             <ul aria-label="Características" className="flex flex-wrap gap-1.5">
@@ -123,7 +116,7 @@ export default async function PaginaDoLugar({
             </ul>
           )}
 
-          <p className="text-xs leading-relaxed text-foreground-muted">
+          <p className="text-[15px] leading-relaxed text-foreground-muted lg:text-sm">
             {ficha.resumo}
           </p>
 
@@ -141,16 +134,20 @@ export default async function PaginaDoLugar({
           <AbasDaFicha
             inicial={abaDaFicha(busca.aba)}
             cupons={
-              <section aria-labelledby="titulo-beneficios">
+              <section
+                id="beneficios"
+                aria-labelledby="titulo-beneficios"
+                className="scroll-mt-4"
+              >
                 <div className="mb-3 flex items-center justify-between gap-2">
                   <div>
                     <h2
                       id="titulo-beneficios"
-                      className="text-sm font-extrabold text-foreground"
+                      className="text-lg font-extrabold tracking-tight text-foreground"
                     >
                       Benefícios exclusivos
                     </h2>
-                    <p className="text-[11px] text-foreground-muted">
+                    <p className="text-xs text-foreground-muted">
                       Aproveite com seu Passaporte Achados na Rota.
                     </p>
                   </div>
@@ -193,6 +190,15 @@ export default async function PaginaDoLugar({
           />
         </div>
       </article>
+      {principal && (
+        <BarraDoBeneficio
+          titulo={principal.titulo}
+          total={ficha.beneficios.length}
+          situacao={situacao}
+          hrefDosBeneficios={`${caminho}?aba=cupons#beneficios`}
+          hrefDeEntrar={rotaDeEntrar(caminho)}
+        />
+      )}
     </HydrationBoundary>
   );
 }

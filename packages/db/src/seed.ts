@@ -73,7 +73,7 @@ type Lugar = {
   tags: string[];
   address: string;
   phone: string;
-  fotos: { arquivo: string; alt: string }[];
+  fotos: { arquivo: string; alt: string; origem?: string }[];
   avaliacao: {
     score: string;
     summary: string;
@@ -86,6 +86,12 @@ type Lugar = {
 
 const ORIGEM_DAS_FOTOS =
   "Imagem ilustrativa do protótipo; só para desenvolvimento.";
+
+// Exceção registrada no ADR-0025: fotos de dois estabelecimentos cujos sites o
+// responsável fez, para validar o app com parceiros antes da inauguração. Saem
+// do repositório e do seed antes da produção inaugural.
+const ORIGEM_DO_SITE =
+  "Foto do site do estabelecimento, cedida ao responsável; só para validação antes da inauguração (ADR-0025).";
 
 const LUGARES: Lugar[] = [
   {
@@ -102,14 +108,16 @@ const LUGARES: Lugar[] = [
     address: "Estrada do Rancho, km 98, Pindamonhangaba - SP",
     phone: "1200000001",
     fotos: [
-      { arquivo: "rancho", alt: "Salão iluminado do Rancho Português à noite" },
-      {
-        arquivo: "rancho-dish",
-        alt: "Prato típico servido no Rancho Português",
-      },
-      { arquivo: "rancho-int1", alt: "Mesas de madeira no salão rústico" },
-      { arquivo: "rancho-int2", alt: "Deck com vista para a serra" },
-    ],
+      ["01-salao", "Salão com azulejos e pratos decorados na parede"],
+      ["02-bacalhau", "Bacalhau à lagareiro servido no restaurante"],
+      ["03-mesas", "Mesas postas com taças no salão"],
+      ["04-adega", "Adega com prateleiras de vinhos"],
+      ["05-polvo", "Polvo à provençal"],
+    ].map(([arquivo, alt]) => ({
+      arquivo: `rancho-portugues/${arquivo}`,
+      alt: alt!,
+      origem: ORIGEM_DO_SITE,
+    })),
     avaliacao: {
       score: "4.8",
       summary:
@@ -134,8 +142,8 @@ const LUGARES: Lugar[] = [
     ],
   },
   {
-    slug: "choperia-da-estacao",
-    name: "Choperia da Estação",
+    slug: "choperia-pinguim",
+    name: "Choperia Pinguim",
     cidade: "pindamonhangaba-sp",
     categoria: "bares",
     specialty: "Choperia",
@@ -147,9 +155,16 @@ const LUGARES: Lugar[] = [
     address: "Rua da Estação, 450, Centro, Pindamonhangaba - SP",
     phone: "1200000002",
     fotos: [
-      { arquivo: "choperia", alt: "Chopp gelado e petiscos sobre a mesa" },
-      { arquivo: "gourmet-plate", alt: "Porção servida na choperia" },
-    ],
+      ["01-chopp", "Chopp sendo tirado na torneira"],
+      ["02-brinde", "Brinde com tulipas de chopp"],
+      ["03-salao", "Salão do bar com televisões"],
+      ["04-prato", "Prato servido na panela de barro"],
+      ["05-tulipa", "Tulipa de chopp com colarinho cremoso"],
+    ].map(([arquivo, alt]) => ({
+      arquivo: `choperia-pinguim/${arquivo}`,
+      alt: alt!,
+      origem: ORIGEM_DO_SITE,
+    })),
     avaliacao: {
       score: "4.7",
       summary:
@@ -387,7 +402,7 @@ async function semearCatalogo(db: Db): Promise<Map<string, string>> {
         placeId,
         url: `/exemplos/${foto.arquivo}.webp`,
         alt: foto.alt,
-        source: ORIGEM_DAS_FOTOS,
+        source: foto.origem ?? ORIGEM_DAS_FOTOS,
         position: posicao,
       }))
     );

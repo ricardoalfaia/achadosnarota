@@ -27,3 +27,11 @@ export function itemAtivo(caminho: string): ItemDaNavegacao["chave"] | null {
     null
   );
 }
+
+/**
+ * A barra inferior some na ficha de um lugar: a tela é de decisão e o pé fica
+ * com o botão do benefício (como um "adicionar à sacola"). Voltar é pelo topo.
+ */
+export function barraVisivel(caminho: string): boolean {
+  return !caminho.startsWith("/lugar/");
+}

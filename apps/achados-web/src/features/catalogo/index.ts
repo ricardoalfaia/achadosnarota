@@ -7,8 +7,9 @@ export { AtalhosDeCidade } from "./components/atalhos-de-cidade";
 export { BarraDeBusca } from "./components/barra-de-busca";
 export { BuscaRapida } from "./components/busca-rapida";
 export { BotaoDeCompartilhar } from "./components/botao-de-compartilhar";
+export { CabecalhoDaFicha } from "./components/cabecalho-da-ficha";
 export { CartaoDeLugar } from "./components/cartao-de-lugar";
-export { CartaoDescubra } from "./components/cartao-descubra";
+export { CarrosselDeAchados } from "./components/carrossel-de-achados";
 export { CartaoEmDestaque } from "./components/cartao-em-destaque";
 export { DestaquesDaRota } from "./components/destaques-da-rota";
 export {

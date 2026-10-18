@@ -30,7 +30,7 @@ export type AparenciaDoBotao = {
 };
 
 const BASE =
-  "inline-flex shrink-0 cursor-pointer items-center justify-center rounded-full border font-bold whitespace-nowrap transition-[color,background-color,border-color,box-shadow,translate] duration-200 ease-smooth outline-none select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50";
+  "inline-flex shrink-0 cursor-pointer items-center justify-center rounded-full border font-bold whitespace-nowrap transition-[color,background-color,border-color,box-shadow,translate,scale] duration-200 ease-smooth outline-none select-none active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50";
 
 /** Ícones dentro do botão acompanham o tamanho do texto. */
 const ICONE = "[&_svg]:size-[1.25em] [&_svg]:shrink-0";

@@ -96,3 +96,12 @@ Explorar e favoritar respondem na hora e funcionam com rede ruim; as fichas cont
 
 - [ADR-0006](0006-estado-http-e-cache.md), [ADR-0016](0016-recursos-do-react-19.md), [ADR-0020](0020-autenticacao-e-sessao.md), [ADR-0022](0022-identidade-visual-achados.md), [ADR-0024](0024-identificadores-ulid.md)
 - [Guia de PWA do Next.js](https://nextjs.org/docs/app/guides/progressive-web-apps)
+
+## Exceção: fotos reais de dois estabelecimentos no seed
+
+As regras do projeto (AGENTS.md) não deixam dado real de parceiro entrar no repositório. Esta exceção é deliberada e temporária:
+
+- **Motivo:** validar o app com parceiros antes da produção inaugural, com fotos que mostram o padrão de qualidade esperado.
+- **Escopo:** só as fotos em `apps/achados-web/public/exemplos/rancho-portugues/` e `apps/achados-web/public/exemplos/choperia-pinguim/`, tiradas dos sites desses estabelecimentos, feitos pelo responsável. Ficaram de fora as que mostram letreiro, logotipo ou marca. Os nomes são os reais (Rancho Português e Choperia Pinguim), por decisão do responsável; notas, pareceres e benefícios do seed são fictícios. Desde 17/10/2026 o ambiente Neon + Vercel é tratado como homologação (`APP_ENV=homolog`) até a produção inaugural, e o seed pode rodar lá para a validação com os parceiros.
+- **Responsável:** Ricardo Alfaia Barbosa (decisão de 17/10/2026).
+- **Condição de retirada:** antes da produção inaugural, ou quando o admin cadastrar esses lugares com fotos enviadas ao bucket (R2). As fotos saem da pasta e do seed nesse momento. O histórico do git continua com elas; se for preciso apagá-las de vez, é preciso reescrever o histórico.
