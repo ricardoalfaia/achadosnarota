@@ -2,15 +2,16 @@
 
 import { Avatar, SeletorDeTema } from "@achados/ui";
 import { cn } from "@achados/ui/estilos";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, LogOut } from "lucide-react";
 
+import { sair } from "@/features/acesso/actions";
 import { usePreferencias } from "@/shared/preferencias/preferencias-provider";
 import { ROTULO_DO_PAPEL, type PessoaDaEquipe } from "@/shared/sessao/sessao";
 import { useMenuDoUsuario } from "./use-menu-do-usuario";
 
 /**
- * O avatar da faixa do topo e o painel com quem está na sessão e o tema. Sair
- * entra junto com o login da equipe (ADR-0020).
+ * O avatar da faixa do topo e o painel com quem está na sessão, o tema e
+ * o botão de sair.
  */
 export function MenuDoUsuario({ pessoa }: { pessoa: PessoaDaEquipe }) {
   const { aberto, alternar, raiz, gatilho, presenca } = useMenuDoUsuario();
@@ -70,10 +71,15 @@ export function MenuDoUsuario({ pessoa }: { pessoa: PessoaDaEquipe }) {
               aoMudar={(tema) => mudar("tema", tema)}
             />
           </div>
-          <p className="mt-4 rounded-control bg-warning-subtle px-3 py-2 text-xs text-warning">
-            Painel sem login nesta fase: os dados são provisórios e só existem
-            no desenvolvimento.
-          </p>
+          <form action={sair} className="mt-4 border-t border-border pt-4">
+            <button
+              type="submit"
+              className="flex w-full cursor-pointer items-center gap-2 rounded-control px-2 py-2 text-left text-sm font-semibold text-danger outline-none hover:bg-danger-subtle focus-visible:outline-2 focus-visible:outline-ring"
+            >
+              <LogOut aria-hidden="true" className="size-4" />
+              Sair do painel
+            </button>
+          </form>
         </div>
       )}
     </div>

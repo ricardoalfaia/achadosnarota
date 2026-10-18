@@ -92,12 +92,21 @@ importers:
       '@tanstack/react-query':
         specifier: 'catalog:'
         version: 5.104.1(react@19.2.8)
+      better-auth:
+        specifier: 1.7.5
+        version: 1.7.5(drizzle-kit@0.31.11)(drizzle-orm@0.45.3(kysely@0.29.6)(postgres@3.4.9))(next@16.3.8(@babel/core@7.29.7(supports-color@7.2.0))(@playwright/test@1.63.0)(@types/node@24.19.2)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(vitest@5.0.3)
+      drizzle-orm:
+        specifier: 0.45.3
+        version: 0.45.3(kysely@0.29.6)(postgres@3.4.9)
       lucide-react:
         specifier: 1.52.0
         version: 1.52.0(@types/react@19.3.0)(react@19.2.8)
       next:
         specifier: 16.3.8
         version: 16.3.8(@babel/core@7.29.7(supports-color@7.2.0))(@playwright/test@1.63.0)(@types/node@24.19.2)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      qrcode:
+        specifier: 1.5.4
+        version: 1.5.4
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -123,6 +132,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 24.19.2
+      '@types/qrcode':
+        specifier: 1.5.6
+        version: 1.5.6
       '@types/react':
         specifier: 'catalog:'
         version: 19.3.0

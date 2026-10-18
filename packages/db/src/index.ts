@@ -33,3 +33,4 @@ export {
   type ResgateDoHistorico,
   type UsoDoBeneficio,
 } from "./resgate";
+export { PAPEIS_DA_EQUIPE, type PapelDaEquipe } from "./schema/_rls";

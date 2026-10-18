@@ -1,14 +1,14 @@
-// Quem está usando o painel, no formato que a casca mostra. Sem React e sem
-// Next.
-//
-// PROVISÓRIO: o painel ainda não tem login. A sessão da equipe (curador,
-// administrador, com MFA) entra com o ADR-0020 e o ADR-003 de produto, e a
-// autorização será decidida no servidor a cada pedido. Até lá a casca mostra
-// um papel genérico, sem nome nem e-mail de pessoa real.
+import type { PapelDaEquipe as PapelNoBanco } from "@achados/db";
 
-export type PapelDaEquipe = "administrador" | "curador";
+// Quem está usando o painel, no formato que a casca mostra, e as regras puras
+// de papel. Sem React e sem Next. Quem é da equipe e com que papel vem do
+// banco (`staff_member`) a cada pedido; esconder um item do menu não é
+// autorização: o banco recusa o que o papel não pode (RLS).
+
+export type PapelDaEquipe = "administrador" | "curador" | "comercial";
 
 export type PessoaDaEquipe = {
+  id: string;
   nome: string;
   papel: PapelDaEquipe;
 };
@@ -16,9 +16,33 @@ export type PessoaDaEquipe = {
 export const ROTULO_DO_PAPEL: Record<PapelDaEquipe, string> = {
   administrador: "Administração",
   curador: "Curadoria",
+  comercial: "Comercial",
 };
 
-export const PESSOA_PROVISORIA: PessoaDaEquipe = {
-  nome: "Equipe Achados",
-  papel: "administrador",
+const PAPEL_DO_BANCO: Record<PapelNoBanco, PapelDaEquipe> = {
+  admin: "administrador",
+  curator: "curador",
+  commercial: "comercial",
 };
+
+export function papelDoBanco(papel: PapelNoBanco): PapelDaEquipe {
+  return PAPEL_DO_BANCO[papel];
+}
+
+/** O que cada papel escreve (o banco confere de novo; isto só orienta a tela). */
+export const ESCREVE: Record<
+  "casas" | "curadoria" | "promocoes" | "operadores",
+  readonly PapelDaEquipe[]
+> = {
+  casas: ["administrador", "curador"],
+  curadoria: ["administrador", "curador"],
+  promocoes: ["administrador", "comercial"],
+  operadores: ["administrador"],
+};
+
+export function podeEscrever(
+  pessoa: Pick<PessoaDaEquipe, "papel">,
+  area: keyof typeof ESCREVE
+): boolean {
+  return ESCREVE[area].includes(pessoa.papel);
+}

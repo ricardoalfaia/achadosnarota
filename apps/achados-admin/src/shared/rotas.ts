@@ -1,5 +1,8 @@
 // Endereços do painel e regras puras sobre eles. Sem React e sem Next.
 
+/** A entrada da equipe, fora da casca e da navegação do painel. */
+export const ROTA_DE_ENTRADA = "/entrar";
+
 export const ROTAS = {
   inicio: "/",
   casas: "/casas",

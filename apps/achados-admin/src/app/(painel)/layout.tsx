@@ -1,11 +1,13 @@
 import { Casca } from "@/shared/casca/casca";
-import { PESSOA_PROVISORIA } from "@/shared/sessao/sessao";
+import { exigirEquipe } from "@/shared/sessao/sessao.servidor";
 
 /**
- * Todas as telas do painel ficam dentro da casca. Quando houver login da
- * equipe (ADR-0020), a sessão é conferida aqui e de novo em cada leitura e
- * comando no servidor: esconder um item do menu não é autorização.
+ * Todas as telas do painel ficam dentro da casca, e só para a equipe com o
+ * autenticador ligado. A sessão e o papel são conferidos aqui e de novo em
+ * cada leitura e comando no servidor; esconder um item do menu não é
+ * autorização.
  */
-export default function LayoutDoPainel({ children }: LayoutProps<"/">) {
-  return <Casca pessoa={PESSOA_PROVISORIA}>{children}</Casca>;
+export default async function LayoutDoPainel({ children }: LayoutProps<"/">) {
+  const pessoa = await exigirEquipe();
+  return <Casca pessoa={pessoa}>{children}</Casca>;
 }
