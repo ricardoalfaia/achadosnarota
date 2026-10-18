@@ -60,6 +60,9 @@ type Oferta = {
   terms: string;
   kind: s.OfferKind;
   icon: string;
+  /** Padrão do banco: 1 uso por ano. */
+  limitPerUser?: number;
+  usagePeriod?: s.OfferUsagePeriod;
 };
 
 type Lugar = {
@@ -261,6 +264,14 @@ const LUGARES: Lugar[] = [
     },
     ofertas: [
       {
+        title: "Compre um prato principal e ganhe outro",
+        terms:
+          "O segundo prato principal, de valor igual ou menor, sai de graça. Para duas pessoas na mesma mesa, uma vez por ano.",
+        kind: "two_for_one",
+        icon: "gift",
+        usagePeriod: "year",
+      },
+      {
         title: "10% de desconto no almoço",
         terms: "Válido de segunda a sexta. Apresente o cupom no local.",
         kind: "discount",
@@ -311,6 +322,7 @@ const LUGARES: Lugar[] = [
           "Válido de terça a domingo. Peça 2 chopps de 500 ml e ganhe o terceiro.",
         kind: "courtesy",
         icon: "beer",
+        usagePeriod: "week",
       },
     ],
   },

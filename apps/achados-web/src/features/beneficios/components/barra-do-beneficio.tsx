@@ -7,7 +7,7 @@ import type { SituacaoDoResgate } from "../domain/situacao";
 const ACAO: Record<SituacaoDoResgate, string> = {
   entrar: "Entrar e usar",
   assinar: "Ver como usar",
-  emissaoIndisponivel: "Usar agora",
+  usar: "Usar agora",
 };
 
 /**

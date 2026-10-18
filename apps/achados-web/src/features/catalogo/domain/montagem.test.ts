@@ -41,6 +41,8 @@ const beneficio = (lugarId: string, posicao: number): LinhaDoBeneficio => ({
   regras: "Regras.",
   icone: "percent",
   tipo: "discount",
+  limite: 1,
+  periodo: "year",
 });
 
 describe("montarCartoes", () => {

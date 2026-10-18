@@ -14,9 +14,10 @@ import { leituraPublica } from "./_rls";
 import { places } from "./catalogo";
 
 // Benefícios (docs/produto/02, contexto Benefits). Oferta é comercial e
-// voluntária do parceiro; não referencia nada do editorial (ADR-004). A
-// emissão e o resgate de código entram na F4, com token em hash e transação
-// (ADR-005 de produto).
+// voluntária do parceiro; não referencia nada do editorial (ADR-004). O
+// resgate emite um código temporário guardado em hash e o operador do
+// estabelecimento o consome numa transação (ADR-005 de produto; ver
+// resgates.ts e src/resgate.ts).
 
 export const OFFER_STATUS = [
   "draft",
@@ -29,9 +30,28 @@ export const OFFER_STATUS = [
 export type OfferStatus = (typeof OFFER_STATUS)[number];
 export const offerStatusEnum = pgEnum("offer_status", OFFER_STATUS);
 
-export const OFFER_KINDS = ["discount", "courtesy"] as const;
+/** `two_for_one`: "compre um, ganhe outro", o benefício principal da casa. */
+export const OFFER_KINDS = ["discount", "courtesy", "two_for_one"] as const;
 export type OfferKind = (typeof OFFER_KINDS)[number];
 export const offerKindEnum = pgEnum("offer_kind", OFFER_KINDS);
+
+/**
+ * Em que janela vale o `limit_per_user`: o dia, a semana, o mês ou o ano do
+ * calendário (horário de Brasília), ou sem limite. "2 por 1 uma vez por ano"
+ * é limite 1 no ano; "chopp cortesia toda semana", limite 1 na semana.
+ */
+export const OFFER_USAGE_PERIODS = [
+  "day",
+  "week",
+  "month",
+  "year",
+  "unlimited",
+] as const;
+export type OfferUsagePeriod = (typeof OFFER_USAGE_PERIODS)[number];
+export const offerUsagePeriodEnum = pgEnum(
+  "offer_usage_period",
+  OFFER_USAGE_PERIODS
+);
 
 export const offers = pgTable(
   "offer",
@@ -47,8 +67,9 @@ export const offers = pgTable(
     kind: offerKindEnum("kind").notNull(),
     /** Chave de apresentação do ícone (percent, gift, dessert, beer...). */
     icon: text("icon").notNull(),
-    /** Quantas vezes cada assinante pode usar no período do passaporte. */
+    /** Quantas vezes cada assinante pode usar dentro de `usage_period`. */
     limitPerUser: integer("limit_per_user").notNull().default(1),
+    usagePeriod: offerUsagePeriodEnum("usage_period").notNull().default("year"),
     validFrom: timestamp("valid_from", { withTimezone: true }),
     validUntil: timestamp("valid_until", { withTimezone: true }),
     status: offerStatusEnum("status").notNull().default("draft"),

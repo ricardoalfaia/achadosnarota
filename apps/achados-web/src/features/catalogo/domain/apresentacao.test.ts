@@ -7,6 +7,7 @@ import {
   mesDaVisita,
   siteParaExibir,
   telefoneParaExibir,
+  textoDaRegraDeUso,
 } from "./apresentacao";
 
 describe("apresentação do lugar", () => {
@@ -38,6 +39,20 @@ describe("apresentação do lugar", () => {
   it("mostra o site sem o esquema", () => {
     expect(siteParaExibir("https://example.com/rancho/")).toBe(
       "example.com/rancho"
+    );
+  });
+});
+
+describe("textoDaRegraDeUso", () => {
+  it("diz quantas vezes e em que período, ou que não há limite", () => {
+    expect(textoDaRegraDeUso({ limite: 1, periodo: "year" })).toBe(
+      "1 vez por ano"
+    );
+    expect(textoDaRegraDeUso({ limite: 2, periodo: "week" })).toBe(
+      "2 vezes por semana"
+    );
+    expect(textoDaRegraDeUso({ limite: 1, periodo: "unlimited" })).toBe(
+      "Sem limite de usos"
     );
   });
 });

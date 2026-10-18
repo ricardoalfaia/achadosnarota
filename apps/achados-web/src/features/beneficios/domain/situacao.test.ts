@@ -20,7 +20,7 @@ describe("situacaoDoResgate", () => {
 
   it("com passaporte, a emissão ainda não existe", () => {
     expect(situacaoDoResgate({ logado: true, passaporteAtivo: true })).toBe(
-      "emissaoIndisponivel"
+      "usar"
     );
   });
 });

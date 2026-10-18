@@ -22,6 +22,7 @@ import {
   GaleriaDeFotos,
   ResumoDaCuradoria,
   SobreOLugar,
+  textoDaRegraDeUso,
   TopoDaFicha,
 } from "@/features/catalogo";
 import { lerFichaDoLugar } from "@/features/catalogo/servidor";
@@ -179,6 +180,8 @@ export default async function PaginaDoLugar({
                         beneficio={beneficio}
                         acao={
                           <BotaoDeResgate
+                            beneficioId={beneficio.id}
+                            regraDeUso={textoDaRegraDeUso(beneficio)}
                             titulo={beneficio.titulo}
                             regras={beneficio.regras}
                             lugar={`${ficha.nome} • ${ficha.local}`}

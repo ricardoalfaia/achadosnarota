@@ -12,7 +12,7 @@ test("com passaporte ativo, o cartão mostra a titular, a validade e o código",
   await expect(cartao).toContainText(/AR-[0-9A-Z]{6}/);
   await expect(page.getByText("Cupons utilizados")).toBeVisible();
   await expect(
-    page.getByRole("tab", { name: /Disponíveis \(7\)/ })
+    page.getByRole("tab", { name: /Disponíveis \(8\)/ })
   ).toBeVisible();
 
   await page.getByRole("tab", { name: "Utilizados (0)" }).click();
@@ -21,17 +21,30 @@ test("com passaporte ativo, o cartão mostra a titular, a validade e o código",
   ).toBeVisible();
 });
 
-test("com passaporte ativo, Resgatar avisa que a emissão ainda não está no ar", async ({
+test("com passaporte ativo, o 2 por 1 gera um código de uso único com validade", async ({
   page,
 }) => {
   await page.goto("/lugar/rancho-portugues");
-  await page.getByRole("button", { name: "Resgatar" }).first().click();
-  const dialogo = page.getByRole("dialog", {
-    name: "10% de desconto no almoço",
+  const beneficios = page.getByRole("region", {
+    name: "Benefícios exclusivos",
   });
-  await expect(dialogo).toContainText("Seu passaporte está ativo");
-  // Nenhum código ou QR inventado no navegador.
-  await expect(dialogo.getByRole("img", { name: /QR/ })).toHaveCount(0);
+  await expect(beneficios).toContainText("1 vez por ano");
+  await beneficios.getByRole("button", { name: "Usar" }).first().click();
+
+  const dialogo = page.getByRole("dialog", {
+    name: "Compre um prato principal e ganhe outro",
+  });
+  await dialogo
+    .getByRole("button", { name: "Estou na casa: gerar código" })
+    .click();
+  // O código vem do servidor: 6 caracteres sem ambíguos, em duas metades.
+  await expect(
+    dialogo.getByText(/^[2-9A-HJ-NP-Z]{3} [2-9A-HJ-NP-Z]{3}$/)
+  ).toBeVisible();
+  await expect(dialogo.getByRole("timer")).toContainText(/Vale por 0?\d:\d\d/);
+  await expect(dialogo).toContainText(
+    "O uso só conta quando o garçom confirmar"
+  );
 });
 
 test.describe("sem passaporte", () => {

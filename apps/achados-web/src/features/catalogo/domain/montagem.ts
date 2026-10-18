@@ -96,6 +96,8 @@ export function beneficioDaInterface({
   regras,
   icone,
   tipo,
+  limite,
+  periodo,
 }: LinhaDoBeneficio): Beneficio {
-  return { id, titulo, regras, icone, tipo };
+  return { id, titulo, regras, icone, tipo, limite, periodo };
 }

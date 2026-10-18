@@ -117,7 +117,7 @@ test("a ficha mostra curadoria, ações, benefícios com regras e as outras abas
   const beneficios = page.getByRole("region", {
     name: "Benefícios exclusivos",
   });
-  await expect(beneficios.getByRole("listitem")).toHaveCount(2);
+  await expect(beneficios.getByRole("listitem")).toHaveCount(3);
   await expect(beneficios).toContainText("Válido de segunda a sexta");
 
   await page.getByRole("tab", { name: "Avaliações" }).click();
@@ -162,10 +162,11 @@ test("sem conta, Resgatar pede para entrar e leva de volta à ficha", async ({
   await page.getByRole("button", { name: "Resgatar" }).first().click();
 
   const dialogo = page.getByRole("dialog", {
-    name: "10% de desconto no almoço",
+    name: "Compre um prato principal e ganhe outro",
   });
   await expect(dialogo).toContainText("Regras:");
-  await dialogo.getByRole("link", { name: "Entrar para resgatar" }).click();
+  await expect(dialogo).toContainText("1 vez por ano.");
+  await dialogo.getByRole("link", { name: "Entrar para usar" }).click();
   await expect(page).toHaveURL(/\/login\?voltar=%2Flugar%2Francho-portugues$/);
 });
 

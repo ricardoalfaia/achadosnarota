@@ -1,4 +1,4 @@
-import type { Selo } from "./tipos";
+import type { Beneficio, PeriodoDeUso, Selo } from "./tipos";
 
 // Como os dados do catálogo aparecem na tela. Funções puras e testáveis.
 
@@ -65,4 +65,20 @@ export function mesDaVisita(dataIso: string): string {
 /** Endereço público do site, sem o esquema: "example.com/rancho". */
 export function siteParaExibir(url: string): string {
   return url.replace(/^https?:\/\//, "").replace(/\/$/, "");
+}
+
+const NO_PERIODO: Record<Exclude<PeriodoDeUso, "unlimited">, string> = {
+  day: "por dia",
+  week: "por semana",
+  month: "por mês",
+  year: "por ano",
+};
+
+/** A regra de uso em linguagem de gente: "1 vez por ano", "Sem limite de usos". */
+export function textoDaRegraDeUso({
+  limite,
+  periodo,
+}: Pick<Beneficio, "limite" | "periodo">): string {
+  if (periodo === "unlimited") return "Sem limite de usos";
+  return `${limite} ${limite === 1 ? "vez" : "vezes"} ${NO_PERIODO[periodo]}`;
 }

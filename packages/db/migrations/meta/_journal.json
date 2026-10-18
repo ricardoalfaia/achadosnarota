@@ -15,6 +15,13 @@
       "when": 1792286578974,
       "tag": "0001_criterios_da_curadoria",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792292827145,
+      "tag": "0002_resgates",
+      "breakpoints": true
     }
   ]
 }

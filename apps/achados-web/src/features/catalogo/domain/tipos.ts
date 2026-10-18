@@ -25,12 +25,18 @@ export type Foto = {
 };
 
 /** Oferta comercial do parceiro, mostrada com as regras (docs/produto/08). */
+/** Em que janela do calendário vale o limite de usos (ou sem limite). */
+export type PeriodoDeUso = "day" | "week" | "month" | "year" | "unlimited";
+
 export type Beneficio = {
   id: string;
   titulo: string;
   regras: string;
   icone: string;
-  tipo: "discount" | "courtesy";
+  tipo: "discount" | "courtesy" | "two_for_one";
+  /** Quantas vezes cada assinante pode usar no período. */
+  limite: number;
+  periodo: PeriodoDeUso;
 };
 
 /** Parecer editorial publicado. Nota de 0 a 5. */

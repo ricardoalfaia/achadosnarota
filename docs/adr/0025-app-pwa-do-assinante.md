@@ -115,3 +115,12 @@ Decisão do responsável em 17/10/2026, pendente de revisão como as demais:
 - **Parecer em blocos fixos**: "O achado imperdível" (`highlight`), "O que provamos" (`summary`), "Dicas da curadoria" (`tips`) e "Bom saber" (`caveats`), com a data da visita.
 - **Na ficha**, o resumo da curadoria (certificado do selo, nota geral e achado imperdível) fica no corpo da página, antes das abas; a avaliação completa fica na aba.
 - Pendências: versão da metodologia, visitas e evidências (F2); a nota geral gravada (`score`) ainda é a média calculada por quem publica, não pelo banco.
+
+## Resgate: regra de uso e código validado pelo garçom (proposto)
+
+Decisões do responsável em 18/10/2026, aplicando o ADR-005 de produto (ainda proposto):
+
+- **Regra de uso por benefício**: `limit_per_user` dentro de `usage_period` (dia, semana, mês ou ano do calendário de Brasília, ou sem limite). "2 por 1 uma vez por ano" é limite 1 no ano; benefícios recorrentes usam semana ou mês. Novo tipo `two_for_one` ("2 por 1"). Migração `0002_resgates`, só aditiva.
+- **Emissão no app** (`emitirResgate`, `@achados/db`): dentro do escopo da pessoa (RLS), exige passaporte vigente, oferta visível e limite disponível; cancela o código anterior não usado; gera 6 caracteres sem ambíguos, válidos por 10 minutos, e grava só o SHA-256. O código aparece uma vez na tela (Action `gerarCodigoDoBeneficio`) e não vai para log, URL nem cache.
+- **Consumo pelo operador** (`consumirResgate`): só acha código da casa dele, recusa expirado, confere o limite de novo sob trava por pessoa e oferta e troca `issued → redeemed` com atualização condicional. Testes de integração provam que dois garçons ao mesmo tempo não usam o mesmo código e que o segundo 2 por 1 no ano é recusado.
+- **Pendente**: o painel do parceiro onde o garçom digita o código (frente do admin), com papel próprio no banco e a decisão, no servidor, de qual casa é do operador; limite de tentativas contra força bruta nesse painel; histórico "Utilizados" no passaporte.

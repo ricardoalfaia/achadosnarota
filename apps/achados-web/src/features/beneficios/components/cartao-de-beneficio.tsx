@@ -1,11 +1,16 @@
 import type { ReactNode } from "react";
 import { Crown } from "lucide-react";
 
-import { IconeDoBeneficio, type Beneficio } from "@/features/catalogo";
+import {
+  IconeDoBeneficio,
+  textoDaRegraDeUso,
+  type Beneficio,
+} from "@/features/catalogo";
 
 const TIPO: Record<Beneficio["tipo"], string> = {
   discount: "Desconto",
   courtesy: "Cortesia",
+  two_for_one: "2 por 1",
 };
 
 /**
@@ -44,7 +49,7 @@ export function CartaoDeBeneficio({
         <div className="mt-2 flex items-center justify-between gap-2">
           <span className="flex items-center gap-1 text-xs font-bold text-primary">
             <Crown aria-hidden="true" className="size-3.5 text-star" />
-            Passaporte
+            {textoDaRegraDeUso(beneficio)}
           </span>
           {acao}
         </div>

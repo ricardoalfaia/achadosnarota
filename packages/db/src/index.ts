@@ -17,3 +17,15 @@ export {
 } from "./client";
 export { ehUlid, novoId } from "./id";
 export { codigoPostgres, lerPublico, validarUserId, withUser } from "./escopo";
+export {
+  ALFABETO_DO_CODIGO,
+  consumirResgate,
+  emitirResgate,
+  fimDoPeriodo,
+  inicioDoPeriodo,
+  normalizarCodigo,
+  TAMANHO_DO_CODIGO,
+  VALIDADE_DO_CODIGO_EM_MINUTOS,
+  type CodigoEmitido,
+  type ResgateConsumido,
+} from "./resgate";

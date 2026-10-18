@@ -110,6 +110,8 @@ async function beneficiosDe(
       regras: offers.terms,
       icone: offers.icon,
       tipo: offers.kind,
+      limite: offers.limitPerUser,
+      periodo: offers.usagePeriod,
     })
     .from(offers)
     .where(inArray(offers.placeId, lugarIds))

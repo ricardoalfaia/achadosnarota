@@ -38,11 +38,13 @@ export { NumerosDoCatalogo } from "./components/numeros-do-catalogo";
 export { SeloDoLugar } from "./components/selo-do-lugar";
 export { TopoDaFicha } from "./components/topo-da-ficha";
 export { abaDaFicha, type AbaDaFicha } from "./domain/abas";
+export { textoDaRegraDeUso } from "./domain/apresentacao";
 export { lerFiltro, semFiltro } from "./domain/filtro";
 export { useFiltroDoCatalogo } from "./hooks/use-filtro-do-catalogo";
 export { useLugares } from "./hooks/use-lugares";
 export type {
   Beneficio,
+  PeriodoDeUso,
   CartaoDeLugar as Lugar,
   Categoria,
   Cidade,
